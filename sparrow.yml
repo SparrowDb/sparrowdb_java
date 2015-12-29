@@ -1,0 +1,30 @@
+# -------------------------- SparrowDb Configuration ---------------------------
+node_name: local-node
+
+# ---------------------------------- Network -----------------------------------
+# HTTP configuration for RESTful
+http_port: 8081
+http_host: "0.0.0.0"
+
+# TCP configuration only used for connection between sparrow nodes
+tcp_port: 9090
+tcp_host: "0.0.0.0"
+
+# ----------------------------------- Cache ------------------------------------
+# Careful with cache capacity, images can be very large. Cache capacity is the
+# number of images in cache, not the size of the image
+cache_capacity: 20
+
+# ----------------------------------- Paths ------------------------------------
+# Database path
+data_file_directory: data
+
+# -------------------------------- Compression ---------------------------------
+# Compression is only for stored images, not for indexes
+#
+# Compression types:
+#
+# 0: disabled
+# 1: Snappy
+# 2: LZ4
+compressor: 0
