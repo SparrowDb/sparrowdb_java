@@ -30,6 +30,10 @@ After that we start the server.  Running the startup script; it can be stopped w
 	$ cd bin
 	$ sparrow
 
+Running client.
+
+	$ python client.py
+
 
 Using Sparrow
 ====================
@@ -51,6 +55,11 @@ Listing all images in database (this query will return the hashed key):
     -307797267      558001  2015-12-27 17:26:57
     236401485       558001  2015-12-27 17:26:29
     -1277804125     558001  2015-12-27 17:26:41
+    
+You also can use query like:
+	
+	>>select from database_name where key = image_key;
+
 	
 Sending an image to database:
 
