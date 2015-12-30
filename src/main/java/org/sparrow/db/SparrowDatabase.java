@@ -54,6 +54,9 @@ public class SparrowDatabase
         if (databaseExists(dbname))
         {
             databases.remove(dbname);
+            String path = DatabaseDescriptor.getDataFilePath() +  dbname;
+            //File[] dirs = FileUtils.listSubdirectories(new File(path));
+            FileUtils.delete(path);
             return true;
         }
         return false;

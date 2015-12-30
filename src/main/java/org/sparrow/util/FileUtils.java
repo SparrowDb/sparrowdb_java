@@ -55,13 +55,40 @@ public class FileUtils
         }
     }
 
-    public static boolean delete(String file)
+    public static void delete(String path)
     {
-        File f = new File(file);
-        return f.delete();
+        File file = new File(path);
+        if(file.isDirectory())
+        {
+            if(file.list().length==0)
+            {
+                file.delete();
+            }
+            else
+            {
+                String files[] = file.list();
+
+                for (String temp : files)
+                {
+                    File fileDelete = new File(file, temp);
+                    delete(fileDelete.getPath());
+                }
+                if(file.list().length==0)
+                {
+                    file.delete();
+                    System.out.println("Directory is deleted : "
+                            + file.getAbsolutePath());
+                }
+            }
+
+        }
+        else
+        {
+            file.delete();
+        }
     }
 
-    public static void delete(File... files)
+    public static void delete(File[] files)
     {
         for (File file : files)
         {

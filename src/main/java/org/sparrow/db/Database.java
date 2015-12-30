@@ -13,7 +13,6 @@ import org.sparrow.thrift.SpqlResult;
 import org.sparrow.util.FileUtils;
 import org.sparrow.util.SPUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Map;
@@ -38,9 +37,9 @@ public class Database
     {
         this.dbname = dbname;
         String path = DatabaseDescriptor.getDataFilePath() + dbname;
-        storageWriter = StorageWriter.open(new java.io.File(path +  File.separator + "Data" + FILENAME_EXTENSION));
-        storageReader = StorageReader.open(new java.io.File(path +  File.separator + "Data" + FILENAME_EXTENSION));
-        indexSummary = new IndexSummary(new java.io.File(path +  File.separator + "Index" + FILENAME_EXTENSION));
+        storageWriter = StorageWriter.open(SPUtils.getDbPath(dbname, "Data", FILENAME_EXTENSION));
+        storageReader = StorageReader.open(SPUtils.getDbPath(dbname, "Data", FILENAME_EXTENSION));
+        indexSummary = new IndexSummary(SPUtils.getDbPath(dbname, "Index", FILENAME_EXTENSION));
         indexSummary.loadIndexFromDisk();
     }
 
@@ -62,7 +61,6 @@ public class Database
         lock_.lock();
         try
         {
-            //int hash32key = MurmurHash.hash32(ByteBuffer.wrap(object.getKey().getBytes()), 0, object.getKey().length(), 0);
             int hash32key = SPUtils.hash32(object.getKey());
             DataDefinition dataDefinition = new DataDefinition();
             dataDefinition.setKey32(hash32key);

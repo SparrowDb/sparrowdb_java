@@ -8,8 +8,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
-import io.netty.util.internal.logging.InternalLoggerFactory;
-import io.netty.util.internal.logging.Slf4JLoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sparrow.net.http.HttpRequestHandler;
@@ -25,11 +23,6 @@ public class NettyHttpServer implements Server
     private static Logger logger = LoggerFactory.getLogger(NettyHttpServer.class);
     private InetSocketAddress address;
     private HttpServerWorker server;
-
-    static
-    {
-        //InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
-    }
 
     public NettyHttpServer(String host, int port)
     {

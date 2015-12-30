@@ -53,6 +53,6 @@ public class DatabaseDescriptor
 
     public static String getDataFilePath()
     {
-        return config.data_file_directory + File.separator;
+        return config.data_file_directory + System.getProperty("file.separator");
     }
 }
