@@ -1,6 +1,7 @@
 package org.sparrow.serializer;
 
 import org.sparrow.db.DataDefinition;
+import org.sparrow.thrift.DataObject;
 
 import java.nio.ByteBuffer;
 

@@ -137,62 +137,39 @@ public class Database
         return dataDefinition;
     }
 
-    public SpqlResult query_data_where_timestamp(long value)
+    public SpqlResult mapToSpqlResult(Map data)
     {
         SpqlResult result = new SpqlResult();
-        Map data = indexSummary.filterByTimestamp(value);
-
         for(Object entry : data.entrySet())
         {
-            Map.Entry<Integer, Index> el = (Map.Entry<Integer, Index>)entry;
-            DataObject dobj = new DataObject();
-            DataDefinition dataDefinition = getDataByKey32(el.getValue().getKey());
-            dobj.setDbname(dbname);
-            dobj.setSize(dataDefinition.getSize());
-            dobj.setTimestamp(el.getValue().getTimestamp());
-            dobj.setKey(String.valueOf(el.getKey()));
-            result.addToRows(dobj);
+            Map.Entry<Integer, Index> idx = (Map.Entry<Integer, Index>) entry;
+            DataDefinition dataDefinition = getDataByKey32(idx.getValue().getKey());
+            DataObject dataObject = new DataObject();
+            dataObject.setDbname(dbname);
+            dataObject.setSize(dataDefinition.getSize());
+            dataObject.setTimestamp(idx.getValue().getTimestamp());
+            dataObject.setKey(String.valueOf(dataDefinition.getKey32()));
+            result.addToRows(dataObject);
         }
         result.count = data.size();
-        return result;
+        return  result;
+    }
+
+    public SpqlResult query_data_where_timestamp(long value)
+    {
+        Map data = indexSummary.filterByTimestamp(value);
+        return mapToSpqlResult(data);
     }
 
     public SpqlResult query_data_where_key(int value)
     {
-        SpqlResult result = new SpqlResult();
         Map data = indexSummary.filterByKey(value);
-
-        for(Object entry : data.entrySet())
-        {
-            Map.Entry<Integer, Index> el = (Map.Entry<Integer, Index>)entry;
-            DataObject dobj = new DataObject();
-            DataDefinition dataDefinition = getDataByKey32(el.getValue().getKey());
-            dobj.setDbname(dbname);
-            dobj.setSize(dataDefinition.getSize());
-            dobj.setTimestamp(el.getValue().getTimestamp());
-            dobj.setKey(String.valueOf(el.getKey()));
-            result.addToRows(dobj);
-        }
-        result.count = data.size();
-        return result;
+        return mapToSpqlResult(data);
     }
 
     public SpqlResult query_data_all()
     {
-        SpqlResult result = new SpqlResult();
         ConcurrentHashMap<Integer, Index> index = indexSummary.getAll();
-
-        for(Map.Entry<Integer, Index> idx : index.entrySet())
-        {
-            DataObject dobj = new DataObject();
-            DataDefinition dataDefinition = getDataByKey32(idx.getValue().getKey());
-            dobj.setDbname(dbname);
-            dobj.setSize(dataDefinition.getSize());
-            dobj.setTimestamp(idx.getValue().getTimestamp());
-            dobj.setKey(String.valueOf(idx.getKey()));
-            result.addToRows(dobj);
-        }
-        result.count = index.size();
-        return result;
+        return mapToSpqlResult(index);
     }
 }
