@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by mauricio on 25/12/2015.
@@ -30,6 +32,7 @@ public class Database
     private IDataReader storageReader;
     private IndexSummary indexSummary;
     private String dbname;
+    private Lock lock_ = new ReentrantLock();
 
     public Database(String dbname)
     {
@@ -56,31 +59,36 @@ public class Database
 
     public String insert_data(DataObject object)
     {
-        int hash32key = MurmurHash.hash32(ByteBuffer.wrap(object.getKey().getBytes()), 0, object.getKey().length(), 0);
-
-        DataDefinition dataDefinition = new DataDefinition();
-        dataDefinition.setKey32(hash32key);
-        dataDefinition.setKey64(MurmurHash.hash2_64(ByteBuffer.wrap(object.getKey().getBytes()), 0, object.getKey().length(), 0));
-        dataDefinition.setOffset(storageWriter.currentPosition());
-        dataDefinition.setSize(object.bufferForData().capacity());
-        dataDefinition.setCrc32(0);
-        dataDefinition.setExtension(DataDefinition.Extension.PNG);
-        dataDefinition.setState(DataDefinition.DataState.ACTIVE);
-        dataDefinition.setBuffer(object.bufferForData().array());
-
-        ByteBuffer buffer = DataDefinitionSerializer.instance.serialize(dataDefinition);
+        lock_.lock();
         try
         {
+            int hash32key = MurmurHash.hash32(ByteBuffer.wrap(object.getKey().getBytes()), 0, object.getKey().length(), 0);
+            DataDefinition dataDefinition = new DataDefinition();
+            dataDefinition.setKey32(hash32key);
+            dataDefinition.setKey64(MurmurHash.hash2_64(ByteBuffer.wrap(object.getKey().getBytes()), 0, object.getKey().length(), 0));
+            dataDefinition.setOffset(storageWriter.currentPosition());
+            dataDefinition.setSize(object.bufferForData().capacity());
+            dataDefinition.setCrc32(0);
+            dataDefinition.setExtension(DataDefinition.Extension.PNG);
+            dataDefinition.setState(DataDefinition.DataState.ACTIVE);
+            dataDefinition.setBuffer(object.bufferForData().array());
+
+            ByteBuffer buffer = DataDefinitionSerializer.instance.serialize(dataDefinition);
             storageWriter.write(buffer);
-        } catch (IOException e)
-        {
-            e.printStackTrace();
+            long unixtime = System.currentTimeMillis() / 1000L;
+            indexSummary.addIndex(new Index(hash32key, dataDefinition.getOffset(), unixtime));
+
+            return String.valueOf(hash32key);
         }
-
-        long unixtime = System.currentTimeMillis() / 1000L;
-        indexSummary.addIndex(new Index(hash32key, dataDefinition.getOffset(), unixtime));
-
-        return String.valueOf(hash32key);
+        catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+        finally
+        {
+            lock_.unlock();
+        }
+        return "Could not insert image";
     }
 
     public DataDefinition getDataByKey32(int key32)
