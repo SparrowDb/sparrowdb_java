@@ -1,5 +1,6 @@
 package org.sparrow.service;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sparrow.config.DatabaseDescriptor;
@@ -12,7 +13,7 @@ import org.sparrow.thrift.ThriftServer;
  */
 public class SparrowDaemon
 {
-    private static Logger logger = LoggerFactory.getLogger(ThriftServer.class);
+    private static Logger logger = LoggerFactory.getLogger(ThriftServer.class.getName());
     private static ThriftServer thriftServer;
     private static NettyHttpServer nettyHttpServer;
 
@@ -50,6 +51,7 @@ public class SparrowDaemon
 
     public static void main(String[] args) throws Exception
     {
+        logger.debug("TESSSSSSSSSSSSSSSSSSSSS");
         logger.info("Starting SparrowDb...");
         setup();
     }

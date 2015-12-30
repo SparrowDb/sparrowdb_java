@@ -14,7 +14,7 @@ import java.nio.ByteBuffer;
  * Andrzej Bialecki (ab at getopt org).
  * </p>
  */
-public class MurmurHash
+class MurmurHash
 {
     public static int hash32(ByteBuffer data, int offset, int length, int seed)
     {

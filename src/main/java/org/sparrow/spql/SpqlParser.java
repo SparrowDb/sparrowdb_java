@@ -4,9 +4,8 @@ import org.slf4j.LoggerFactory;
 import org.sparrow.db.Database;
 import org.sparrow.db.SparrowDatabase;
 import org.sparrow.thrift.SpqlResult;
-import org.sparrow.util.MurmurHash;
+import org.sparrow.util.SPUtils;
 
-import java.nio.ByteBuffer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,6 +28,8 @@ public class SpqlParser
 
         if (query_select_matcher.matches())
         {
+            logger.debug("Processing query: {} ", query);
+
             query_where_matcher = Pattern.compile(SPQL_QUERY_WHERE).matcher(query_select_matcher.group(2));
 
             Database database = SparrowDatabase.instance.getDatabase(query_select_matcher.group(1));
@@ -40,8 +41,7 @@ public class SpqlParser
             {
                 if (query_where_matcher.group(1).equals("key"))
                 {
-                    int hash32key = MurmurHash.hash32(ByteBuffer.wrap(query_where_matcher.group(2).getBytes()), 0, query_where_matcher.group(2).length(), 0);
-                    return database.query_data_where_key(hash32key);
+                    return database.query_data_where_key(SPUtils.hash32(query_where_matcher.group(2)));
                 }
                 else if (query_where_matcher.group(1).equals("timestamp"))
                 {
@@ -63,7 +63,7 @@ public class SpqlParser
         }
         else
         {
-            logger.debug("Invalid query: " + query);
+            logger.debug("Invalid query: {}", query);
         }
 
         return null;

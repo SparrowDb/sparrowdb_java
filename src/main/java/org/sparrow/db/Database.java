@@ -11,7 +11,7 @@ import org.sparrow.serializer.DataDefinitionSerializer;
 import org.sparrow.thrift.DataObject;
 import org.sparrow.thrift.SpqlResult;
 import org.sparrow.util.FileUtils;
-import org.sparrow.util.MurmurHash;
+import org.sparrow.util.SPUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,10 +62,11 @@ public class Database
         lock_.lock();
         try
         {
-            int hash32key = MurmurHash.hash32(ByteBuffer.wrap(object.getKey().getBytes()), 0, object.getKey().length(), 0);
+            //int hash32key = MurmurHash.hash32(ByteBuffer.wrap(object.getKey().getBytes()), 0, object.getKey().length(), 0);
+            int hash32key = SPUtils.hash32(object.getKey());
             DataDefinition dataDefinition = new DataDefinition();
             dataDefinition.setKey32(hash32key);
-            dataDefinition.setKey64(MurmurHash.hash2_64(ByteBuffer.wrap(object.getKey().getBytes()), 0, object.getKey().length(), 0));
+            dataDefinition.setKey64(SPUtils.hash64(object.getKey()));
             dataDefinition.setOffset(storageWriter.currentPosition());
             dataDefinition.setSize(object.bufferForData().capacity());
             dataDefinition.setCrc32(0);

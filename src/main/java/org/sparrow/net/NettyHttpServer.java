@@ -28,7 +28,7 @@ public class NettyHttpServer implements Server
 
     static
     {
-        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
+        //InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
     }
 
     public NettyHttpServer(String host, int port)

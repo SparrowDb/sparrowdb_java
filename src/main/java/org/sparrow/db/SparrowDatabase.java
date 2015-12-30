@@ -6,10 +6,9 @@ import org.slf4j.LoggerFactory;
 import org.sparrow.config.DatabaseDescriptor;
 import org.sparrow.thrift.DataObject;
 import org.sparrow.util.FileUtils;
-import org.sparrow.util.MurmurHash;
+import org.sparrow.util.SPUtils;
 
 import java.io.File;
-import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.Set;
 
@@ -92,12 +91,11 @@ public class SparrowDatabase
 
     public DataDefinition getObjectByKey(String dbname, String key)
     {
-        int hash32key = MurmurHash.hash32(ByteBuffer.wrap(key.getBytes()), 0, key.length(), 0);
         Database database = getDatabase(dbname);
 
         if (database!=null)
         {
-            return database.getDataWithImageByKey32(hash32key);
+            return database.getDataWithImageByKey32(SPUtils.hash32(key));
         }
         return null;
     }

@@ -1,7 +1,5 @@
 package org.sparrow.db;
 
-import org.sparrow.thrift.DataObject;
-
 /**
  * Created by mauricio on 25/12/2015.
  */
