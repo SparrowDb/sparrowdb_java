@@ -14,14 +14,14 @@ import java.io.File;
 public class DatabaseDescriptor
 {
     private static Logger logger = LoggerFactory.getLogger(DatabaseDescriptor.class);
-    public static final String DEFAULT_SERVER_CONFIG_FILE = "sparrow.yml";
+    private static final String DEFAULT_SERVER_CONFIG_FILE = "sparrow.yml";
     public static Config config;
 
     static {
         config = new Config();
     }
 
-    public static Config loadConfiguration()
+    public static void loadConfiguration()
     {
         try
         {
@@ -34,7 +34,6 @@ public class DatabaseDescriptor
             logger.error("Error trying to load configuration file " + DEFAULT_SERVER_CONFIG_FILE);
             System.exit(1);
         }
-        return config;
     }
 
     public static void checkDataDirectory()

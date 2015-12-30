@@ -38,12 +38,7 @@ public class Database
         storageWriter = StorageWriter.open(new java.io.File(path +  File.separator + "Data" + FILENAME_EXTENSION));
         storageReader = StorageReader.open(new java.io.File(path +  File.separator + "Data" + FILENAME_EXTENSION));
         indexSummary = new IndexSummary(new java.io.File(path +  File.separator + "Index" + FILENAME_EXTENSION));
-        loadDataFromDisk();
-    }
-
-    public void loadDataFromDisk()
-    {
-        indexSummary.loadDataFromDisk();
+        indexSummary.loadIndexFromDisk();
     }
 
     public static Database build(String dbname)

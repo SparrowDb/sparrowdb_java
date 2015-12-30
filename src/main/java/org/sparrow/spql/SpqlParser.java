@@ -1,17 +1,11 @@
 package org.sparrow.spql;
 
-import com.google.common.collect.ImmutableMap;
 import org.sparrow.db.Database;
 import org.sparrow.db.SparrowDatabase;
-import org.sparrow.spql.statements.SpqlStatement;
-import org.sparrow.thrift.Query;
 import org.sparrow.thrift.SpqlResult;
 import org.sparrow.util.MurmurHash;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,7 +37,6 @@ public class SpqlParser
             {
                 if (query_where_matcher.group(1).equals("key"))
                 {
-                    String str = query_where_matcher.group(2);
                     int hash32key = MurmurHash.hash32(ByteBuffer.wrap(query_where_matcher.group(2).getBytes()), 0, query_where_matcher.group(2).length(), 0);
                     return database.query_data_where_key(hash32key);
                 }

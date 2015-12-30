@@ -16,7 +16,7 @@ public class SparrowDaemon
     private static ThriftServer thriftServer;
     private static NettyHttpServer nettyHttpServer;
 
-    public static void setup()
+    private static void setup()
     {
         logger.info("Loading configuration file...");
         DatabaseDescriptor.loadConfiguration();

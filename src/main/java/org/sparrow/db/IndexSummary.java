@@ -32,7 +32,7 @@ public class IndexSummary
         this.indexReader = StorageReader.open(this.indexFile);
     }
 
-    public void loadDataFromDisk()
+    public void loadIndexFromDisk()
     {
         ByteBuffer reader = ByteBuffer.allocate(IndexSerializer.DEFAULT_SIZE);
         while(indexReader.read(reader)>0)
@@ -44,7 +44,7 @@ public class IndexSummary
         }
     }
 
-    public boolean exists(Integer key)
+    public boolean exists(int key)
     {
         return indexMap.contains(key);
     }
@@ -94,11 +94,7 @@ public class IndexSummary
 
     public Map filterByKey(int value)
     {
-        Predicate<Map.Entry<Integer, Index>> wherePredicate = new Predicate<Map.Entry<Integer, Index>>() {
-            public boolean apply(Map.Entry<Integer, Index> element) {
-                return element.getValue().getKey() == value;
-            }
-        };
+        Predicate<Map.Entry<Integer, Index>> wherePredicate = element -> element.getValue().getKey() == value;
         return Maps.filterEntries(indexMap, wherePredicate);
     }
 }

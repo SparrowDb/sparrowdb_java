@@ -241,7 +241,6 @@ public class MurmurHash
                 k1 *= c2;
                 h1 ^= k1;
         }
-        ;
 
         //----------
         // finalization

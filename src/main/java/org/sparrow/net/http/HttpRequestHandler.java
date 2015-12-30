@@ -29,8 +29,6 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<HttpObject>
         if (msg instanceof HttpRequest)
         {
             HttpRequest request = (HttpRequest) msg;
-            HttpHeaders headers = request.headers();
-
             RestResponse response = restController.processRequest(request.getMethod(), request.getUri());
             ctx.writeAndFlush(response.getResponse()).addListener(ChannelFutureListener.CLOSE);
         }
