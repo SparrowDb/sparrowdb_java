@@ -7,8 +7,6 @@ import org.sparrow.config.DatabaseDescriptor;
 import org.sparrow.db.SparrowDatabase;
 import org.sparrow.net.NettyHttpServer;
 import org.sparrow.thrift.ThriftServer;
-import org.sparrow.util.FileUtils;
-import org.sparrow.util.SPUtils;
 
 /**
  * Created by mauricio on 24/12/2015.

@@ -9,8 +9,6 @@ import org.sparrow.util.FileUtils;
 import org.sparrow.util.SPUtils;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Set;
 
