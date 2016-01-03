@@ -76,8 +76,6 @@ public class FileUtils
                 if(file.list().length==0)
                 {
                     file.delete();
-                    System.out.println("Directory is deleted : "
-                            + file.getAbsolutePath());
                 }
             }
 

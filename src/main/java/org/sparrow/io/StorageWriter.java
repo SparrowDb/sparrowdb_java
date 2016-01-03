@@ -139,6 +139,8 @@ public class StorageWriter implements IDataWriter
         {
             buffer.clear();
             fchannel.close();
+            buffer = null;
+            fchannel = null;
         } catch (IOException e)
         {
             e.printStackTrace();

@@ -61,7 +61,6 @@ def spql_query(query):
 commandTable = {}
 commandTable['^create database ([A-Za-z0-9]{3,20})\s*;$'] =  lambda x : client.create_database(x.group(1))
 commandTable['^drop database ([A-Za-z0-9]{3,20})\s*;$'] = lambda x : client.drop_database(x.group(1))
-commandTable['^drop database ([A-Za-z0-9]{3,20})\s*;$'] = lambda x : client.drop_database(x.group(1))
 commandTable['^insert into ([A-Za-z0-9]{3,20})\s*\(\s*(.{1,}.{4}\s*),\s*([A-Za-z0-9]{3,20}\s*)\)\s*;$'] = lambda x : insert_data(x.group(1), x.group(2), x.group(3))
   
 def sendCommand(cmd):

@@ -36,7 +36,6 @@ public class Database
     public Database(String dbname)
     {
         this.dbname = dbname;
-        String path = DatabaseDescriptor.getDataFilePath() + dbname;
         storageWriter = StorageWriter.open(SPUtils.getDbPath(dbname, "Data", FILENAME_EXTENSION));
         storageReader = StorageReader.open(SPUtils.getDbPath(dbname, "Data", FILENAME_EXTENSION));
         indexSummary = new IndexSummary(SPUtils.getDbPath(dbname, "Index", FILENAME_EXTENSION));
@@ -54,6 +53,13 @@ public class Database
             e.getMessage();
         }
         return null;
+    }
+
+    public void close()
+    {
+        storageWriter.close();
+        storageReader.close();
+        indexSummary.close();
     }
 
     public String insert_data(DataObject object)
@@ -90,7 +96,7 @@ public class Database
         return "Could not insert image";
     }
 
-    public DataDefinition getDataByKey32(int key32)
+    public DataDefinition getRawDataByKey32(int key32)
     {
         ByteBuffer dataDefinitionBuffer = ByteBuffer.allocate(DataDefinitionSerializer.DEFAULT_SIZE);
         Index index = indexSummary.get(key32);
@@ -115,7 +121,7 @@ public class Database
 
     public DataDefinition getDataWithImageByKey32(int key32)
     {
-        DataDefinition dataDefinition = getDataByKey32(key32);
+        DataDefinition dataDefinition = getRawDataByKey32(key32);
 
         if (dataDefinition != null)
         {
@@ -142,7 +148,7 @@ public class Database
         for(Object entry : data.entrySet())
         {
             Map.Entry<Integer, Index> idx = (Map.Entry<Integer, Index>) entry;
-            DataDefinition dataDefinition = getDataByKey32(idx.getValue().getKey());
+            DataDefinition dataDefinition = getRawDataByKey32(idx.getValue().getKey());
             DataObject dataObject = new DataObject();
             dataObject.setDbname(dbname);
             dataObject.setSize(dataDefinition.getSize());

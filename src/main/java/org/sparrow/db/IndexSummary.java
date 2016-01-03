@@ -97,4 +97,10 @@ public class IndexSummary
         Predicate<Map.Entry<Integer, Index>> wherePredicate = element -> element.getValue().getKey() == value;
         return Maps.filterEntries(indexMap, wherePredicate);
     }
+
+    public void close()
+    {
+        indexWriter.close();
+        indexReader.close();
+    }
 }

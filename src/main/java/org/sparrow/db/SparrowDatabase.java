@@ -9,6 +9,8 @@ import org.sparrow.util.FileUtils;
 import org.sparrow.util.SPUtils;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Set;
 
@@ -51,12 +53,11 @@ public class SparrowDatabase
 
     public boolean dropDatabase(String dbname)
     {
-        if (databaseExists(dbname))
+        Database database = databases.get(dbname);
+        if (database != null)
         {
-            databases.remove(dbname);
-            String path = DatabaseDescriptor.getDataFilePath() +  dbname;
-            //File[] dirs = FileUtils.listSubdirectories(new File(path));
-            FileUtils.delete(path);
+            database.close();
+            FileUtils.delete(SPUtils.getDbPath(dbname).getAbsolutePath());
             return true;
         }
         return false;
