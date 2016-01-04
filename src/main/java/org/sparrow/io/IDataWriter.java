@@ -13,7 +13,6 @@ public interface IDataWriter
     long lastModified();
     int write(ByteBuffer src) throws IOException;
     void fsync();
-    void flush() throws IOException;
     void truncate(long newSize);
     void close();
 }

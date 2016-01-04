@@ -71,7 +71,12 @@ public class Database
             DataDefinition dataDefinition = new DataDefinition();
             dataDefinition.setKey32(hash32key);
             dataDefinition.setKey64(SPUtils.hash64(object.getKey()));
-            dataDefinition.setOffset(storageWriter.currentPosition());
+
+            /*
+             *  As append only data file, the offset of new data is the
+             *   the size of data file.
+            */
+            dataDefinition.setOffset(storageWriter.length());
             dataDefinition.setSize(object.bufferForData().capacity());
             dataDefinition.setCrc32(0);
             dataDefinition.setExtension(DataDefinition.Extension.PNG);

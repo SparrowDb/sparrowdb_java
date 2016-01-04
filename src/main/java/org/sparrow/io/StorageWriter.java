@@ -16,8 +16,6 @@ public class StorageWriter implements IDataWriter
     private static Logger logger = org.slf4j.LoggerFactory.getLogger(StorageWriter.class);
     private final File file;
     private FileChannel fchannel;
-    private ByteBuffer buffer;
-    private boolean hasDirty;
 
     private StorageWriter(File file) throws IOException
     {
@@ -36,8 +34,6 @@ public class StorageWriter implements IDataWriter
         {
             throw new IOException(e);
         }
-
-        buffer = ByteBuffer.allocate(5000000);
         this.file = file;
     }
 
@@ -58,7 +54,7 @@ public class StorageWriter implements IDataWriter
     @Override
     public long length() throws IOException
     {
-        return Math.max(currentPosition(), fchannel.size());
+        return fchannel.size();
     }
 
     @Override
@@ -66,7 +62,7 @@ public class StorageWriter implements IDataWriter
     {
         try
         {
-            return fchannel.size() + buffer.position();
+            return fchannel.position();
         } catch (IOException e)
         {
             e.printStackTrace();
@@ -98,7 +94,6 @@ public class StorageWriter implements IDataWriter
         while(src.hasRemaining())
             fchannel.write(src);
         fsync();
-        hasDirty = true;
         return length;
     }
 
@@ -112,12 +107,6 @@ public class StorageWriter implements IDataWriter
         {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void flush() throws IOException
-    {
-        hasDirty = false;
     }
 
     @Override
@@ -137,9 +126,7 @@ public class StorageWriter implements IDataWriter
     {
         try
         {
-            buffer.clear();
             fchannel.close();
-            buffer = null;
             fchannel = null;
         } catch (IOException e)
         {
