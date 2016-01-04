@@ -5,7 +5,7 @@ sys.path.append('../py')
 
 from sparrow import SparrowTransport
 from sparrow.ttypes import *
-
+from enum import Enum
 from thrift import Thrift
 from thrift.transport import TSocket
 from thrift.transport import TTransport
@@ -30,6 +30,11 @@ except Thrift.TException, tx:
   print '%s' % (tx.message)
   sys.exit()
 
+class State(Enum):
+	ACTIVE = 0
+	REMOVED = 1
+	DESTROY = 2
+  
 def loadImage(path):
   with open(path, "rb") as f:
     data = f.read()
@@ -48,12 +53,13 @@ def spql_query(query):
 	rowStr = ""
 
 	if data.rows is not None:
-		rowStr =  "key\tsize\ttimestamp" + "\n"
+		rowStr = "Key\t\tSize\tTimestamp\t\tStatus\n"
+		rowStr = rowStr + "---------------------------------------------------------\n"
 		result = result + rowStr
 		
 		for row in data.rows:
 			dth = datetime.datetime.fromtimestamp(int(row.timestamp)).strftime('%Y-%m-%d %H:%M:%S')
-			result = result + (row.key + "\t" + str(row.size) + "\t" + str(row.timestamp) + "\n")
+			result = result + (row.key + "\t" + str(row.size) + "\t" + dth + "\t" + State(row.state).name + "\n")
 		return result
 	else:
 		return "Empty"

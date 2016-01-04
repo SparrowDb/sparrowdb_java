@@ -11,7 +11,8 @@ struct DataObject {
 	4:optional binary data,
 	5:optional string extension,
 	6:optional i64 timestamp,
-	7:optional i32 size;
+	7:optional i32 size,
+	8:optional i32 state,
 }
 
 struct SpqlResult {

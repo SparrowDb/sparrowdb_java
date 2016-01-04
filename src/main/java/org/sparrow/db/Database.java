@@ -154,6 +154,7 @@ public class Database
             dataObject.setSize(dataDefinition.getSize());
             dataObject.setTimestamp(idx.getValue().getTimestamp());
             dataObject.setKey(String.valueOf(dataDefinition.getKey32()));
+            dataObject.setState(dataDefinition.getState().ordinal());
             result.addToRows(dataObject);
         }
         result.count = data.size();
