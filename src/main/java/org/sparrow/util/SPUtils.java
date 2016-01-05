@@ -13,12 +13,12 @@ public class SPUtils
 {
     public static int hash32(String data)
     {
-        return MurmurHash.hash32(ByteBuffer.wrap(data.getBytes()), 0, data.length(), 0);
+        return Math.abs(MurmurHash.hash32(ByteBuffer.wrap(data.getBytes()), 0, data.length(), 0));
     }
 
     public static long hash64(String data)
     {
-        return MurmurHash.hash2_64(ByteBuffer.wrap(data.getBytes()), 0, data.length(), 0);
+        return Math.abs(MurmurHash.hash2_64(ByteBuffer.wrap(data.getBytes()), 0, data.length(), 0));
     }
 
     public static File getDbPath(String ... names)
