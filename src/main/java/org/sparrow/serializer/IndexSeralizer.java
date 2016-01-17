@@ -25,9 +25,19 @@ public class IndexSeralizer implements TypeSerializer<Map.Entry<Integer, Long>>
         {
             bos.writeInt(key);
             bos.writeLong(offset);
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
+        }
+        finally
+        {
+            try
+            {
+                bos.close();
+            } catch (IOException e)
+            {
+            }
         }
         return baos.toByteArray();
     }
@@ -42,9 +52,19 @@ public class IndexSeralizer implements TypeSerializer<Map.Entry<Integer, Long>>
             int key = dis.readInt();
             long offset = dis.readLong();
             return new AbstractMap.SimpleEntry<>(key, offset);
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
+        }
+        finally
+        {
+            try
+            {
+                dis.close();
+            } catch (IOException e)
+            {
+            }
         }
         return null;
     }

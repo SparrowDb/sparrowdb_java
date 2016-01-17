@@ -116,15 +116,14 @@ public class DataLog
         if (offset!=null)
         {
             byte[] bytes = DataInput.load(dataReader, offset);
-            DataDefinition dataDefinition = DataDefinitionSerializer.instance.deserialize(bytes, true);
-            return dataDefinition;
+            return DataDefinitionSerializer.instance.deserialize(bytes, true);
         }
         return null;
     }
 
     public boolean isEmpty()
     {
-        return getSize() > 0 ? false : true;
+        return getSize() <= 0;
     }
 
     public long getSize()

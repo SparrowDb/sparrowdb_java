@@ -57,10 +57,7 @@ public class Database
         }
 
         DataHolder.loadDataHolders(database.dataHolder, dbname);
-        for(DataHolder dataHolder : database.dataHolder)
-        {
-            dataHolder.loadIndexFile();
-        }
+        database.dataHolder.forEach(DataHolder::loadIndexFile);
 
         return database;
     }

@@ -27,8 +27,8 @@ public class DataOutput
             e.printStackTrace();
         } finally
         {
-            if (dataBuff == null) dataBuff.clear();
-            if (dataSizeBuff == null) dataSizeBuff.clear();
+            if (dataBuff != null) dataBuff.clear();
+            if (dataSizeBuff != null) dataSizeBuff.clear();
         }
     }
 }

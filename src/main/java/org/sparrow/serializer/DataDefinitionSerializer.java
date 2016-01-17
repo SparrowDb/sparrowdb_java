@@ -28,9 +28,19 @@ public class DataDefinitionSerializer implements TypeSerializer<DataDefinition>
             if (dataDefinition.getSize() > 0) {
                 bos.write(dataDefinition.getBuffer());
             }
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
+        }
+        finally
+        {
+            try
+            {
+                bos.close();
+            } catch (IOException e)
+            {
+            }
         }
         return baos.toByteArray();
     }
@@ -48,7 +58,7 @@ public class DataDefinitionSerializer implements TypeSerializer<DataDefinition>
         DataInputStream dis = new DataInputStream(bais);
         try
         {
-            dataDefinition.setKey(dis.readUTF().toString());
+            dataDefinition.setKey(dis.readUTF());
             dataDefinition.setKey32(dis.readInt());
             dataDefinition.setSize(dis.readInt());
             dataDefinition.setOffset(dis.readLong());
@@ -60,9 +70,19 @@ public class DataDefinitionSerializer implements TypeSerializer<DataDefinition>
                 dis.read(data);
                 dataDefinition.setBuffer(data);
             }
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
+        }
+        finally
+        {
+            try
+            {
+                dis.close();
+            } catch (IOException e)
+            {
+            }
         }
         return dataDefinition;
     }
