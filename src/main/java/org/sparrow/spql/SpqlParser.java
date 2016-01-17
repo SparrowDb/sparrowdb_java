@@ -41,7 +41,7 @@ public class SpqlParser
             {
                 if (query_where_matcher.group(1).equals("key"))
                 {
-                    return database.query_data_where_key(SPUtils.hash32(query_where_matcher.group(2)));
+                    return database.query_data_where_key(query_where_matcher.group(2));
                 }
                 else if (query_where_matcher.group(1).equals("timestamp"))
                 {

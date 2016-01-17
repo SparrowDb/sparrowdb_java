@@ -8,6 +8,7 @@ import org.sparrow.thrift.SpqlResult;
 import org.sparrow.util.FileUtils;
 import org.sparrow.util.SPUtils;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
@@ -20,8 +21,8 @@ public class Database
 {
     private static Logger logger = LoggerFactory.getLogger(Database.class);
     private static final String FILENAME_EXTENSION = ".spw";
-    private Set<DataHolder> dataHolder;
-    private DataLog dataLog;
+    private volatile Set<DataHolder> dataHolder;
+    private volatile DataLog dataLog;
     private String dbname;
     private Lock lock_ = new ReentrantLock();
 
@@ -143,9 +144,16 @@ public class Database
         return  null;
     }
 
-    public SpqlResult query_data_where_key(int value)
+    public SpqlResult query_data_where_key(String value)
     {
-        return  null;
+        DataDefinition dataDefinition = getDataWithImageByKey32(value);
+        if (dataDefinition!=null)
+        {
+            return mapToSpqlResult(new HashSet<DataDefinition>(){{
+                add(dataDefinition);
+            }});
+        }
+        return null;
     }
 
     public SpqlResult query_data_all()

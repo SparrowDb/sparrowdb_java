@@ -19,7 +19,7 @@ public class SparrowDatabase
 {
     private static final Logger logger = LoggerFactory.getLogger(SparrowDatabase.class);
     public static final SparrowDatabase instance = new SparrowDatabase();
-    private final Map<String, Database> databases = new NonBlockingHashMap<>();
+    private volatile Map<String, Database> databases = new NonBlockingHashMap<>();
 
     public SparrowDatabase()
     {
@@ -95,11 +95,6 @@ public class SparrowDatabase
     public DataDefinition getObjectByKey(String dbname, String key)
     {
         Database database = getDatabase(dbname);
-
-        if (database!=null)
-        {
-            return database.getDataWithImageByKey32(key);
-        }
-        return null;
+        return (database!=null) ? database.getDataWithImageByKey32(key) : null ;
     }
 }
