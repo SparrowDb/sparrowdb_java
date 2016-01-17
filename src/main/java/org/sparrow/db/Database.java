@@ -49,17 +49,17 @@ public class Database
     {
         Database database = new Database(dbname);
 
-        DataHolder.loadDataHolders(database.dataHolder, dbname);
-        for(DataHolder dataHolder : database.dataHolder)
-        {
-           dataHolder.loadIndexFile();
-        }
-
         if (!database.dataLog.isEmpty())
         {
             logger.debug("Loading datalog {} with size: {}", dbname, database.dataLog.getSize());
             database.dataLog.load();
             database.dataLog.flush(database.dataHolder);
+        }
+
+        DataHolder.loadDataHolders(database.dataHolder, dbname);
+        for(DataHolder dataHolder : database.dataHolder)
+        {
+            dataHolder.loadIndexFile();
         }
 
         return database;
