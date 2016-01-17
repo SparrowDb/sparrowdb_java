@@ -31,11 +31,11 @@ public class StorageReader implements IDataReader
         }
     }
 
-    public static IDataReader open(File file)
+    public static IDataReader open(String file)
     {
         try
         {
-            return new StorageReader(file);
+            return new StorageReader(new File(file));
         }
         catch (Exception e)
         {
@@ -46,9 +46,16 @@ public class StorageReader implements IDataReader
     }
 
     @Override
-    public long length() throws IOException
+    public long length()
     {
-        return fchannel.size();
+        try
+        {
+            return fchannel.size();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     @Override

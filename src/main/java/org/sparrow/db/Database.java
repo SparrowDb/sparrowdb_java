@@ -3,20 +3,13 @@ package org.sparrow.db;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sparrow.config.DatabaseDescriptor;
-import org.sparrow.io.IDataReader;
-import org.sparrow.io.IDataWriter;
-import org.sparrow.io.StorageReader;
-import org.sparrow.io.StorageWriter;
-import org.sparrow.serializer.DataDefinitionSerializer;
 import org.sparrow.thrift.DataObject;
 import org.sparrow.thrift.SpqlResult;
 import org.sparrow.util.FileUtils;
 import org.sparrow.util.SPUtils;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -27,19 +20,16 @@ public class Database
 {
     private static Logger logger = LoggerFactory.getLogger(Database.class);
     private static final String FILENAME_EXTENSION = ".spw";
-    private IDataWriter storageWriter;
-    private IDataReader storageReader;
-    private IndexSummary indexSummary;
+    private Set<DataHolder> dataHolder;
+    private DataLog dataLog;
     private String dbname;
     private Lock lock_ = new ReentrantLock();
 
-    public Database(String dbname)
+    private Database(String dbname)
     {
         this.dbname = dbname;
-        storageWriter = StorageWriter.open(SPUtils.getDbPath(dbname, "Data", FILENAME_EXTENSION));
-        storageReader = StorageReader.open(SPUtils.getDbPath(dbname, "Data", FILENAME_EXTENSION));
-        indexSummary = new IndexSummary(SPUtils.getDbPath(dbname, "Index", FILENAME_EXTENSION));
-        indexSummary.loadIndexFromDisk();
+        dataLog = new DataLog(dbname, SPUtils.getDbPath(dbname, "datalog", FILENAME_EXTENSION));
+        dataHolder = new LinkedHashSet<>();
     }
 
     public static Database build(String dbname)
@@ -55,11 +45,28 @@ public class Database
         return null;
     }
 
+    public static Database open(String dbname)
+    {
+        Database database = new Database(dbname);
+
+        DataHolder.loadDataHolders(database.dataHolder, dbname);
+        for(DataHolder dataHolder : database.dataHolder)
+        {
+           dataHolder.loadIndexFile();
+        }
+
+        if (!database.dataLog.isEmpty())
+        {
+            logger.debug("Loading datalog {} with size: {}", dbname, database.dataLog.getSize());
+            database.dataLog.load();
+            database.dataLog.flush(database.dataHolder);
+        }
+
+        return database;
+    }
+
     public void close()
     {
-        storageWriter.close();
-        storageReader.close();
-        indexSummary.close();
     }
 
     public String insert_data(DataObject object)
@@ -69,96 +76,64 @@ public class Database
         {
             int hash32key = SPUtils.hash32(object.getKey());
             DataDefinition dataDefinition = new DataDefinition();
+            dataDefinition.setKey(object.getKey());
             dataDefinition.setKey32(hash32key);
-            dataDefinition.setKey64(SPUtils.hash64(object.getKey()));
 
             /*
              *  As append only data file, the offset of new data is the
-             *   the size of data file.
+             *   the size of data file. It is updated when the data is
+             *   written to the file.
             */
-            dataDefinition.setOffset(storageWriter.length());
+            dataDefinition.setOffset(0);
             dataDefinition.setSize(object.bufferForData().capacity());
             dataDefinition.setCrc32(0);
             dataDefinition.setExtension(DataDefinition.Extension.PNG);
             dataDefinition.setState(DataDefinition.DataState.ACTIVE);
             dataDefinition.setBuffer(object.bufferForData().array());
 
-            ByteBuffer buffer = DataDefinitionSerializer.instance.serialize(dataDefinition);
-            storageWriter.write(buffer);
-            long unixtime = System.currentTimeMillis() / 1000L;
-            indexSummary.addIndex(new Index(hash32key, dataDefinition.getOffset(), unixtime));
+            if (dataLog.needFlush(dataDefinition.getSize()))
+            {
+                dataLog.flush(dataHolder);
+            }
+            dataLog.append(dataDefinition);
 
             return String.valueOf(hash32key);
-        }
-        catch (IOException ex)
-        {
-            ex.printStackTrace();
         }
         finally
         {
             lock_.unlock();
         }
-        return "Could not insert image";
     }
 
-    public DataDefinition getRawDataByKey32(int key32)
+    public DataDefinition getDataWithImageByKey32(String dataKey)
     {
-        ByteBuffer dataDefinitionBuffer = ByteBuffer.allocate(DataDefinitionSerializer.DEFAULT_SIZE);
-        Index index = indexSummary.get(key32);
         DataDefinition dataDefinition = null;
 
-        if (index != null)
+        dataDefinition = dataLog.get(dataKey);
+
+        if (dataDefinition == null)
         {
-            try
+            for (DataHolder dh : dataHolder)
             {
-                storageReader.readChunck(index.getOffset(), dataDefinitionBuffer);
-                dataDefinitionBuffer.flip();
-                dataDefinition = DataDefinitionSerializer.instance.deserialize(dataDefinitionBuffer);
-                dataDefinitionBuffer.clear();
-            } catch (IOException e)
-            {
-                e.printStackTrace();
+                dataDefinition = dh.get(dataKey);
+                if (dataDefinition != null)
+                    return  dataDefinition;
             }
         }
 
         return dataDefinition;
     }
 
-    public DataDefinition getDataWithImageByKey32(int key32)
-    {
-        DataDefinition dataDefinition = getRawDataByKey32(key32);
-
-        if (dataDefinition != null)
-        {
-            try
-            {
-                if (dataDefinition.getSize() > 0)
-                {
-                    ByteBuffer dataBuff = ByteBuffer.allocate(dataDefinition.getSize());
-                    storageReader.readChunck(dataDefinition.getOffset() + DataDefinitionSerializer.DEFAULT_SIZE, dataBuff);
-                    dataDefinition.setBuffer(dataBuff.array());
-                }
-            } catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
-
-        return dataDefinition;
-    }
-
-    public SpqlResult mapToSpqlResult(Map data)
+    public SpqlResult mapToSpqlResult(Set<DataDefinition> data)
     {
         SpqlResult result = new SpqlResult();
-        for(Object entry : data.entrySet())
+        for(DataDefinition dataDefinition : data)
         {
-            Map.Entry<Integer, Index> idx = (Map.Entry<Integer, Index>) entry;
-            DataDefinition dataDefinition = getRawDataByKey32(idx.getValue().getKey());
             DataObject dataObject = new DataObject();
             dataObject.setDbname(dbname);
             dataObject.setSize(dataDefinition.getSize());
-            dataObject.setTimestamp(idx.getValue().getTimestamp());
-            dataObject.setKey(String.valueOf(dataDefinition.getKey32()));
+            dataObject.setTimestamp(0);
+            dataObject.setKey(dataDefinition.getKey());
             dataObject.setState(dataDefinition.getState().ordinal());
             result.addToRows(dataObject);
         }
@@ -168,19 +143,18 @@ public class Database
 
     public SpqlResult query_data_where_timestamp(long value)
     {
-        Map data = indexSummary.filterByTimestamp(value);
-        return mapToSpqlResult(data);
+        return  null;
     }
 
     public SpqlResult query_data_where_key(int value)
     {
-        Map data = indexSummary.filterByKey(value);
-        return mapToSpqlResult(data);
+        return  null;
     }
 
     public SpqlResult query_data_all()
     {
-        ConcurrentHashMap<Integer, Index> index = indexSummary.getAll();
-        return mapToSpqlResult(index);
+        Set result = new LinkedHashSet<>();
+        dataHolder.forEach(x -> result.addAll(x.fetchAll()));
+        return mapToSpqlResult(result);
     }
 }

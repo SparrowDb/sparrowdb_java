@@ -1,13 +1,12 @@
 package org.sparrow.tools;
 
 import org.sparrow.db.DataDefinition;
+import org.sparrow.io.DataInput;
+import org.sparrow.io.IDataReader;
+import org.sparrow.io.StorageReader;
 import org.sparrow.serializer.DataDefinitionSerializer;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 
 /**
  * Created by mauricio on 27/12/2015.
@@ -16,26 +15,18 @@ public class DataExtract
 {
     public static void main(String[] args) throws IOException
     {
-        ByteBuffer in = ByteBuffer.allocate(DataDefinitionSerializer.DEFAULT_SIZE);
-        FileChannel fc2 = FileChannel.open(new java.io.File("data\\teste1\\Data.spw").toPath(), StandardOpenOption.READ);
-        fc2.position(0);
+        IDataReader dataReader  = StorageReader.open("data\\teste1\\data-holder-1.spw");
 
-        while(fc2.read(in)>0)
+        long fileSize = dataReader.length();
+        long currentSize = 0;
+
+        while (currentSize < fileSize)
         {
-            in.flip();
-            DataDefinition dataDefinition = DataDefinitionSerializer.instance.deserialize(in);
-            if (dataDefinition.getSize() > 0)
-            {
-                ByteBuffer aaa = ByteBuffer.allocate(dataDefinition.getSize());
-                fc2.read(aaa);
-                dataDefinition.setBuffer(aaa.array());
-                byte[] byteArray = dataDefinition.getBuffer();
-                Files.write(new java.io.File(dataDefinition.getKey32() + ".png").toPath(), byteArray);
-                System.out.println(DataDefinitionSerializer.instance.toString(dataDefinition));
-            }
-
-            in.clear();
+            byte[] bytes = DataInput.load(dataReader, currentSize);
+            DataDefinition dataDefinition = DataDefinitionSerializer.instance.deserialize(bytes, true);
+            System.out.println(DataDefinitionSerializer.instance.toString(dataDefinition));
+            currentSize += (bytes.length + 4);
         }
-        fc2.close();
+        dataReader.close();
     }
 }

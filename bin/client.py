@@ -53,7 +53,7 @@ def spql_query(query):
 	rowStr = ""
 
 	if data.rows is not None:
-		rowStr = "Key\t\tSize\tTimestamp\t\tStatus\n"
+		rowStr = "Key\tSize\tTimestamp\t\tStatus\n"
 		rowStr = rowStr + "---------------------------------------------------------\n"
 		result = result + rowStr
 		

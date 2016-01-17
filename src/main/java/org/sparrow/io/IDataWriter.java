@@ -8,9 +8,10 @@ import java.nio.ByteBuffer;
  */
 public interface IDataWriter
 {
-    long length() throws IOException;
+    long length();
     long currentPosition();
     long lastModified();
+    void write(byte[] src) throws IOException;
     int write(ByteBuffer src) throws IOException;
     void fsync();
     void truncate(long newSize);

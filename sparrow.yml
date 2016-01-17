@@ -19,12 +19,6 @@ cache_capacity: 20
 # Database path
 data_file_directory: data
 
-# -------------------------------- Compression ---------------------------------
-# Compression is only for stored images, not for indexes
-#
-# Compression types:
-#
-# 0: disabled
-# 1: Snappy
-# 2: LZ4
-compressor: 0
+# ------------------------------ Max file sizes --------------------------------
+max_datalog_size: 383688
+max_dataholder_size: 383688

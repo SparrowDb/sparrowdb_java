@@ -2,7 +2,6 @@ package org.sparrow.util;
 
 import org.sparrow.config.DatabaseDescriptor;
 
-import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -26,7 +25,7 @@ public class SPUtils
         return MurmurHash.hash2_64(ByteBuffer.wrap(data.getBytes()), 0, data.length(), 0);
     }
 
-    public static File getDbPath(String ... names)
+    public static String getDbPath(String ... names)
     {
         StringBuilder b = new StringBuilder();
         b.append(DatabaseDescriptor.getDataFilePath());
@@ -35,6 +34,6 @@ public class SPUtils
                 b.append(System.getProperty("file.separator"));
             b.append(x);
         });
-        return new File(b.toString());
+        return b.toString();
     }
 }

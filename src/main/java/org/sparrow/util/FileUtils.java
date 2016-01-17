@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +54,11 @@ public class FileUtils
             if (!directory.mkdirs())
                 throw new Exception("Failed to mkdirs " + directory);
         }
+    }
+
+    public static long getFileSize(String filename)
+    {
+        return Paths.get(filename).toFile().length();
     }
 
     public static void delete(String path)

@@ -1,5 +1,6 @@
 package org.sparrow.service;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sparrow.config.DatabaseDescriptor;
@@ -51,6 +52,7 @@ public class SparrowDaemon
     public static void main(String[] args) throws Exception
     {
         logger.info("Starting SparrowDb...");
+        logger.info("Node name: {}", DatabaseDescriptor.config.node_name);
         setup();
     }
 }

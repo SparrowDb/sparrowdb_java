@@ -54,8 +54,9 @@ public class SparrowDatabase
         Database database = databases.get(dbname);
         if (database != null)
         {
+            logger.debug("Dropping database {}", dbname);
             database.close();
-            FileUtils.delete(SPUtils.getDbPath(dbname).getAbsolutePath());
+            FileUtils.delete(new File(SPUtils.getDbPath(dbname)).getAbsolutePath());
             return true;
         }
         return false;
@@ -86,7 +87,7 @@ public class SparrowDatabase
         File[] dirs = FileUtils.listSubdirectories(new File(DatabaseDescriptor.getDataFilePath()));
         for(File dir : dirs)
         {
-            Database database = new Database(dir.getName());
+            Database database = Database.open(dir.getName());
             databases.put(dir.getName(), database);
         }
     }
@@ -97,7 +98,7 @@ public class SparrowDatabase
 
         if (database!=null)
         {
-            return database.getDataWithImageByKey32(SPUtils.hash32(key));
+            return database.getDataWithImageByKey32(key);
         }
         return null;
     }

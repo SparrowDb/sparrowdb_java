@@ -48,13 +48,13 @@ Clear database:
 Listing all images in database (this query will return the hashed key):
 
 	>>select from database_name;
-	Key             Size    Timestamp               Status
+	Key		Size    Timestamp               Status
 	---------------------------------------------------------
-	-763656453      558001  2016-01-03 22:14:21     ACTIVE
-	-1277804125     61148   2016-01-03 22:14:40     ACTIVE
-	236401485       558001  2016-01-03 22:14:31     ACTIVE
-	-307797267      558001  2016-01-03 22:16:06     REMOVED
-	-819873158      95889   2016-01-03 22:14:47     ACTIVE
+	key1	558001  2016-01-03 22:14:21     ACTIVE
+	key2	61148   2016-01-03 22:14:40     ACTIVE
+	key4	558001  2016-01-03 22:14:31     ACTIVE
+	key3	558001  2016-01-03 22:16:06     REMOVED
+	key5	95889   2016-01-03 22:14:47     ACTIVE
     
 You also can use query like:
 	

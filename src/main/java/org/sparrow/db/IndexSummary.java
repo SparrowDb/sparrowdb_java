@@ -1,106 +1,50 @@
 package org.sparrow.db;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Maps;
-import org.sparrow.io.IDataReader;
-import org.sparrow.io.IDataWriter;
-import org.sparrow.io.StorageReader;
-import org.sparrow.io.StorageWriter;
-import org.sparrow.serializer.IndexSerializer;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by mauricio on 25/12/2015.
+ * Created by mauricio on 27/12/2015.
  */
 public class IndexSummary
 {
-    private ConcurrentHashMap<Integer, Index> indexMap;
-    private final File indexFile;
-    private IDataWriter indexWriter;
-    private IDataReader indexReader;
+    private ConcurrentHashMap<Integer, Long> index_ = new ConcurrentHashMap<Integer, Long>();
 
-    public IndexSummary(File indexFile)
+    public IndexSummary()
     {
-        indexMap = new ConcurrentHashMap<>();
-        this.indexFile = indexFile;
-        this.indexWriter = StorageWriter.open(this.indexFile);
-        this.indexReader = StorageReader.open(this.indexFile);
     }
 
-    public void loadIndexFromDisk()
+    public boolean put(int key, long value)
     {
-        ByteBuffer reader = ByteBuffer.allocate(IndexSerializer.DEFAULT_SIZE);
-        while(indexReader.read(reader)>0)
-        {
-            reader.flip();
-            Index index = IndexSerializer.instance.deserialize(reader);
-            indexMap.put(index.getKey(), index);
-            reader.clear();
-        }
-    }
-
-    public boolean exists(int key)
-    {
-        return indexMap.contains(key);
-    }
-
-    public boolean addIndex(Index index)
-    {
-        if (exists(index.getKey()))
+        if (index_.contains(key))
             return false;
-
-        indexMap.put(index.getKey(), index);
-        ByteBuffer buffer = IndexSerializer.instance.serialize(index);
-        try
-        {
-            indexWriter.write(buffer);
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+        index_.put(key, value);
         return true;
     }
 
-    public Index get(int hash32)
+    public Long get(int key)
     {
-        return indexMap.get(hash32);
+        return index_.get(key);
     }
 
-    public boolean remove(Integer key)
+    public boolean hasKey(Integer key)
     {
-        if (exists(key))
-        {
-            indexMap.remove(key);
-            return true;
-        }
-        return false;
+        return index_.contains(key);
     }
 
-    public ConcurrentHashMap<Integer, Index> getAll()
+    public Map<Integer, Long> getIndexList()
     {
-        return indexMap;
+        return index_;
     }
 
-    public Map filterByTimestamp(long value)
+    public void clear()
     {
-        Predicate<Map.Entry<Integer, Index>> wherePredicate = element -> element.getValue().getTimestamp() == value;
-        return Maps.filterEntries(indexMap, wherePredicate);
+        index_.clear();
     }
 
-    public Map filterByKey(int value)
+    public void delete(int key)
     {
-        Predicate<Map.Entry<Integer, Index>> wherePredicate = element -> element.getValue().getKey() == value;
-        return Maps.filterEntries(indexMap, wherePredicate);
+        index_.remove(key);
     }
 
-    public void close()
-    {
-        indexWriter.close();
-        indexReader.close();
-    }
 }

@@ -42,8 +42,8 @@ public class DataDefinition
 
     }
 
+    private String key;
     private int key32;
-    private long key64;
     private int size;
     private long offset;
     private int crc32;
@@ -51,10 +51,10 @@ public class DataDefinition
     private DataState state;
     private byte[] buffer;
 
-    public DataDefinition(int key32, long key64, int size, long offset, int crc32, Extension extension, DataState state)
+    public DataDefinition(String key, int key32, int size, long offset, int crc32, Extension extension, DataState state)
     {
+        this.key = key;
         this.key32 = key32;
-        this.key64 = key64;
         this.size = size;
         this.offset = offset;
         this.crc32 = crc32;
@@ -62,16 +62,26 @@ public class DataDefinition
         this.state = state;
     }
 
-    public DataDefinition(int key32, long key64, int size, long offset, int crc32, Extension extension, DataState state, byte[] buffer)
+    public DataDefinition(String key, int key32, int size, long offset, int crc32, Extension extension, DataState state, byte[] buffer)
     {
+        this.key = key;
         this.key32 = key32;
-        this.key64 = key64;
         this.size = size;
         this.offset = offset;
         this.crc32 = crc32;
         this.extension = extension;
         this.state = state;
         this.buffer = buffer;
+    }
+
+    public String getKey()
+    {
+        return key;
+    }
+
+    public void setKey(String key)
+    {
+        this.key = key;
     }
 
     public int getKey32()
@@ -82,16 +92,6 @@ public class DataDefinition
     public void setKey32(int key32)
     {
         this.key32 = key32;
-    }
-
-    public long getKey64()
-    {
-        return key64;
-    }
-
-    public void setKey64(long key64)
-    {
-        this.key64 = key64;
     }
 
     public int getSize()

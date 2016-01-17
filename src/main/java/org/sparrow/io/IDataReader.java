@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
  */
 public interface IDataReader
 {
-    long length() throws IOException;
+    long length();
     long currentPosition();
     int readChunck(long offset, ByteBuffer dst) throws IOException;
     int read(ByteBuffer src);

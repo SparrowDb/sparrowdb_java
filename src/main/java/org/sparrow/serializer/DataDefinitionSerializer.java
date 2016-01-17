@@ -2,44 +2,68 @@ package org.sparrow.serializer;
 
 import org.sparrow.db.DataDefinition;
 
-import java.nio.ByteBuffer;
+import java.io.*;
 
 /**
  * Created by mauricio on 26/12/2015.
  */
 public class DataDefinitionSerializer implements TypeSerializer<DataDefinition>
 {
-    public static final int DEFAULT_SIZE = 31;
     public static final DataDefinitionSerializer instance = new DataDefinitionSerializer();
 
     @Override
-    public ByteBuffer serialize(DataDefinition object)
+    public byte[] serialize(DataDefinition dataDefinition)
     {
-        ByteBuffer buff = ByteBuffer.allocate(object.getSize() > 0 ? DEFAULT_SIZE + object.getSize() : DEFAULT_SIZE);
-        buff.putInt(object.getKey32());
-        buff.putLong(object.getKey64());
-        buff.putInt(object.getSize());
-        buff.putLong(object.getOffset());
-        buff.putInt(object.getCrc32());
-        buff.putShort(DataDefinition.Extension.getShort(object.getExtension()));
-        buff.put(DataDefinition.DataState.getByte(object.getState()));
-        if (object.getSize() > 0)
-            buff.put(object.getBuffer());
-        buff.flip();
-        return buff;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        DataOutputStream bos = new DataOutputStream(baos);
+        try
+        {
+            bos.writeUTF(dataDefinition.getKey());
+            bos.writeInt(dataDefinition.getKey32());
+            bos.writeInt(dataDefinition.getSize());
+            bos.writeLong(dataDefinition.getOffset());
+            bos.writeInt(dataDefinition.getCrc32());
+            bos.writeShort(DataDefinition.Extension.getShort(dataDefinition.getExtension()));
+            bos.writeByte(DataDefinition.DataState.getByte(dataDefinition.getState()));
+            if (dataDefinition.getSize() > 0) {
+                bos.write(dataDefinition.getBuffer());
+            }
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return baos.toByteArray();
     }
 
     @Override
-    public DataDefinition deserialize(ByteBuffer in)
+    public DataDefinition deserialize(byte[] in)
+    {
+        return deserialize(in, false);
+    }
+
+    public DataDefinition deserialize(byte[] in, boolean withData)
     {
         DataDefinition dataDefinition = new DataDefinition();
-        dataDefinition.setKey32(in.getInt());
-        dataDefinition.setKey64(in.getLong());
-        dataDefinition.setSize(in.getInt());
-        dataDefinition.setOffset(in.getLong());
-        dataDefinition.setCrc32(in.getInt());
-        dataDefinition.setExtension(DataDefinition.Extension.values()[in.getShort()]);
-        dataDefinition.setState(DataDefinition.DataState.values()[in.get()]);
+        ByteArrayInputStream bais = new ByteArrayInputStream(in);
+        DataInputStream dis = new DataInputStream(bais);
+        try
+        {
+            dataDefinition.setKey(dis.readUTF().toString());
+            dataDefinition.setKey32(dis.readInt());
+            dataDefinition.setSize(dis.readInt());
+            dataDefinition.setOffset(dis.readLong());
+            dataDefinition.setCrc32(dis.readInt());
+            dataDefinition.setExtension(DataDefinition.Extension.values()[dis.readShort()]);
+            dataDefinition.setState(DataDefinition.DataState.values()[dis.readByte()]);
+            if (withData) {
+                byte[] data = new byte[dataDefinition.getSize()];
+                dis.read(data);
+                dataDefinition.setBuffer(data);
+            }
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
         return dataDefinition;
     }
 
@@ -47,8 +71,8 @@ public class DataDefinitionSerializer implements TypeSerializer<DataDefinition>
     public String toString(DataDefinition object)
     {
         return "DataDefinition{" +
-                "key32=" + object.getKey32() +
-                ", key64=" + object.getKey64() +
+                "key=" + object.getKey() +
+                ", key32=" + object.getKey32() +
                 ", size=" + object.getSize() +
                 ", offset=" + object.getOffset() +
                 ", crc32=" + object.getCrc32() +

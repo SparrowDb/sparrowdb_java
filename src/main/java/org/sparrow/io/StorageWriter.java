@@ -37,11 +37,11 @@ public class StorageWriter implements IDataWriter
         this.file = file;
     }
 
-    public static IDataWriter open(File file)
+    public static IDataWriter open(String file)
     {
         try
         {
-            return new StorageWriter(file);
+            return new StorageWriter(new File(file));
         }
         catch (Exception e)
         {
@@ -52,9 +52,16 @@ public class StorageWriter implements IDataWriter
     }
 
     @Override
-    public long length() throws IOException
+    public long length()
     {
-        return fchannel.size();
+        try
+        {
+            return fchannel.size();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     @Override
@@ -76,6 +83,7 @@ public class StorageWriter implements IDataWriter
         return file.lastModified();
     }
 
+    @Override
     public void write(byte[] buffer) throws IOException
     {
         write(ByteBuffer.wrap(buffer));

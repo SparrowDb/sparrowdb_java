@@ -1,12 +1,12 @@
 package org.sparrow.tools;
 
-import org.sparrow.db.Index;
-import org.sparrow.serializer.IndexSerializer;
+import org.sparrow.io.DataInput;
+import org.sparrow.io.IDataReader;
+import org.sparrow.io.StorageReader;
+import org.sparrow.serializer.IndexSeralizer;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.file.StandardOpenOption;
+import java.util.Map;
 
 /**
  * Created by mauricio on 27/12/2015.
@@ -15,17 +15,18 @@ public class IndexExtract
 {
     public static void main(String[] args) throws IOException
     {
-        ByteBuffer in = ByteBuffer.allocate(IndexSerializer.DEFAULT_SIZE);
-        FileChannel fc2 = FileChannel.open(new java.io.File("data\\teste1\\Index.spw").toPath(), StandardOpenOption.READ);
-        fc2.position(0);
+        IDataReader dataReader  = StorageReader.open("data\\teste1\\index-1.spw");
 
-        while (fc2.read(in) > 0)
+        long fileSize = dataReader.length();
+        long currentSize = 0;
+
+        while (currentSize < fileSize)
         {
-            in.flip();
-            Index index = IndexSerializer.instance.deserialize(in);
-            System.out.println(IndexSerializer.instance.toString(index));
-            in.clear();
+            byte[] bytes = DataInput.load(dataReader, currentSize);
+            Map.Entry<Integer, Long> entry = IndexSeralizer.instance.deserialize(bytes);
+            System.out.println(IndexSeralizer.instance.toString(entry));
+            currentSize += (bytes.length + 4);
         }
-        fc2.close();
+        dataReader.close();
     }
 }
