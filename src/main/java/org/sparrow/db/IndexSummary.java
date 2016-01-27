@@ -47,4 +47,8 @@ public class IndexSummary
         index_.remove(key);
     }
 
+    public int size()
+    {
+        return index_.size();
+    }
 }

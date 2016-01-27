@@ -5,10 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.sparrow.config.DatabaseDescriptor;
 import org.sparrow.io.*;
 import org.sparrow.serializer.DataDefinitionSerializer;
-import org.sparrow.util.FileUtils;
 import org.sparrow.util.SPUtils;
-
-import java.util.Set;
 
 
 /**
@@ -23,7 +20,7 @@ public class DataLog
     private IDataWriter dataWriter;
     private IDataReader dataReader;
     private long currentSize = 0;
-    private boolean isFlushingData = false;
+    private boolean flushingData = false;
 
 
     public DataLog(String dbname, String filename)
@@ -34,61 +31,56 @@ public class DataLog
         dataReader = StorageReader.open(filename);
     }
 
-    public boolean needFlush(long size)
+    public DataHolder append(DataDefinition dataDefinition)
     {
-        return (size + currentSize) >= DatabaseDescriptor.config.max_datalog_size;
-    }
+        DataHolder dh = null;
 
-    public void append(DataDefinition dataDefinition)
-    {
+        if ((dataDefinition.getSize() + currentSize) >= DatabaseDescriptor.config.max_datalog_size)
+        {
+            dh = flush();
+        }
+
         dataDefinition.setOffset(dataWriter.length());
         logger.debug("Writing data: {}", DataDefinitionSerializer.instance.toString(dataDefinition));
         byte[] serializedData = DataDefinitionSerializer.instance.serialize(dataDefinition);
         DataOutput.save(dataWriter, serializedData);
         currentSize += dataDefinition.getSize();
         indexer.put(dataDefinition.getKey32(), dataDefinition.getOffset());
+        return dh;
     }
 
-    public void flush(Set<DataHolder> dataHolder)
+    public DataHolder flush()
     {
-        isFlushingData = true;
-
-        String lastFileName = DataHolder.getLastFilename(dbname);
-        long lastFileSize = FileUtils.getFileSize(SPUtils.getDbPath(dbname, lastFileName));
-
-        DataHolder temp = new DataHolder(SPUtils.getDbPath(dbname, lastFileName));
-        temp.beforeAppend();
-
-
-        logger.debug("-------------- Start flushing: {}",lastFileName );
-
+        flushingData = true;
         long fileSize = dataReader.length();
         long readOffset = 0;
+        String nextFileName = SPUtils.getDbPath(dbname, DataHolder.getNextFilename(dbname));
+
+        logger.debug("Flushing data into {}", nextFileName);
+
+        DataHolder dataHolder = null;
+
+        dataHolder = DataHolder.create(nextFileName);
+        dataHolder.beforeAppend();
 
         while (readOffset < fileSize)
         {
             byte[] bytes = DataInput.load(dataReader, readOffset);
             DataDefinition dataDefinition = DataDefinitionSerializer.instance.deserialize(bytes, true);
-
-            if ((lastFileSize + dataDefinition.getSize()) >= DatabaseDescriptor.config.max_dataholder_size)
-            {
-                temp.afterAppend();
-                lastFileName = SPUtils.getDbPath(dbname, DataHolder.getNextFilename(dbname));
-                temp = new DataHolder(lastFileName);
-                dataHolder.add(temp);
-                temp.beforeAppend();
-            }
-
-            temp.append(dataDefinition);
+            dataHolder.append(dataDefinition);
             indexer.delete(dataDefinition.getKey32());
             readOffset += (bytes.length + 4);
         }
+
+        dataHolder.afterAppend();
 
         logger.debug("-------------- End flushing");
 
         dataWriter.truncate(0);
         indexer.clear();
-        isFlushingData = false;
+        flushingData = false;
+
+        return dataHolder;
     }
 
     public void load()
@@ -102,6 +94,7 @@ public class DataLog
             indexer.put(dataDefinition.getKey32(), dataDefinition.getOffset());
             currentSize += (bytes.length + 4);
         }
+        logger.info("aaaa: {}", currentSize);
     }
 
     public DataDefinition get(String key)
@@ -113,7 +106,7 @@ public class DataLog
     {
         Long offset = indexer.get(key32);
 
-        if (offset!=null)
+        if (offset != null)
         {
             byte[] bytes = DataInput.load(dataReader, offset);
             return DataDefinitionSerializer.instance.deserialize(bytes, true);
@@ -134,5 +127,11 @@ public class DataLog
     public void clear()
     {
         dataWriter.truncate(0);
+    }
+
+    public void close()
+    {
+        if (dataWriter != null) dataWriter.close();
+        if (dataReader != null) dataReader.close();
     }
 }

@@ -1,5 +1,8 @@
 package org.sparrow.config;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Created by mauricio on 24/12/2015.
  */
@@ -14,4 +17,5 @@ public class Config
     public String data_file_directory = "data";
     public Integer max_datalog_size = 5000000;
     public Integer max_dataholder_size = 5000000;
+    public List<String> nodes = new LinkedList<String>();
 }

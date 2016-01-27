@@ -5,9 +5,12 @@ import org.slf4j.LoggerFactory;
 import org.sparrow.io.*;
 import org.sparrow.serializer.DataDefinitionSerializer;
 import org.sparrow.serializer.IndexSeralizer;
+import org.sparrow.util.BloomFilter;
 import org.sparrow.util.SPUtils;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -20,16 +23,32 @@ public class DataHolder
 {
     private static Logger logger = LoggerFactory.getLogger(DataHolder.class);
     private IndexSummary indexer = new IndexSummary();
+    private BloomFilter bf = null;
     private String filename;
     private String indexFile;
+    private String bloomFilterFile;
     private IDataWriter dataWriter;
-    private IDataReader dataReader;
 
-    public DataHolder(String filename)
+    private DataHolder(String filename)
     {
         this.filename = filename;
         this.indexFile = filename.replace("data-holder", "index");
+        this.bloomFilterFile = filename.replace("data-holder", "bloomfilter");
     }
+
+    public static DataHolder open(String filename)
+    {
+        DataHolder dataHolder = new DataHolder(filename);
+        dataHolder.loadIndexFile();
+        dataHolder.loadBloomFilter();
+        return dataHolder;
+    }
+
+    public static DataHolder create(String filename)
+    {
+        return new DataHolder(filename);
+    }
+
 
     public void beforeAppend()
     {
@@ -42,29 +61,69 @@ public class DataHolder
         logger.debug("Writing data: {}", DataDefinitionSerializer.instance.toString(dataDefinition));
         byte[] serializedData = DataDefinitionSerializer.instance.serialize(dataDefinition);
         DataOutput.save(dataWriter, serializedData);
-        indexer.put(dataDefinition.getKey32(), dataDefinition.getOffset());
         writeIndex(dataDefinition.getKey32(), dataDefinition.getOffset());
     }
 
     public void afterAppend()
     {
         dataWriter.close();
+        loadIndexFile();
+        writeBloomFilter();
     }
 
     public boolean isKeyInFile(String key)
     {
-        return false;
+        String hashed = String.valueOf(SPUtils.hash32(key));
+        return bf.contains(hashed);
     }
 
-    public void writeIndex(int key, long offset)
+    private void writeIndex(int key, long offset)
     {
         IDataWriter indexWriter = StorageWriter.open(indexFile);
         byte[] serializedData = IndexSeralizer.instance.serialize(key, offset);
         DataOutput.save(indexWriter, serializedData);
-        indexWriter.close();
+        if (indexWriter != null)
+        {
+            indexWriter.close();
+        }
     }
 
-    public void loadIndexFile()
+    private void writeBloomFilter()
+    {
+        bf = new BloomFilter(indexer.size(), 0.001);
+        for (Map.Entry<Integer, Long> idx : indexer.getIndexList().entrySet()) {
+            bf.add(String.valueOf(idx.getKey()));
+        }
+        byte[] bytes = BloomFilter.BloomFilterSerializer.serializer(bf);
+        IDataWriter bfWriter = StorageWriter.open(bloomFilterFile);
+        try
+        {
+            bfWriter.write(bytes);
+        }
+        catch (IOException e)
+        {
+            logger.error("Could not write bloomfilter {}", bloomFilterFile);
+        }
+        bfWriter.close();
+    }
+
+    public void loadBloomFilter()
+    {
+        IDataReader dataReader = StorageReader.open(bloomFilterFile);
+        ByteBuffer buffer = ByteBuffer.allocate((int)dataReader.length());
+        try
+        {
+            dataReader.readChunck(0, buffer);
+            bf = BloomFilter.BloomFilterSerializer.deserialize(buffer.array());
+        }
+        catch (IOException e)
+        {
+            logger.error("Could not read bloomfilter {}", bloomFilterFile);
+        }
+        dataReader.close();
+    }
+
+    private void loadIndexFile()
     {
         IDataReader indexReader = StorageReader.open(indexFile);
         long fileSize = indexReader.length();
@@ -88,7 +147,7 @@ public class DataHolder
 
     public DataDefinition get(int key32)
     {
-        this.dataReader = StorageReader.open(this.filename);
+        IDataReader dataReader = StorageReader.open(this.filename);
         Long offset = indexer.get(key32);
 
         if (offset!=null)
@@ -96,7 +155,7 @@ public class DataHolder
             byte[] bytes = DataInput.load(dataReader, offset);
             return DataDefinitionSerializer.instance.deserialize(bytes, true);
         }
-        this.dataReader.close();
+        dataReader.close();
         return null;
     }
 
@@ -104,7 +163,7 @@ public class DataHolder
     {
         return indexer.getIndexList().entrySet().stream().map(
                 idx -> get(idx.getKey())).collect(
-                Collectors.toCollection(() -> new LinkedHashSet<>()));
+                Collectors.toCollection(LinkedHashSet::new));
     }
 
     public static void loadDataHolders(Set<DataHolder> collection, String dbname)
@@ -119,7 +178,7 @@ public class DataHolder
             file = new File(filename);
             if (file.exists())
             {
-                DataHolder dataHolder = new DataHolder(filename);
+                DataHolder dataHolder = DataHolder.open(filename);
                 collection.add(dataHolder);
             } else {
                 break;

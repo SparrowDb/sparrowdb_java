@@ -22,3 +22,6 @@ data_file_directory: data
 # ------------------------------ Max file sizes --------------------------------
 max_datalog_size: 383688
 max_dataholder_size: 383688
+
+# ------------------------------- Cluster nodes --------------------------------
+nodes: []

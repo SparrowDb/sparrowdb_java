@@ -4,7 +4,6 @@ import org.slf4j.LoggerFactory;
 import org.sparrow.db.Database;
 import org.sparrow.db.SparrowDatabase;
 import org.sparrow.thrift.SpqlResult;
-import org.sparrow.util.SPUtils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

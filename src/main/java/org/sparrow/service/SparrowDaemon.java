@@ -13,7 +13,7 @@ import org.sparrow.thrift.ThriftServer;
  */
 public class SparrowDaemon
 {
-    private static Logger logger = LoggerFactory.getLogger(ThriftServer.class.getName());
+    private static Logger logger = LoggerFactory.getLogger(SparrowDaemon.class);
     private static ThriftServer thriftServer;
     private static NettyHttpServer nettyHttpServer;
 
@@ -22,6 +22,8 @@ public class SparrowDaemon
         logger.info("Loading configuration file...");
         DatabaseDescriptor.loadConfiguration();
         DatabaseDescriptor.checkDataDirectory();
+
+        logger.info("Node name: {}", DatabaseDescriptor.config.node_name);
 
         logger.info("Loading databases...");
         SparrowDatabase.instance.loadFromDisk();
@@ -47,12 +49,14 @@ public class SparrowDaemon
 
         if (thriftServer.isRunning())
             thriftServer.stop();
+
+        if (nettyHttpServer.isRunning())
+            nettyHttpServer.stop();
     }
 
     public static void main(String[] args) throws Exception
     {
         logger.info("Starting SparrowDb...");
-        logger.info("Node name: {}", DatabaseDescriptor.config.node_name);
         setup();
     }
 }

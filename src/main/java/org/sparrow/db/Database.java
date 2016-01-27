@@ -54,17 +54,16 @@ public class Database
         {
             logger.debug("Loading datalog {} with size: {}", dbname, database.dataLog.getSize());
             database.dataLog.load();
-            database.dataLog.flush(database.dataHolder);
         }
 
         DataHolder.loadDataHolders(database.dataHolder, dbname);
-        database.dataHolder.forEach(DataHolder::loadIndexFile);
 
         return database;
     }
 
     public void close()
     {
+        dataLog.close();
     }
 
     public String insert_data(DataObject object)
@@ -89,11 +88,11 @@ public class Database
             dataDefinition.setState(DataDefinition.DataState.ACTIVE);
             dataDefinition.setBuffer(object.bufferForData().array());
 
-            if (dataLog.needFlush(dataDefinition.getSize()))
+            DataHolder dh = dataLog.append(dataDefinition);
+            if (dh != null)
             {
-                dataLog.flush(dataHolder);
+                dataHolder.add(dh);
             }
-            dataLog.append(dataDefinition);
 
             return String.valueOf(hash32key);
         }
@@ -113,9 +112,12 @@ public class Database
         {
             for (DataHolder dh : dataHolder)
             {
-                dataDefinition = dh.get(dataKey);
-                if (dataDefinition != null)
-                    return  dataDefinition;
+                if (dh.isKeyInFile(dataKey))
+                {
+                    dataDefinition = dh.get(dataKey);
+                    if (dataDefinition != null)
+                        return  dataDefinition;
+                }
             }
         }
 
@@ -147,13 +149,14 @@ public class Database
     public SpqlResult query_data_where_key(String value)
     {
         DataDefinition dataDefinition = getDataWithImageByKey32(value);
+        SpqlResult result = new SpqlResult();
         if (dataDefinition!=null)
         {
-            return mapToSpqlResult(new HashSet<DataDefinition>(){{
+            result = mapToSpqlResult(new HashSet<DataDefinition>(){{
                 add(dataDefinition);
             }});
         }
-        return null;
+        return result;
     }
 
     public SpqlResult query_data_all()
