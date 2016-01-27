@@ -78,6 +78,7 @@ public class DataLog
 
         dataWriter.truncate(0);
         indexer.clear();
+        currentSize = 0;
         flushingData = false;
 
         return dataHolder;
@@ -94,7 +95,6 @@ public class DataLog
             indexer.put(dataDefinition.getKey32(), dataDefinition.getOffset());
             currentSize += (bytes.length + 4);
         }
-        logger.info("aaaa: {}", currentSize);
     }
 
     public DataDefinition get(String key)

@@ -116,7 +116,9 @@ public class Database
                 {
                     dataDefinition = dh.get(dataKey);
                     if (dataDefinition != null)
-                        return  dataDefinition;
+                    {
+                        return dataDefinition;
+                    }
                 }
             }
         }

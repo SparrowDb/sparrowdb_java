@@ -167,6 +167,11 @@ public class DataHolder
                 Collectors.toCollection(LinkedHashSet::new));
     }
 
+    public String getFilename()
+    {
+        return filename;
+    }
+
     public static void loadDataHolders(Set<DataHolder> collection, String dbname)
     {
         int filecount = 0;
