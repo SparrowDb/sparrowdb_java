@@ -25,3 +25,8 @@ max_dataholder_size: 383688
 
 # ------------------------------- Cluster nodes --------------------------------
 nodes: []
+
+
+# ------------------------------- Bloom Filter ---------------------------------
+# Blommfilter false positive probability
+bloomfilter_fpp: 0.001

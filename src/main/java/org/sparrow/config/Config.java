@@ -18,4 +18,5 @@ public class Config
     public Integer max_datalog_size = 5000000;
     public Integer max_dataholder_size = 5000000;
     public List<String> nodes = new LinkedList<String>();
+    public Double bloomfilter_fpp = 0.001;
 }

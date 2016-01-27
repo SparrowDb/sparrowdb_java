@@ -2,6 +2,7 @@ package org.sparrow.db;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sparrow.config.DatabaseDescriptor;
 import org.sparrow.io.*;
 import org.sparrow.serializer.DataDefinitionSerializer;
 import org.sparrow.serializer.IndexSeralizer;
@@ -90,7 +91,7 @@ public class DataHolder
 
     private void writeBloomFilter()
     {
-        bf = new BloomFilter(indexer.size(), 0.001);
+        bf = new BloomFilter(indexer.size(), DatabaseDescriptor.config.bloomfilter_fpp);
         for (Map.Entry<Integer, Long> idx : indexer.getIndexList().entrySet()) {
             bf.add(String.valueOf(idx.getKey()));
         }
