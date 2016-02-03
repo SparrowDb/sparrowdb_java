@@ -30,12 +30,12 @@ class Client:
 	client = None
 	args = None
 	commandTable = {}
-	commandTable['^create database ([A-Za-z0-9]{3,20})\s*;$'] =  lambda x : client.create_database(x.group(1))
-	commandTable['^drop database ([A-Za-z0-9]{3,20})\s*;$'] = lambda x : client.drop_database(x.group(1))
-	commandTable['^insert into ([A-Za-z0-9]{3,20})\s*\(\s*(.{1,}.{4}\s*),\s*([A-Za-z0-9]{3,20}\s*)\)\s*;$'] = lambda x : insert_data(x.group(1), x.group(2), x.group(3))
 	
 	def __init__ (self, args):
 		self.args = args
+		self.commandTable['^create database ([A-Za-z0-9]{3,20})\s*;$'] =  lambda x : self.client.create_database(x.group(1))
+		self.commandTable['^drop database ([A-Za-z0-9]{3,20})\s*;$'] = lambda x : self.client.drop_database(x.group(1))
+		self.commandTable['^insert into ([A-Za-z0-9]{3,20})\s*\(\s*(.{1,}.{4}\s*),\s*([A-Za-z0-9]{3,20}\s*)\)\s*;$'] = lambda x : self.insert_data(x.group(1), x.group(2), x.group(3))
 		
 	def connect(self):
 		try:
@@ -59,7 +59,7 @@ class Client:
 		obj.dbname = dbname
 		obj.key = key
 		obj.data = loadImage(path)
-		return client.insert_data(obj)
+		return self.client.insert_data(obj)
 	  
 	def spql_query(self, query):
 		data = self.client.spql_query(query)
@@ -98,9 +98,6 @@ class ArgParser:
 		parser.add_argument('-p', '--port', nargs=1, type=int, default=DEFAULT_PORT, help='Define port')
 
 		self.args = parser.parse_args()
-		#print args.accumulate(args.integers)
-		#print parser.print_help()
-		#print args
 	
 	def getArgs(self):
 		return self.args
