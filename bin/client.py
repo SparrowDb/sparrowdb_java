@@ -58,7 +58,7 @@ class Client:
 		obj = DataObject()
 		obj.dbname = dbname
 		obj.key = key
-		obj.data = loadImage(path)
+		obj.data = self.loadImage(path)
 		return self.client.insert_data(obj)
 	  
 	def spql_query(self, query):
