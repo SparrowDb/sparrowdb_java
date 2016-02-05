@@ -59,7 +59,7 @@ class Client:
 		obj.dbname = dbname
 		obj.key = key
 		obj.data = self.loadImage(path)
-		return self.client.insert_data(obj)
+		self.client.insert_data(obj)
 	  
 	def spql_query(self, query):
 		data = self.client.spql_query(query)
@@ -83,7 +83,7 @@ class Client:
 		for key, val in self.commandTable.iteritems():
 			match = re.search(key, cmd)
 			if match:
-				print val(match)
+				val(match)
 				found = True
 		
 		if found is False:

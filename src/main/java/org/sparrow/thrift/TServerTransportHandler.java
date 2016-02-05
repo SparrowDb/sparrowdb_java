@@ -42,31 +42,18 @@ public class TServerTransportHandler implements SparrowTransport.Iface
     }
 
     @Override
-    public String clear_database(String dbname) throws TException
-    {
-        return null;
-    }
-
-    @Override
     public String insert_data(DataObject object) throws TException
     {
-        return SparrowDatabase.instance.insert_data(object);
-    }
-
-    @Override
-    public String bulk_insert_data(List<DataObject> objects) throws TException
-    {
-        return null;
+        if (SparrowDatabase.instance.databaseExists(object.getDbname()))
+        {
+            SparrowDatabase.instance.insert_data(object);
+            return "";
+        }
+        return "Could not insert data";
     }
 
     @Override
     public String delete_data(DataObject object) throws TException
-    {
-        return null;
-    }
-
-    @Override
-    public String bulk_delete_data(List<DataObject> objects) throws TException
     {
         return null;
     }

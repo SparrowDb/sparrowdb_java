@@ -7,6 +7,13 @@ import org.sparrow.io.*;
 import org.sparrow.serializer.DataDefinitionSerializer;
 import org.sparrow.util.SPUtils;
 
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 
 /**
  * Created by mauricio on 07/01/2016.
@@ -17,48 +24,78 @@ public class DataLog
     private IndexSummary indexer = new IndexSummary();
     private String filename;
     private String dbname;
+    private Set<DataHolder> dataHolders;
     private IDataWriter dataWriter;
     private IDataReader dataReader;
     private long currentSize = 0;
-    private boolean flushingData = false;
+    private volatile LinkedBlockingQueue<DataDefinition> queue = new LinkedBlockingQueue<>();
+    private Lock lock_ = new ReentrantLock();
+    private ExecutorService executor = Executors.newCachedThreadPool();
 
-
-    public DataLog(String dbname, String filename)
+    public DataLog(String dbname, Set<DataHolder> dataHolders, String filename)
     {
         this.dbname = dbname;
         this.filename = filename;
+        this.dataHolders = dataHolders;
         dataWriter = StorageWriter.open(filename);
         dataReader = StorageReader.open(filename);
+        startConsumer();
     }
 
-    public DataHolder append(DataDefinition dataDefinition)
+    public synchronized void add(DataDefinition dataDefinition)
     {
-        DataHolder dh = null;
+        queue.add(dataDefinition);
+    }
 
-        if ((dataDefinition.getSize() + currentSize) >= DatabaseDescriptor.config.max_datalog_size)
-        {
-            dh = flush();
-        }
-
+    private void append(DataDefinition dataDefinition)
+    {
         dataDefinition.setOffset(dataWriter.length());
         logger.debug("Writing data: {}", DataDefinitionSerializer.instance.toString(dataDefinition));
         byte[] serializedData = DataDefinitionSerializer.instance.serialize(dataDefinition);
         DataOutput.save(dataWriter, serializedData);
         currentSize += dataDefinition.getSize();
         indexer.put(dataDefinition.getKey32(), dataDefinition.getOffset());
-        return dh;
     }
 
-    public DataHolder flush()
+    private void startConsumer()
     {
-        flushingData = true;
+        Runnable task = () -> {
+            for(;;)
+            {
+                DataDefinition dataDefinition = null;
+                lock_.lock();
+
+                try
+                {
+                    dataDefinition = queue.take();
+                    if ((dataDefinition.getSize() + currentSize) >= DatabaseDescriptor.config.max_datalog_size)
+                    {
+                        flush();
+                    }
+                    append(dataDefinition);
+                    dataDefinition = null;
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+                finally
+                {
+                    lock_.unlock();
+                }
+            }
+        };
+        new Thread(task).start();
+    }
+
+    private void flush()
+    {
+        DataHolder dataHolder = null;
         long fileSize = dataReader.length();
         long readOffset = 0;
         String nextFileName = SPUtils.getDbPath(dbname, DataHolder.getNextFilename(dbname));
 
         logger.debug("Flushing data into {}", nextFileName);
-
-        DataHolder dataHolder = null;
 
         dataHolder = DataHolder.create(nextFileName);
         dataHolder.beforeAppend();
@@ -79,9 +116,7 @@ public class DataLog
         dataWriter.truncate(0);
         indexer.clear();
         currentSize = 0;
-        flushingData = false;
-
-        return dataHolder;
+        dataHolders.add(dataHolder);
     }
 
     public void load()

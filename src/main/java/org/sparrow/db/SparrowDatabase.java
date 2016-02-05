@@ -72,14 +72,9 @@ public class SparrowDatabase
         return databases.keySet();
     }
 
-    public String insert_data(DataObject object)
+    public void insert_data(DataObject object)
     {
-        Database database = getDatabase(object.getDbname());
-        if (database != null)
-        {
-            return database.insert_data(object);
-        }
-        return "Could not insert data " + object.getKey();
+        getDatabase(object.getDbname()).insert_data(object);
     }
 
     public void loadFromDisk()

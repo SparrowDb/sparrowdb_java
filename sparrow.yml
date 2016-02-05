@@ -20,8 +20,9 @@ cache_capacity: 20
 data_file_directory: data
 
 # ------------------------------ Max file sizes --------------------------------
-#max_datalog_size: 50000000
-max_datalog_size: 1073741824
+#max_datalog_size: 1000000
+#max_datalog_size: 1073741824
+max_datalog_size: 52428800
 # ------------------------------- Cluster nodes --------------------------------
 nodes: []
 

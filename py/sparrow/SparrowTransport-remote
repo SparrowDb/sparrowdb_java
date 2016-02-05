@@ -28,11 +28,8 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  string logout()')
   print('  string create_database(string dbname)')
   print('  string drop_database(string dbname)')
-  print('  string clear_database(string dbname)')
   print('  string insert_data(DataObject object)')
-  print('  string bulk_insert_data( objects)')
   print('  string delete_data(DataObject object)')
-  print('  string bulk_delete_data( objects)')
   print('  SpqlResult spql_query(string query)')
   print('')
   sys.exit(0)
@@ -114,35 +111,17 @@ elif cmd == 'drop_database':
     sys.exit(1)
   pp.pprint(client.drop_database(args[0],))
 
-elif cmd == 'clear_database':
-  if len(args) != 1:
-    print('clear_database requires 1 args')
-    sys.exit(1)
-  pp.pprint(client.clear_database(args[0],))
-
 elif cmd == 'insert_data':
   if len(args) != 1:
     print('insert_data requires 1 args')
     sys.exit(1)
   pp.pprint(client.insert_data(eval(args[0]),))
 
-elif cmd == 'bulk_insert_data':
-  if len(args) != 1:
-    print('bulk_insert_data requires 1 args')
-    sys.exit(1)
-  pp.pprint(client.bulk_insert_data(eval(args[0]),))
-
 elif cmd == 'delete_data':
   if len(args) != 1:
     print('delete_data requires 1 args')
     sys.exit(1)
   pp.pprint(client.delete_data(eval(args[0]),))
-
-elif cmd == 'bulk_delete_data':
-  if len(args) != 1:
-    print('bulk_delete_data requires 1 args')
-    sys.exit(1)
-  pp.pprint(client.bulk_delete_data(eval(args[0]),))
 
 elif cmd == 'spql_query':
   if len(args) != 1:

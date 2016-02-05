@@ -29,15 +29,9 @@ service SparrowTransport {
 	
 	string drop_database(1:required string dbname)
 	
-	string clear_database(1:required string dbname)
-	
 	string insert_data(1:required DataObject object)
 	
-	string bulk_insert_data(1:required list<DataObject> objects)
-	
 	string delete_data(1:required DataObject object)
-	
-	string bulk_delete_data(1:required list<DataObject> objects)
 	
 	SpqlResult spql_query(1:required string query)
 }

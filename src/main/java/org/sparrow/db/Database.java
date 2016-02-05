@@ -11,8 +11,6 @@ import org.sparrow.util.SPUtils;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by mauricio on 25/12/2015.
@@ -21,16 +19,15 @@ public class Database
 {
     private static Logger logger = LoggerFactory.getLogger(Database.class);
     private static final String FILENAME_EXTENSION = ".spw";
-    private volatile Set<DataHolder> dataHolder;
+    private volatile Set<DataHolder> dataHolders;
     private volatile DataLog dataLog;
     private String dbname;
-    private Lock lock_ = new ReentrantLock();
 
     private Database(String dbname)
     {
         this.dbname = dbname;
-        dataLog = new DataLog(dbname, SPUtils.getDbPath(dbname, "datalog", FILENAME_EXTENSION));
-        dataHolder = new LinkedHashSet<>();
+        dataHolders = new LinkedHashSet<>();
+        dataLog = new DataLog(dbname, dataHolders, SPUtils.getDbPath(dbname, "datalog", FILENAME_EXTENSION));
     }
 
     public static Database build(String dbname)
@@ -56,7 +53,7 @@ public class Database
             database.dataLog.load();
         }
 
-        DataHolder.loadDataHolders(database.dataHolder, dbname);
+        DataHolder.loadDataHolders(database.dataHolders, dbname);
 
         return database;
     }
@@ -66,40 +63,26 @@ public class Database
         dataLog.close();
     }
 
-    public String insert_data(DataObject object)
+    public void insert_data(DataObject object)
     {
-        lock_.lock();
-        try
-        {
-            int hash32key = SPUtils.hash32(object.getKey());
-            DataDefinition dataDefinition = new DataDefinition();
-            dataDefinition.setKey(object.getKey());
-            dataDefinition.setKey32(hash32key);
+        int hash32key = SPUtils.hash32(object.getKey());
+        DataDefinition dataDefinition = new DataDefinition();
+        dataDefinition.setKey(object.getKey());
+        dataDefinition.setKey32(hash32key);
 
-            /*
-             *  As append only data file, the offset of new data is the
-             *   the size of data file. It is updated when the data is
-             *   written to the file.
-            */
-            dataDefinition.setOffset(0);
-            dataDefinition.setSize(object.bufferForData().capacity());
-            dataDefinition.setCrc32(0);
-            dataDefinition.setExtension(DataDefinition.Extension.PNG);
-            dataDefinition.setState(DataDefinition.DataState.ACTIVE);
-            dataDefinition.setBuffer(object.bufferForData().array());
+        /*
+         *  As append only data file, the offset of new data is the
+         *   the size of data file. It is updated when the data is
+         *   written to the file.
+        */
+        dataDefinition.setOffset(0);
+        dataDefinition.setSize(object.bufferForData().capacity());
+        dataDefinition.setCrc32(0);
+        dataDefinition.setExtension(DataDefinition.Extension.PNG);
+        dataDefinition.setState(DataDefinition.DataState.ACTIVE);
+        dataDefinition.setBuffer(object.bufferForData().array());
 
-            DataHolder dh = dataLog.append(dataDefinition);
-            if (dh != null)
-            {
-                dataHolder.add(dh);
-            }
-
-            return String.valueOf(hash32key);
-        }
-        finally
-        {
-            lock_.unlock();
-        }
+        dataLog.add(dataDefinition);
     }
 
     public DataDefinition getDataWithImageByKey32(String dataKey)
@@ -110,7 +93,7 @@ public class Database
 
         if (dataDefinition == null)
         {
-            for (DataHolder dh : dataHolder)
+            for (DataHolder dh : dataHolders)
             {
                 if (dh.isKeyInFile(dataKey))
                 {
@@ -164,7 +147,7 @@ public class Database
     public SpqlResult query_data_all()
     {
         Set result = new LinkedHashSet<>();
-        dataHolder.forEach(x -> result.addAll(x.fetchAll()));
+        dataHolders.forEach(x -> result.addAll(x.fetchAll()));
         return mapToSpqlResult(result);
     }
 }
