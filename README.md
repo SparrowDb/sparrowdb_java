@@ -50,11 +50,11 @@ Listing all images in database (this query will return the hashed key):
 	>>select from database_name;
 	Key		Size    Timestamp               Status
 	---------------------------------------------------------
-	key1	558001  2016-01-03 22:14:21     ACTIVE
-	key2	61148   2016-01-03 22:14:40     ACTIVE
-	key4	558001  2016-01-03 22:14:31     ACTIVE
-	key3	558001  2016-01-03 22:16:06     REMOVED
-	key5	95889   2016-01-03 22:14:47     ACTIVE
+	key1	558001  2016-01-03 22:14:21+0000     ACTIVE
+	key2	61148   2016-01-03 22:14:40+0000     ACTIVE
+	key4	558001  2016-01-03 22:14:31+0000     ACTIVE
+	key3	558001  2016-01-03 22:16:06+0000     REMOVED
+	key5	95889   2016-01-03 22:14:47+0000     ACTIVE
     
 You also can use query like:
 	
