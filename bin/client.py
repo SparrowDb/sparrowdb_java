@@ -71,16 +71,25 @@ class Client:
 		rowStr = ""
 
 		if data.rows is not None:
-			rowStr = "Key\tSize\tTimestamp\t\tStatus\n"
-			rowStr = rowStr + "---------------------------------------------------------\n"
+			rowStr = "Key\tSize\tTimestamp\t\t\tStatus\n"
+			rowStr = rowStr + "---------------------------------------------------------"
 			result = result + rowStr
+			print result
+
+			lineIndex = 0
+			lineRange = 20
 			
-			for row in data.rows:
-				dth = datetime.datetime.fromtimestamp(int(row.timestamp)).strftime('%Y-%m-%d %H:%M:%S+0000')
-				result = result + (row.key + "\t" + str(row.size) + "\t" + dth + "\t" + State(row.state).name + "\n")
-			return result
+			while lineIndex < len(data.rows):
+				rows = data.rows[lineIndex:lineIndex+lineRange]
+				for row in rows:
+					dth = datetime.datetime.fromtimestamp(int(row.timestamp)).strftime('%Y-%m-%d %H:%M:%S+0000')
+					print (row.key + "\t" + str(row.size) + "\t" + dth + "\t" + State(row.state).name)
+				if len(data.rows) < lineRange: break
+				input = raw_input("[%d:%d]:" % (lineIndex, lineIndex+lineRange))
+				if input == "stop" or input == "s": break
+				lineIndex += lineRange
 		else:
-			return "Empty"
+			print "Empty"
 	  
 	def sendCommand(self, cmd):
 		found = False
@@ -91,7 +100,7 @@ class Client:
 				found = True
 		
 		if found is False:
-			print self.spql_query(cmd)
+			self.spql_query(cmd)
 			
 class ArgParser:
 	args = None
