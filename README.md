@@ -45,7 +45,7 @@ Clear database:
 
 	>>clear database_name;
 
-Listing all images in database (this query will return the hashed key):
+Listing all images in database:
 
 	>>select from database_name;
 	Key		Size    Timestamp               Status
