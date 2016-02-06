@@ -2,6 +2,7 @@ import re
 import sys
 import datetime
 import argparse
+import os.path
 sys.path.append('../py')
 
 from sparrow import SparrowTransport
@@ -50,16 +51,19 @@ class Client:
 		  sys.exit()
 
 	def loadImage(self, path):
-	  with open(path, "rb") as f:
-		data = f.read()
-	  return data
+		with open(path, "rb") as f:
+			data = f.read()
+			return data
 
 	def insert_data(self, dbname, path, key):
-		obj = DataObject()
-		obj.dbname = dbname
-		obj.key = key
-		obj.data = self.loadImage(path)
-		self.client.insert_data(obj)
+		if os.path.exists(path):
+			obj = DataObject()
+			obj.dbname = dbname
+			obj.key = key
+			obj.data = self.loadImage(path)
+			self.client.insert_data(obj)
+		else:
+			print "File:",path,"does not exists"
 	  
 	def spql_query(self, query):
 		data = self.client.spql_query(query)
