@@ -47,6 +47,7 @@ public class DataDefinition
     private int size;
     private long offset;
     private int crc32;
+    private long timestamp;
     private Extension extension;
     private DataState state;
     private byte[] buffer;
@@ -112,6 +113,16 @@ public class DataDefinition
     public void setOffset(long offset)
     {
         this.offset = offset;
+    }
+
+    public long getTimestamp()
+    {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp)
+    {
+        this.timestamp = timestamp;
     }
 
     public int getCrc32()

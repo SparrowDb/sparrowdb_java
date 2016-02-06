@@ -22,6 +22,7 @@ public class DataDefinitionSerializer implements TypeSerializer<DataDefinition>
             bos.writeInt(dataDefinition.getKey32());
             bos.writeInt(dataDefinition.getSize());
             bos.writeLong(dataDefinition.getOffset());
+            bos.writeLong(dataDefinition.getTimestamp());
             bos.writeInt(dataDefinition.getCrc32());
             bos.writeShort(DataDefinition.Extension.getShort(dataDefinition.getExtension()));
             bos.writeByte(DataDefinition.DataState.getByte(dataDefinition.getState()));
@@ -62,6 +63,7 @@ public class DataDefinitionSerializer implements TypeSerializer<DataDefinition>
             dataDefinition.setKey32(dis.readInt());
             dataDefinition.setSize(dis.readInt());
             dataDefinition.setOffset(dis.readLong());
+            dataDefinition.setTimestamp(dis.readLong());
             dataDefinition.setCrc32(dis.readInt());
             dataDefinition.setExtension(DataDefinition.Extension.values()[dis.readShort()]);
             dataDefinition.setState(DataDefinition.DataState.values()[dis.readByte()]);
@@ -95,6 +97,7 @@ public class DataDefinitionSerializer implements TypeSerializer<DataDefinition>
                 ", key32=" + object.getKey32() +
                 ", size=" + object.getSize() +
                 ", offset=" + object.getOffset() +
+                ", timestamp=" + object.getTimestamp() +
                 ", crc32=" + object.getCrc32() +
                 ", extension=" + object.getExtension() +
                 ", state=" + object.getState() +

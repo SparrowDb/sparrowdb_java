@@ -12,7 +12,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 
 /**
@@ -29,8 +31,7 @@ public class DataLog
     private IDataReader dataReader;
     private long currentSize = 0;
     private volatile LinkedBlockingQueue<DataDefinition> queue = new LinkedBlockingQueue<>();
-    private Lock lock_ = new ReentrantLock();
-    private ExecutorService executor = Executors.newCachedThreadPool();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
 
     public DataLog(String dbname, Set<DataHolder> dataHolders, String filename)
     {
@@ -63,7 +64,7 @@ public class DataLog
             for(;;)
             {
                 DataDefinition dataDefinition = null;
-                lock_.lock();
+                lock.writeLock().lock();
 
                 try
                 {
@@ -81,7 +82,7 @@ public class DataLog
                 }
                 finally
                 {
-                    lock_.unlock();
+                    lock.writeLock().unlock();
                 }
             }
         };

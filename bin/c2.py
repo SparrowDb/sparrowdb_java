@@ -55,11 +55,18 @@ class Client:
 	  return data
 
 	def insert_data(self, dbname, path, key):
-		obj = DataObject()
-		obj.dbname = dbname
-		obj.key = key
-		obj.data = self.loadImage(path)
-		self.client.insert_data(obj)
+		counter = 0
+		name = "key"
+		vec = ["aaa.jpg", "original1.png", "original2.jpg"]
+		import random
+		for x in range(50000):
+			img = vec[random.randint(0,2)]
+			obj = DataObject()
+			obj.dbname = dbname
+			obj.key = name+str(x)
+			obj.data = self.loadImage(img)
+			self.client.insert_data(obj)
+		return "aa"
 	  
 	def spql_query(self, query):
 		data = self.client.spql_query(query)
@@ -72,7 +79,7 @@ class Client:
 			result = result + rowStr
 			
 			for row in data.rows:
-				dth = datetime.datetime.fromtimestamp(int(row.timestamp)).strftime('%Y-%m-%d %H:%M:%S+0000')
+				dth = datetime.datetime.fromtimestamp(int(row.timestamp)).strftime('%Y-%m-%d %H:%M:%S')
 				result = result + (row.key + "\t" + str(row.size) + "\t" + dth + "\t" + State(row.state).name + "\n")
 			return result
 		else:
@@ -83,7 +90,7 @@ class Client:
 		for key, val in self.commandTable.iteritems():
 			match = re.search(key, cmd)
 			if match:
-				val(match)
+				print val(match)
 				found = True
 		
 		if found is False:
@@ -98,6 +105,9 @@ class ArgParser:
 		parser.add_argument('-p', '--port', nargs=1, type=int, default=DEFAULT_PORT, help='Define port')
 
 		self.args = parser.parse_args()
+		#print args.accumulate(args.integers)
+		#print parser.print_help()
+		#print args
 	
 	def getArgs(self):
 		return self.args

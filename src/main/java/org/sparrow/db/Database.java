@@ -76,6 +76,9 @@ public class Database
          *   written to the file.
         */
         dataDefinition.setOffset(0);
+
+        // Get current time int UTC
+        dataDefinition.setTimestamp(java.time.Instant.now().getEpochSecond());
         dataDefinition.setSize(object.bufferForData().capacity());
         dataDefinition.setCrc32(0);
         dataDefinition.setExtension(DataDefinition.Extension.PNG);
@@ -117,7 +120,7 @@ public class Database
             DataObject dataObject = new DataObject();
             dataObject.setDbname(dbname);
             dataObject.setSize(dataDefinition.getSize());
-            dataObject.setTimestamp(0);
+            dataObject.setTimestamp(dataDefinition.getTimestamp());
             dataObject.setKey(dataDefinition.getKey());
             dataObject.setState(dataDefinition.getState().ordinal());
             result.addToRows(dataObject);
