@@ -26,6 +26,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('Functions:')
   print('  string authenticate(string username, string password)')
   print('  string logout()')
+  print('   show_databases()')
   print('  string create_database(string dbname)')
   print('  string drop_database(string dbname)')
   print('  string insert_data(DataObject object)')
@@ -98,6 +99,12 @@ elif cmd == 'logout':
     print('logout requires 0 args')
     sys.exit(1)
   pp.pprint(client.logout())
+
+elif cmd == 'show_databases':
+  if len(args) != 0:
+    print('show_databases requires 0 args')
+    sys.exit(1)
+  pp.pprint(client.show_databases())
 
 elif cmd == 'create_database':
   if len(args) != 1:

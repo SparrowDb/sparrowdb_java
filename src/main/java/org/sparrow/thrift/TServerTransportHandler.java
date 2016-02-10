@@ -6,6 +6,9 @@ import org.slf4j.LoggerFactory;
 import org.sparrow.db.SparrowDatabase;
 import org.sparrow.spql.SpqlParser;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -25,6 +28,14 @@ public class TServerTransportHandler implements SparrowTransport.Iface
     public String logout() throws TException
     {
         return null;
+    }
+
+    @Override
+    public List<String> show_databases() throws TException
+    {
+        List<String> list = new ArrayList<>(SparrowDatabase.instance.getDatabases());
+        Collections.sort(list, (str1, str2) -> str1.toUpperCase().compareTo(str2.toUpperCase()));
+        return list;
     }
 
     @Override

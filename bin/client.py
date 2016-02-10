@@ -36,6 +36,7 @@ class Client:
 		self.args = args
 		self.commandTable['^create database ([A-Za-z0-9]{3,20})\s*;$'] =  lambda x : self.client.create_database(x.group(1))
 		self.commandTable['^drop database ([A-Za-z0-9]{3,20})\s*;$'] = lambda x : self.client.drop_database(x.group(1))
+		self.commandTable['^show databases\s*;$'] = lambda x : self.show_databases()
 		self.commandTable['^insert into ([A-Za-z0-9]{3,20})\s*\(\s*(.{1,}.{4}\s*),\s*([A-Za-z0-9]{3,20}\s*)\)\s*;$'] = lambda x : self.insert_data(x.group(1), x.group(2), x.group(3))
 		
 	def connect(self):
@@ -50,6 +51,19 @@ class Client:
 		  print '%s' % (tx.message)
 		  sys.exit()
 
+	def show_databases(self):
+		c = 0
+		dbs = self.client.show_databases()
+		for l in dbs:
+			if c == 6: 
+				print '\n'
+				c = 0
+			print l,'\t',
+			c = c + 1
+		print '\n'
+			
+			
+		  
 	def loadImage(self, path):
 		with open(path, "rb") as f:
 			data = f.read()
