@@ -130,17 +130,18 @@ class ArgParser:
 		return self.args
   
 def main():
+	print description + " v" + version
 	argp = ArgParser()
 	argp.parse()
 	client = Client(argp.getArgs())
 	client.connect()
-	print description + " v" + version
-	try:
-		while active:
-			shell = raw_input(">>")
-			client.sendCommand(shell)
-	except KeyboardInterrupt:
-		sys.exit("Connection closed;");
-
+	
+	while active:
+		shell = raw_input(">>")
+		client.sendCommand(shell)
+	
 if __name__ == '__main__':
-  main()
+	try:
+		main()
+	except:
+		sys.exit('\n\nConnection aborted.')
