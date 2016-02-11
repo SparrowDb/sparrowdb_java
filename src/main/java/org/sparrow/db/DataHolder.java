@@ -7,6 +7,7 @@ import org.sparrow.io.*;
 import org.sparrow.serializer.DataDefinitionSerializer;
 import org.sparrow.serializer.IndexSeralizer;
 import org.sparrow.util.BloomFilter;
+import org.sparrow.util.FileUtils;
 import org.sparrow.util.SPUtils;
 
 import java.io.File;
@@ -60,9 +61,15 @@ public class DataHolder
     {
         dataDefinition.setOffset(dataWriter.length());
         logger.debug("Writing data: {}", DataDefinitionSerializer.instance.toString(dataDefinition));
-        byte[] serializedData = DataDefinitionSerializer.instance.serialize(dataDefinition);
-        DataOutput.save(dataWriter, serializedData);
-        writeIndex(dataDefinition.getKey32(), dataDefinition.getOffset());
+        try
+        {
+            byte[] serializedData = DataDefinitionSerializer.instance.serialize(dataDefinition);
+            DataOutput.save(dataWriter, serializedData);
+            writeIndex(dataDefinition.getKey32(), dataDefinition.getOffset());
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public void afterAppend()
@@ -81,11 +88,17 @@ public class DataHolder
     private void writeIndex(int key, long offset)
     {
         IDataWriter indexWriter = StorageWriter.open(indexFile);
-        byte[] serializedData = IndexSeralizer.instance.serialize(key, offset);
-        DataOutput.save(indexWriter, serializedData);
-        if (indexWriter != null)
+        try
         {
-            indexWriter.close();
+            byte[] serializedData = IndexSeralizer.instance.serialize(key, offset);
+            DataOutput.save(indexWriter, serializedData);
+            if (indexWriter != null)
+            {
+                indexWriter.close();
+            }
+        } catch (IOException e)
+        {
+            e.printStackTrace();
         }
     }
 
@@ -133,11 +146,16 @@ public class DataHolder
         while (indexSize < fileSize)
         {
             byte[] bytes = DataInput.load(indexReader, indexSize);
-            Map.Entry<Integer, Long> entry = IndexSeralizer.instance.deserialize(bytes);
-            indexer.put(entry.getKey(), entry.getValue());
-            indexSize += (bytes.length + 4);
+            try
+            {
+                Map.Entry<Integer, Long> entry = IndexSeralizer.instance.deserialize(bytes);
+                indexer.put(entry.getKey(), entry.getValue());
+                indexSize += (bytes.length + 4);
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
         }
-
         indexReader.close();
     }
 
@@ -154,7 +172,13 @@ public class DataHolder
         if (offset!=null)
         {
             byte[] bytes = DataInput.load(dataReader, offset);
-            return DataDefinitionSerializer.instance.deserialize(bytes, true);
+            try
+            {
+                return DataDefinitionSerializer.instance.deserialize(bytes, true);
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
         }
         dataReader.close();
         return null;
@@ -172,6 +196,21 @@ public class DataHolder
         return filename;
     }
 
+    private static boolean isValidDataHolder(String filename)
+    {
+        if (!FileUtils.fileExists(filename.replace("data-holder", "index")))
+        {
+            logger.warn("Index file does not exists for {}", filename);
+            return false;
+        }
+        if (!FileUtils.fileExists(filename.replace("data-holder", "bloomfilter")))
+        {
+            logger.warn("Bloom filter file does not exists for {}", filename);
+            return false;
+        }
+        return true;
+    }
+
     public static void loadDataHolders(Set<DataHolder> collection, String dbname)
     {
         int filecount = 0;
@@ -184,8 +223,11 @@ public class DataHolder
             file = new File(filename);
             if (file.exists())
             {
-                DataHolder dataHolder = DataHolder.open(filename);
-                collection.add(dataHolder);
+                if (isValidDataHolder(filename))
+                {
+                    DataHolder dataHolder = DataHolder.open(filename);
+                    collection.add(dataHolder);
+                }
             } else {
                 break;
             }

@@ -12,80 +12,56 @@ public class DataDefinitionSerializer implements TypeSerializer<DataDefinition>
     public static final DataDefinitionSerializer instance = new DataDefinitionSerializer();
 
     @Override
-    public byte[] serialize(DataDefinition dataDefinition)
+    public byte[] serialize(DataDefinition dataDefinition) throws IOException
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream bos = new DataOutputStream(baos);
-        try
+
+        bos.writeUTF(dataDefinition.getKey());
+        bos.writeInt(dataDefinition.getKey32());
+        bos.writeInt(dataDefinition.getSize());
+        bos.writeLong(dataDefinition.getOffset());
+        bos.writeLong(dataDefinition.getTimestamp());
+        bos.writeInt(dataDefinition.getCrc32());
+        bos.writeShort(DataDefinition.Extension.getShort(dataDefinition.getExtension()));
+        bos.writeByte(DataDefinition.DataState.getByte(dataDefinition.getState()));
+        if (dataDefinition.getSize() > 0)
         {
-            bos.writeUTF(dataDefinition.getKey());
-            bos.writeInt(dataDefinition.getKey32());
-            bos.writeInt(dataDefinition.getSize());
-            bos.writeLong(dataDefinition.getOffset());
-            bos.writeLong(dataDefinition.getTimestamp());
-            bos.writeInt(dataDefinition.getCrc32());
-            bos.writeShort(DataDefinition.Extension.getShort(dataDefinition.getExtension()));
-            bos.writeByte(DataDefinition.DataState.getByte(dataDefinition.getState()));
-            if (dataDefinition.getSize() > 0) {
-                bos.write(dataDefinition.getBuffer());
-            }
+            bos.write(dataDefinition.getBuffer());
         }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-            try
-            {
-                bos.close();
-            } catch (IOException e)
-            {
-            }
-        }
+        bos.close();
         return baos.toByteArray();
     }
 
     @Override
-    public DataDefinition deserialize(byte[] in)
+    public DataDefinition deserialize(byte[] in) throws IOException
     {
         return deserialize(in, false);
     }
 
-    public DataDefinition deserialize(byte[] in, boolean withData)
+    public DataDefinition deserialize(byte[] in, boolean withData) throws IOException
     {
         DataDefinition dataDefinition = new DataDefinition();
         ByteArrayInputStream bais = new ByteArrayInputStream(in);
         DataInputStream dis = new DataInputStream(bais);
-        try
+
+        dataDefinition.setKey(dis.readUTF());
+        dataDefinition.setKey32(dis.readInt());
+        dataDefinition.setSize(dis.readInt());
+        dataDefinition.setOffset(dis.readLong());
+        dataDefinition.setTimestamp(dis.readLong());
+        dataDefinition.setCrc32(dis.readInt());
+        dataDefinition.setExtension(DataDefinition.Extension.values()[dis.readShort()]);
+        dataDefinition.setState(DataDefinition.DataState.values()[dis.readByte()]);
+        if (withData)
         {
-            dataDefinition.setKey(dis.readUTF());
-            dataDefinition.setKey32(dis.readInt());
-            dataDefinition.setSize(dis.readInt());
-            dataDefinition.setOffset(dis.readLong());
-            dataDefinition.setTimestamp(dis.readLong());
-            dataDefinition.setCrc32(dis.readInt());
-            dataDefinition.setExtension(DataDefinition.Extension.values()[dis.readShort()]);
-            dataDefinition.setState(DataDefinition.DataState.values()[dis.readByte()]);
-            if (withData) {
-                byte[] data = new byte[dataDefinition.getSize()];
-                dis.read(data);
-                dataDefinition.setBuffer(data);
-            }
+            byte[] data = new byte[dataDefinition.getSize()];
+            dis.read(data);
+            dataDefinition.setBuffer(data);
         }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-            try
-            {
-                dis.close();
-            } catch (IOException e)
-            {
-            }
-        }
+
+        dis.close();
+
         return dataDefinition;
     }
 

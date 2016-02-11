@@ -161,4 +161,10 @@ public class FileUtils
         }
         return length;
     }
+
+    public static boolean fileExists(String filname)
+    {
+        File f = new File(filname);
+        return f.exists() && !f.isDirectory();
+    }
 }

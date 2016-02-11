@@ -7,13 +7,10 @@ import org.sparrow.io.*;
 import org.sparrow.serializer.DataDefinitionSerializer;
 import org.sparrow.util.SPUtils;
 
+import java.io.IOException;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 
@@ -52,16 +49,22 @@ public class DataLog
     {
         dataDefinition.setOffset(dataWriter.length());
         logger.debug("Writing data: {}", DataDefinitionSerializer.instance.toString(dataDefinition));
-        byte[] serializedData = DataDefinitionSerializer.instance.serialize(dataDefinition);
-        DataOutput.save(dataWriter, serializedData);
-        currentSize += dataDefinition.getSize();
-        indexer.put(dataDefinition.getKey32(), dataDefinition.getOffset());
+        try
+        {
+            byte[] serializedData = DataDefinitionSerializer.instance.serialize(dataDefinition);
+            DataOutput.save(dataWriter, serializedData);
+            currentSize += dataDefinition.getSize();
+            indexer.put(dataDefinition.getKey32(), dataDefinition.getOffset());
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     private void startConsumer()
     {
         Runnable task = () -> {
-            for(;;)
+            for (; ; )
             {
                 DataDefinition dataDefinition = null;
                 lock.writeLock().lock();
@@ -75,12 +78,10 @@ public class DataLog
                     }
                     append(dataDefinition);
                     dataDefinition = null;
-                }
-                catch (InterruptedException e)
+                } catch (InterruptedException e)
                 {
                     e.printStackTrace();
-                }
-                finally
+                } finally
                 {
                     lock.writeLock().unlock();
                 }
@@ -104,10 +105,16 @@ public class DataLog
         while (readOffset < fileSize)
         {
             byte[] bytes = DataInput.load(dataReader, readOffset);
-            DataDefinition dataDefinition = DataDefinitionSerializer.instance.deserialize(bytes, true);
-            dataHolder.append(dataDefinition);
-            indexer.delete(dataDefinition.getKey32());
-            readOffset += (bytes.length + 4);
+            try
+            {
+                DataDefinition dataDefinition = DataDefinitionSerializer.instance.deserialize(bytes, true);
+                dataHolder.append(dataDefinition);
+                indexer.delete(dataDefinition.getKey32());
+                readOffset += (bytes.length + 4);
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
         }
 
         dataHolder.afterAppend();
@@ -127,7 +134,18 @@ public class DataLog
         while (currentSize < fileSize)
         {
             byte[] bytes = DataInput.load(dataReader, currentSize);
-            DataDefinition dataDefinition = DataDefinitionSerializer.instance.deserialize(bytes, true);
+            DataDefinition dataDefinition = null;
+
+            try
+            {
+                dataDefinition = DataDefinitionSerializer.instance.deserialize(bytes, true);
+            } catch (IOException e)
+            {
+                logger.warn("{} Dataholder {} is corrupted size {}, truncating file...", dbname, filename, fileSize);
+                dataWriter.truncate(0);
+                break;
+            }
+
             indexer.put(dataDefinition.getKey32(), dataDefinition.getOffset());
             currentSize += (bytes.length + 4);
         }
@@ -145,7 +163,13 @@ public class DataLog
         if (offset != null)
         {
             byte[] bytes = DataInput.load(dataReader, offset);
-            return DataDefinitionSerializer.instance.deserialize(bytes, true);
+            try
+            {
+                return DataDefinitionSerializer.instance.deserialize(bytes, true);
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
         }
         return null;
     }

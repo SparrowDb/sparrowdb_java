@@ -12,61 +12,31 @@ public class IndexSeralizer implements TypeSerializer<Map.Entry<Integer, Long>>
     public static final IndexSeralizer instance = new IndexSeralizer();
 
     @Override
-    public byte[] serialize(Map.Entry<Integer, Long> index)
+    public byte[] serialize(Map.Entry<Integer, Long> index) throws IOException
     {
         return serialize(index.getKey(), index.getValue());
     }
 
-    public byte[] serialize(int key, long offset)
+    public byte[] serialize(int key, long offset) throws IOException
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream bos = new DataOutputStream(baos);
-        try
-        {
-            bos.writeInt(key);
-            bos.writeLong(offset);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-            try
-            {
-                bos.close();
-            } catch (IOException e)
-            {
-            }
-        }
+        bos.writeInt(key);
+        bos.writeLong(offset);
+        bos.close();
         return baos.toByteArray();
     }
 
     @Override
-    public Map.Entry<Integer, Long> deserialize(byte[] in)
+    public Map.Entry<Integer, Long> deserialize(byte[] in) throws IOException
     {
         ByteArrayInputStream bais = new ByteArrayInputStream(in);
         DataInputStream dis = new DataInputStream(bais);
-        try
-        {
-            int key = dis.readInt();
-            long offset = dis.readLong();
-            return new AbstractMap.SimpleEntry<>(key, offset);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-            try
-            {
-                dis.close();
-            } catch (IOException e)
-            {
-            }
-        }
-        return null;
+        int key = dis.readInt();
+        long offset = dis.readLong();
+        dis.close();
+        return new AbstractMap.SimpleEntry<>(key, offset);
+
     }
 
     @Override
