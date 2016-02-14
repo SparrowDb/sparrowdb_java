@@ -3,6 +3,7 @@ package org.sparrow.db;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sparrow.config.DatabaseDescriptor;
+import org.sparrow.serializer.DataDefinitionSerializer;
 import org.sparrow.thrift.DataObject;
 import org.sparrow.thrift.SpqlResult;
 import org.sparrow.util.FileUtils;
@@ -110,6 +111,30 @@ public class Database
         }
 
         return dataDefinition;
+    }
+
+    public boolean deleteData(String dataKey)
+    {
+        DataDefinition dataDefinition = null;
+
+        dataDefinition = dataLog.get(dataKey);
+
+        if (dataDefinition == null)
+        {
+            for (DataHolder dh : dataHolders)
+            {
+                if (dh.isKeyInFile(dataKey))
+                {
+                    dataDefinition = dh.get(dataKey);
+                    if (dataDefinition != null)
+                    {
+                        dh.deleteData(dataDefinition);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public SpqlResult mapToSpqlResult(Set<DataDefinition> data)

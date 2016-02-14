@@ -64,9 +64,14 @@ public class TServerTransportHandler implements SparrowTransport.Iface
     }
 
     @Override
-    public String delete_data(DataObject object) throws TException
+    public String delete_data(String dbname, String key) throws TException
     {
-        return null;
+        if (SparrowDatabase.instance.databaseExists(dbname))
+        {
+            SparrowDatabase.instance.delete_data(dbname, key);
+            return "";
+        }
+        return "Data deleted";
     }
 
     @Override

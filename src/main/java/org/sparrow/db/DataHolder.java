@@ -51,7 +51,6 @@ public class DataHolder
         return new DataHolder(filename);
     }
 
-
     public void beforeAppend()
     {
         dataWriter = StorageWriter.open(filename);
@@ -74,9 +73,37 @@ public class DataHolder
 
     public void afterAppend()
     {
-        dataWriter.close();
+        closeFile();
         loadIndexFile();
         writeBloomFilter();
+    }
+
+    public void deleteData(DataDefinition dataDefinition)
+    {
+        // open datawriter
+        beforeAppend();
+
+        // update datadefinition to be removed
+        dataDefinition.setSize(0);
+        dataDefinition.setBuffer(null);
+        dataDefinition.setOffset(dataWriter.length());
+        dataDefinition.setState(DataDefinition.DataState.REMOVED);
+
+        // update index to the new removed registry
+        indexer.delete(dataDefinition.getKey32());
+        indexer.put(dataDefinition.getKey32(), dataWriter.length());
+
+        // write to disk new datadefinition
+        append(dataDefinition);
+
+        // close datawriter
+        closeFile();
+    }
+
+    public void closeFile()
+    {
+        if (dataWriter!=null)
+            dataWriter.close();
     }
 
     public boolean isKeyInFile(String key)

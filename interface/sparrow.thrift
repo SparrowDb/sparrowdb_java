@@ -33,7 +33,7 @@ service SparrowTransport {
 	
 	string insert_data(1:required DataObject object)
 	
-	string delete_data(1:required DataObject object)
+	string delete_data(1:required string dbname, 2:required string key)
 	
 	SpqlResult spql_query(1:required string query)
 }

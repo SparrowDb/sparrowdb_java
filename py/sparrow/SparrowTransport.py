@@ -53,10 +53,11 @@ class Iface:
     """
     pass
 
-  def delete_data(self, object):
+  def delete_data(self, dbname, key):
     """
     Parameters:
-     - object
+     - dbname
+     - key
     """
     pass
 
@@ -253,18 +254,20 @@ class Client(Iface):
       return result.success
     raise TApplicationException(TApplicationException.MISSING_RESULT, "insert_data failed: unknown result");
 
-  def delete_data(self, object):
+  def delete_data(self, dbname, key):
     """
     Parameters:
-     - object
+     - dbname
+     - key
     """
-    self.send_delete_data(object)
+    self.send_delete_data(dbname, key)
     return self.recv_delete_data()
 
-  def send_delete_data(self, object):
+  def send_delete_data(self, dbname, key):
     self._oprot.writeMessageBegin('delete_data', TMessageType.CALL, self._seqid)
     args = delete_data_args()
-    args.object = object
+    args.dbname = dbname
+    args.key = key
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
@@ -415,7 +418,7 @@ class Processor(Iface, TProcessor):
     args.read(iprot)
     iprot.readMessageEnd()
     result = delete_data_result()
-    result.success = self._handler.delete_data(args.object)
+    result.success = self._handler.delete_data(args.dbname, args.key)
     oprot.writeMessageBegin("delete_data", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
@@ -1206,16 +1209,19 @@ class insert_data_result:
 class delete_data_args:
   """
   Attributes:
-   - object
+   - dbname
+   - key
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRUCT, 'object', (DataObject, DataObject.thrift_spec), None, ), # 1
+    (1, TType.STRING, 'dbname', None, None, ), # 1
+    (2, TType.STRING, 'key', None, None, ), # 2
   )
 
-  def __init__(self, object=None,):
-    self.object = object
+  def __init__(self, dbname=None, key=None,):
+    self.dbname = dbname
+    self.key = key
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -1227,9 +1233,13 @@ class delete_data_args:
       if ftype == TType.STOP:
         break
       if fid == 1:
-        if ftype == TType.STRUCT:
-          self.object = DataObject()
-          self.object.read(iprot)
+        if ftype == TType.STRING:
+          self.dbname = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.key = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -1242,22 +1252,29 @@ class delete_data_args:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('delete_data_args')
-    if self.object is not None:
-      oprot.writeFieldBegin('object', TType.STRUCT, 1)
-      self.object.write(oprot)
+    if self.dbname is not None:
+      oprot.writeFieldBegin('dbname', TType.STRING, 1)
+      oprot.writeString(self.dbname)
+      oprot.writeFieldEnd()
+    if self.key is not None:
+      oprot.writeFieldBegin('key', TType.STRING, 2)
+      oprot.writeString(self.key)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.object is None:
-      raise TProtocol.TProtocolException(message='Required field object is unset!')
+    if self.dbname is None:
+      raise TProtocol.TProtocolException(message='Required field dbname is unset!')
+    if self.key is None:
+      raise TProtocol.TProtocolException(message='Required field key is unset!')
     return
 
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.object)
+    value = (value * 31) ^ hash(self.dbname)
+    value = (value * 31) ^ hash(self.key)
     return value
 
   def __repr__(self):

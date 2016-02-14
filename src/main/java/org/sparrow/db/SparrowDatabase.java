@@ -77,6 +77,11 @@ public class SparrowDatabase
         getDatabase(object.getDbname()).insert_data(object);
     }
 
+    public void delete_data(String dbname, String key)
+    {
+        getDatabase(dbname).deleteData(key);
+    }
+
     public void loadFromDisk()
     {
         File[] dirs = FileUtils.listSubdirectories(new File(DatabaseDescriptor.getDataFilePath()));

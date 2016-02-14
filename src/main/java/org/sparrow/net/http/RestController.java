@@ -72,7 +72,7 @@ public class RestController
         String imageKey = urlMatcher.group(2);
 
         DataDefinition dataDefinition = SparrowDatabase.instance.getObjectByKey(database, imageKey);
-        if (dataDefinition == null)
+        if (dataDefinition == null || dataDefinition.getState() != DataDefinition.DataState.ACTIVE)
         {
             restResponse.setStatus(HttpResponseStatus.BAD_REQUEST);
             restResponse.setResponseType(RestResponse.ResponseType.TEXT);

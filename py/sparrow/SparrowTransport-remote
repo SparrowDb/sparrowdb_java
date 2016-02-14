@@ -30,7 +30,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  string create_database(string dbname)')
   print('  string drop_database(string dbname)')
   print('  string insert_data(DataObject object)')
-  print('  string delete_data(DataObject object)')
+  print('  string delete_data(string dbname, string key)')
   print('  SpqlResult spql_query(string query)')
   print('')
   sys.exit(0)
@@ -125,10 +125,10 @@ elif cmd == 'insert_data':
   pp.pprint(client.insert_data(eval(args[0]),))
 
 elif cmd == 'delete_data':
-  if len(args) != 1:
-    print('delete_data requires 1 args')
+  if len(args) != 2:
+    print('delete_data requires 2 args')
     sys.exit(1)
-  pp.pprint(client.delete_data(eval(args[0]),))
+  pp.pprint(client.delete_data(args[0],args[1],))
 
 elif cmd == 'spql_query':
   if len(args) != 1:

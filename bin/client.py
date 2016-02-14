@@ -36,6 +36,7 @@ class Client:
 		self.args = args
 		self.commandTable['^create database ([A-Za-z0-9]{3,20})\s*;$'] =  lambda x : self.client.create_database(x.group(1))
 		self.commandTable['^drop database ([A-Za-z0-9]{3,20})\s*;$'] = lambda x : self.client.drop_database(x.group(1))
+		self.commandTable['^delete data ([A-Za-z0-9]{3,20}).([A-Za-z0-9]{3,20})\s*;$'] = lambda x : self.client.delete_data(x.group(1),x.group(2))
 		self.commandTable['^show databases\s*;$'] = lambda x : self.show_databases()
 		self.commandTable['^insert into ([A-Za-z0-9]{3,20})\s*\(\s*(.{1,}.{4}\s*),\s*([A-Za-z0-9]{3,20}\s*)\)\s*;$'] = lambda x : self.insert_data(x.group(1), x.group(2), x.group(3))
 		
