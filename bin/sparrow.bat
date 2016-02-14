@@ -1,6 +1,7 @@
 @echo off
 
-if NOT DEFINED SPARROW_HOME set SPARROW_HOME=%CD%
+for %%i in ("%~dp0..") do set "SPARROW_HOME=%%~fi"
+cd %SPARROW_HOME%
 
 IF /i "%1" == "build" GOTO build
 IF /i "%1" == "start" GOTO start
