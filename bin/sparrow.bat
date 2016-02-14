@@ -14,7 +14,8 @@ goto end
 
 :start
 set SPARROW_MAIN=org.sparrow.service.SparrowDaemon
-set JAVA_OPTS=-Xmx2G^
+set JAVA_OPTS=-Djava.library.path="sigar-bin"^
+ -Xmx2G^
  -Xms2G^
  -XX:+UseParNewGC^
  -XX:+UseConcMarkSweepGC^

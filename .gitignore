@@ -19,6 +19,7 @@ buildNumber.properties
 data/
 log/
 server.xml
+sparrow.pid
 
 # General
 *.pyc

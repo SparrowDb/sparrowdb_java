@@ -7,6 +7,13 @@ import org.sparrow.config.DatabaseDescriptor;
 import org.sparrow.db.SparrowDatabase;
 import org.sparrow.net.NettyHttpServer;
 import org.sparrow.thrift.ThriftServer;
+import org.sparrow.util.SigarLib;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * Created by mauricio on 24/12/2015.
@@ -32,15 +39,31 @@ public class SparrowDaemon
         thriftServer = new ThriftServer(
                 DatabaseDescriptor.config.tcp_host,
                 DatabaseDescriptor.config.tcp_port);
-        thriftServer.start();
 
         logger.info("Starting SparrowDb Http Server...");
         nettyHttpServer = new NettyHttpServer(
                 DatabaseDescriptor.config.http_host,
                 DatabaseDescriptor.config.http_port);
-        nettyHttpServer.start();
 
         logger.info("SparrowDb loaded !");
+    }
+
+    private static void startServers()
+    {
+        thriftServer.start();
+        nettyHttpServer.start();
+    }
+
+    private static void writePidFile()
+    {
+        long pid = SigarLib.instance.getPid();
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("sparrow.pid"))) {
+            writer.write(String.valueOf(pid));
+        }
+        catch (IOException e)
+        {
+            logger.warn("Could not write pid file");
+        }
     }
 
     public static void stop()
@@ -57,6 +80,10 @@ public class SparrowDaemon
     public static void main(String[] args) throws Exception
     {
         logger.info("Starting SparrowDb...");
+
+        SigarLib.instance.checkSystemResource();
+        writePidFile();
         setup();
+        startServers();
     }
 }
