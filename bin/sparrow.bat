@@ -36,7 +36,8 @@ goto end
 
 :exec
 set SPARROW_CLASSPATH=target/lib/*
-"%JAVA_HOME%\bin\java" %JAVA_OPTS% -cp "target/sparrow-1.0-SNAPSHOT.jar;%SPARROW_CLASSPATH%" %SPARROW_MAIN%
+set SPARROW_JAR=target/sparrow-1.0-SNAPSHOT.jar
+"%JAVA_HOME%\bin\java" %JAVA_OPTS% -cp "%SPARROW_JAR%;%SPARROW_CLASSPATH%" %SPARROW_MAIN%
 goto end
 
 :end
