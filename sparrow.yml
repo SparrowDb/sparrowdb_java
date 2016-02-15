@@ -11,9 +11,7 @@ tcp_port: 9090
 tcp_host: "0.0.0.0"
 
 # ----------------------------------- Cache ------------------------------------
-# Careful with cache capacity, images can be very large. Cache capacity is the
-# number of images in cache, not the size of the image
-cache_capacity: 20
+max_cache_size: 31457280
 
 # ----------------------------------- Paths ------------------------------------
 # Database path
@@ -23,9 +21,9 @@ data_file_directory: data
 #max_datalog_size: 1000000
 #max_datalog_size: 1073741824
 max_datalog_size: 52428800
+
 # ------------------------------- Cluster nodes --------------------------------
 nodes: []
-
 
 # ------------------------------- Bloom Filter ---------------------------------
 # Blommfilter false positive probability

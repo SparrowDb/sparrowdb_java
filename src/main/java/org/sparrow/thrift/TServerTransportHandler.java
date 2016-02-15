@@ -3,6 +3,7 @@ package org.sparrow.thrift;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sparrow.config.DatabaseDescriptor;
 import org.sparrow.db.SparrowDatabase;
 import org.sparrow.spql.SpqlParser;
 
@@ -54,10 +55,13 @@ public class TServerTransportHandler implements SparrowTransport.Iface
     @Override
     public String insert_data(DataObject object) throws TException
     {
-        if (SparrowDatabase.instance.databaseExists(object.getDbname()))
+        if (object.getSize() < DatabaseDescriptor.config.max_datalog_size)
         {
-            SparrowDatabase.instance.insert_data(object);
-            return "";
+            if (SparrowDatabase.instance.databaseExists(object.getDbname()))
+            {
+                SparrowDatabase.instance.insert_data(object);
+                return "";
+            }
         }
         return "Could not insert data";
     }
