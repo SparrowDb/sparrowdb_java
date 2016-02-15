@@ -13,7 +13,7 @@ public class Config
     public String http_host = "0.0.0.0";
     public Integer tcp_port = 8082;
     public String tcp_host = "0.0.0.0";
-    public Long cache_capacity = 31457280L;
+    public Long max_cache_size = 31457280L;
     public String data_file_directory = "data";
     public Long max_datalog_size = 1073741824L;
     public List<String> nodes = new LinkedList<String>();
