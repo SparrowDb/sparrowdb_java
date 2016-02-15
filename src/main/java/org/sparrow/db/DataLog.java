@@ -7,9 +7,11 @@ import org.sparrow.io.*;
 import org.sparrow.serializer.DataDefinitionSerializer;
 import org.sparrow.util.SPUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Set;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -27,8 +29,8 @@ public class DataLog
     private IDataWriter dataWriter;
     private IDataReader dataReader;
     private long currentSize = 0;
-    private volatile LinkedBlockingQueue<DataDefinition> queue = new LinkedBlockingQueue<>();
     private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
+    private ExecutorService executor = Executors.newCachedThreadPool();
 
     public DataLog(String dbname, Set<DataHolder> dataHolders, String filename)
     {
@@ -37,12 +39,6 @@ public class DataLog
         this.dataHolders = dataHolders;
         dataWriter = StorageWriter.open(filename);
         dataReader = StorageReader.open(filename);
-        startConsumer();
-    }
-
-    public synchronized void add(DataDefinition dataDefinition)
-    {
-        queue.add(dataDefinition);
     }
 
     private void append(DataDefinition dataDefinition)
@@ -61,70 +57,47 @@ public class DataLog
         }
     }
 
-    private void startConsumer()
+    public void add(DataDefinition dataDefinition)
     {
-        Runnable task = () -> {
-            for (; ; )
-            {
-                DataDefinition dataDefinition = null;
-                lock.writeLock().lock();
+        if ((dataDefinition.getSize() + currentSize) >= DatabaseDescriptor.config.max_datalog_size)
+        {
+            flush();
+        }
 
-                try
-                {
-                    dataDefinition = queue.take();
-                    if ((dataDefinition.getSize() + currentSize) >= DatabaseDescriptor.config.max_datalog_size)
-                    {
-                        flush();
-                    }
-                    append(dataDefinition);
-                    dataDefinition = null;
-                } catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                } finally
-                {
-                    lock.writeLock().unlock();
-                }
-            }
-        };
-        new Thread(task).start();
+        lock.writeLock().lock();
+        try
+        {
+            append(dataDefinition);
+        } finally
+        {
+            lock.writeLock().unlock();
+        }
     }
 
     private void flush()
     {
-        DataHolder dataHolder = null;
-        long fileSize = dataReader.length();
-        long readOffset = 0;
         String nextFileName = SPUtils.getDbPath(dbname, DataHolder.getNextFilename(dbname));
-
         logger.debug("Flushing data into {}", nextFileName);
+        close();
 
-        dataHolder = DataHolder.create(nextFileName);
-        dataHolder.beforeAppend();
-
-        while (readOffset < fileSize)
+        if (new File(filename).renameTo(new File(nextFileName)))
         {
-            byte[] bytes = DataInput.load(dataReader, readOffset);
-            try
-            {
-                DataDefinition dataDefinition = DataDefinitionSerializer.instance.deserialize(bytes, true);
-                dataHolder.append(dataDefinition);
-                indexer.delete(dataDefinition.getKey32());
-                readOffset += (bytes.length + 4);
-            } catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+            IndexSummary temp = new IndexSummary();
+            temp.getIndexList().putAll(this.indexer.getIndexList());
+
+            executor.execute(() -> {
+                DataHolder dataHolder = DataHolder.create(nextFileName, temp);
+                dataHolders.add(dataHolder);
+            });
+
+            this.indexer.clear();
+
+            currentSize = 0;
+            dataWriter = StorageWriter.open(filename);
+            dataReader = StorageReader.open(filename);
         }
 
-        dataHolder.afterAppend();
-
         logger.debug("-------------- End flushing");
-
-        dataWriter.truncate(0);
-        indexer.clear();
-        currentSize = 0;
-        dataHolders.add(dataHolder);
     }
 
     public void load()

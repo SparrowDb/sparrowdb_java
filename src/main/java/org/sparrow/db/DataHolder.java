@@ -51,6 +51,17 @@ public class DataHolder
         return new DataHolder(filename);
     }
 
+    public static DataHolder create(String filename, IndexSummary indexer)
+    {
+        DataHolder dh = new DataHolder(filename);
+        indexer.getIndexList().forEach((key, value) -> {
+            dh.writeIndex(key, value);
+            dh.indexer.put(key, value);
+        });
+        dh.writeBloomFilter();
+        return dh;
+    }
+
     public void beforeAppend()
     {
         dataWriter = StorageWriter.open(filename);
@@ -139,13 +150,16 @@ public class DataHolder
         IDataWriter bfWriter = StorageWriter.open(bloomFilterFile);
         try
         {
-            bfWriter.write(bytes);
+            if (bfWriter != null)
+                bfWriter.write(bytes);
         }
         catch (IOException e)
         {
             logger.error("Could not write bloomfilter {}", bloomFilterFile);
         }
-        bfWriter.close();
+
+        if (bfWriter != null)
+            bfWriter.close();
     }
 
     public void loadBloomFilter()
