@@ -11,6 +11,10 @@ import org.sparrow.util.SigarLib;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryPoolMXBean;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -65,6 +69,31 @@ public class SparrowDaemon
         }
     }
 
+    private static void logSystemInfo()
+    {
+        if (logger.isInfoEnabled())
+        {
+            try
+            {
+                logger.info("Hostname: {}", InetAddress.getLocalHost().getHostName());
+            }
+            catch (UnknownHostException e1)
+            {
+                logger.info("Could not resolve local host");
+            }
+
+            logger.info("JVM vendor/version: {}/{}", System.getProperty("java.vm.name"), System.getProperty("java.version"));
+            logger.info("Heap size: {}/{}", Runtime.getRuntime().totalMemory(), Runtime.getRuntime().maxMemory());
+
+            for(MemoryPoolMXBean pool: ManagementFactory.getMemoryPoolMXBeans())
+                logger.info("{} {}: {}", pool.getName(), pool.getType(), pool.getPeakUsage());
+
+            logger.info("Classpath: {}", System.getProperty("java.class.path"));
+
+            logger.info("JVM Arguments: {}", ManagementFactory.getRuntimeMXBean().getInputArguments());
+        }
+    }
+
     public static void stop()
     {
         logger.info("Stoping SparrowDb...");
@@ -79,7 +108,7 @@ public class SparrowDaemon
     public static void main(String[] args) throws Exception
     {
         logger.info("Starting SparrowDb...");
-
+        logSystemInfo();
         SigarLib.instance.checkSystemResource();
         writePidFile();
         setup();
