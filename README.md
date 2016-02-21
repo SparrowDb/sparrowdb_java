@@ -1,3 +1,5 @@
+﻿[![Build Status](https://travis-ci.org/SparrowDb/sparrowdb.svg?branch=master)](https://travis-ci.org/SparrowDb/sparrowdb)
+﻿
 ﻿Whats is SparrowDB?
 ====================
 SparrowJDB is an image database that works like a simple append-only object store containing data definitions representing the stored images. Sparrow has a HTTP server so images can be accessed in browser or using client to make queries.
