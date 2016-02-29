@@ -42,10 +42,6 @@ public class SpqlParser
                 {
                     return database.query_data_where_key(query_where_matcher.group(2));
                 }
-                else if (query_where_matcher.group(1).equals("timestamp"))
-                {
-                    return database.query_data_where_timestamp(Integer.parseInt(query_where_matcher.group(2)));
-                }
             }
             else
             {

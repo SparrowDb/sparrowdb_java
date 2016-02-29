@@ -11,6 +11,7 @@ import org.sparrow.util.FileUtils;
 import org.sparrow.util.SPUtils;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -95,26 +96,26 @@ public class Database
 
     public DataDefinition getDataWithImageByKey32(String dataKey)
     {
-        if (cache.containsKey(dataKey)) {
-            return cache.get(dataKey);
-        }
-
-        DataDefinition dataDefinition = null;
-
-        dataDefinition = dataLog.get(dataKey);
+        DataDefinition dataDefinition = cache.get(dataKey);
 
         if (dataDefinition == null)
         {
-            for (DataHolder dh : dataHolders)
+            dataDefinition = dataLog.get(dataKey);
+        }
+
+        if (dataDefinition == null)
+        {
+            Iterator<DataHolder> iterDataHolder = dataHolders.stream()
+                    .filter(x -> x.isKeyInFile(dataKey))
+                    .iterator();
+
+            while (iterDataHolder.hasNext())
             {
-                if (dh.isKeyInFile(dataKey))
+                dataDefinition = iterDataHolder.next().get(dataKey);
+                if (dataDefinition != null)
                 {
-                    dataDefinition = dh.get(dataKey);
-                    if (dataDefinition != null)
-                    {
-                        cache.put(dataKey, dataDefinition);
-                        return dataDefinition;
-                    }
+                    cache.put(dataKey, dataDefinition);
+                    break;
                 }
             }
         }
@@ -161,11 +162,6 @@ public class Database
         }
         result.count = data.size();
         return  result;
-    }
-
-    public SpqlResult query_data_where_timestamp(long value)
-    {
-        return  null;
     }
 
     public SpqlResult query_data_where_key(String value)

@@ -18,16 +18,9 @@ public class StorageReader implements IDataReader
 
     private StorageReader(File file) throws IOException
     {
-        try
+        if (file.exists())
         {
-            if (file.exists())
-            {
-                fchannel = FileChannel.open(file.toPath(), StandardOpenOption.READ);
-            }
-        }
-        catch (IOException e)
-        {
-            throw new IOException(e);
+            fchannel = FileChannel.open(file.toPath(), StandardOpenOption.READ);
         }
     }
 
@@ -51,7 +44,8 @@ public class StorageReader implements IDataReader
         try
         {
             return fchannel.size();
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
         }
@@ -64,7 +58,8 @@ public class StorageReader implements IDataReader
         try
         {
             return fchannel.position();
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
         }
@@ -83,7 +78,8 @@ public class StorageReader implements IDataReader
         try
         {
             return fchannel.read(src);
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
         }
@@ -96,7 +92,8 @@ public class StorageReader implements IDataReader
         try
         {
             fchannel.close();
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
         }

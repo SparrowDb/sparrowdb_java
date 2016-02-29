@@ -19,21 +19,8 @@ public class StorageWriter implements IDataWriter
 
     private StorageWriter(File file) throws IOException
     {
-        try
-        {
-            if (file.exists())
-            {
-                fchannel = FileChannel.open(file.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE);
-            }
-            else
-            {
-                fchannel = FileChannel.open(file.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE, StandardOpenOption.CREATE);
-            }
-        }
-        catch (IOException e)
-        {
-            throw new IOException(e);
-        }
+        fchannel = file.exists() ? FileChannel.open(file.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE) :
+                                   FileChannel.open(file.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE, StandardOpenOption.CREATE);
         this.file = file;
     }
 
@@ -57,7 +44,8 @@ public class StorageWriter implements IDataWriter
         try
         {
             return fchannel.size();
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
         }
@@ -70,7 +58,8 @@ public class StorageWriter implements IDataWriter
         try
         {
             return fchannel.position();
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
         }
@@ -99,7 +88,7 @@ public class StorageWriter implements IDataWriter
     {
         fchannel.position(fchannel.size());
         int length = src.remaining();
-        while(src.hasRemaining())
+        while (src.hasRemaining())
             fchannel.write(src);
         fsync();
         return length;
@@ -111,7 +100,8 @@ public class StorageWriter implements IDataWriter
         try
         {
             fchannel.force(true);
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
         }
@@ -123,7 +113,8 @@ public class StorageWriter implements IDataWriter
         try
         {
             fchannel.truncate(newSize);
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
         }
@@ -136,7 +127,8 @@ public class StorageWriter implements IDataWriter
         {
             fchannel.close();
             fchannel = null;
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
         }
