@@ -37,8 +37,7 @@ public class SparrowDatabase
                 return true;
             } catch (Exception e)
             {
-                e.printStackTrace();
-                return false;
+                logger.error("Could not create database {}: {} ", dbname, e.getMessage());
             }
         }
         return false;

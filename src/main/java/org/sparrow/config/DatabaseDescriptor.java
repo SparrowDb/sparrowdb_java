@@ -46,6 +46,7 @@ public class DatabaseDescriptor
                 FileUtils.createDirectory(getDataFilePath());
             } catch (Exception e)
             {
+                logger.error("Create data directory: {}", e.getMessage());
                 e.printStackTrace();
             }
         }

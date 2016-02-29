@@ -12,7 +12,7 @@ public class SigarLib
 {
     private static Logger logger = LoggerFactory.getLogger(SigarLib.class);
     public static final SigarLib instance = new SigarLib();
-    private boolean initialized = false;
+    private boolean initialized;
     private long MIN_HEAP_SPACE = (long) 2 * 1024 * 1024 * 1024; // 2GB
     private Sigar sigar;
 
@@ -59,13 +59,13 @@ public class SigarLib
         if (initialized)
         {
             boolean goodHeapSpace = hasAcceptableHeapSpace();
-            if (!goodHeapSpace)
+            if (goodHeapSpace)
             {
-                logger.warn("Address heap space adequate ? {}", goodHeapSpace);
+                logger.info("Checked OS settings and found them configured for optimal performance.");
             }
             else
             {
-                logger.info("Checked OS settings and found them configured for optimal performance.");
+                logger.warn("Address heap space adequate ? {}", goodHeapSpace);
             }
         }
         else

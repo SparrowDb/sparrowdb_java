@@ -1,5 +1,7 @@
 package org.sparrow.db;
 
+import java.util.Arrays;
+
 /**
  * Created by mauricio on 25/12/2015.
  */
@@ -37,11 +39,6 @@ public class DataDefinition
         }
     }
 
-    public DataDefinition()
-    {
-
-    }
-
     private String key;
     private int key32;
     private int size;
@@ -51,6 +48,11 @@ public class DataDefinition
     private Extension extension;
     private DataState state;
     private byte[] buffer;
+
+    public DataDefinition()
+    {
+
+    }
 
     public DataDefinition(String key, int key32, int size, long offset, int crc32, Extension extension, DataState state)
     {
@@ -72,7 +74,7 @@ public class DataDefinition
         this.crc32 = crc32;
         this.extension = extension;
         this.state = state;
-        this.buffer = buffer;
+        this.buffer = Arrays.copyOf(buffer, buffer.length);
     }
 
     public String getKey()
@@ -162,6 +164,6 @@ public class DataDefinition
 
     public void setBuffer(byte[] buffer)
     {
-        this.buffer = buffer;
+        this.buffer = Arrays.copyOf(buffer, buffer.length);
     }
 }

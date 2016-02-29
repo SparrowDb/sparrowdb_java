@@ -60,6 +60,7 @@ public class ThriftServer implements Server
 
         public ThriftServerWorker(InetSocketAddress address)
         {
+            super();
             server = CustomTThreadPoolServer.Builder.build(address, new TServerTransportHandler());
         }
 

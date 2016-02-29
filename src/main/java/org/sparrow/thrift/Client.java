@@ -14,11 +14,11 @@ import org.slf4j.LoggerFactory;
 public class Client
 {
     private static Logger logger = LoggerFactory.getLogger(Client.class);
-    private TTransport transport = null;
-    private TProtocol protocol = null;
-    private SparrowTransport.Client client = null;
-    private String host = null;
-    private int port = 0;
+    private TTransport transport;
+    private TProtocol protocol;
+    private SparrowTransport.Client client;
+    private String host;
+    private int port;
 
     public Client(String host, int port)
     {

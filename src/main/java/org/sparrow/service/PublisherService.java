@@ -19,7 +19,7 @@ public class PublisherService
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private volatile BlockingDeque<Executor> queue = new LinkedBlockingDeque<>();
     private volatile Set<Client> subscribers = new HashSet<>();
-    private volatile boolean active = false;
+    private volatile boolean active;
 
     public enum Type
     {

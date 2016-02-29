@@ -34,7 +34,6 @@ public class BloomFilter
     }
 
     public boolean contains(String key) {
-        String hashed = String.valueOf(SPUtils.hash32(key));
         for (int idx : getHashes(key)) {
             if (!bitset.get(idx)) {
                 return false;

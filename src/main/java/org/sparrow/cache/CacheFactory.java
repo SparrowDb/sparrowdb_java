@@ -10,7 +10,7 @@ public class CacheFactory
 {
     private static Logger logger = LoggerFactory.getLogger(CacheProvider.class);
 
-    public static ICache newCache(long capacity)
+    public static ICache newCache(final long capacity)
     {
         logger.info("Creating cache provider with capacity: {}", capacity);
         return new CacheProvider<>(capacity);

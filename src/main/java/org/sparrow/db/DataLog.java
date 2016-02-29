@@ -28,7 +28,7 @@ public class DataLog
     private Set<DataHolder> dataHolders;
     private IDataWriter dataWriter;
     private IDataReader dataReader;
-    private long currentSize = 0;
+    private long currentSize;
     private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
     private ExecutorService executor = Executors.newCachedThreadPool();
 
@@ -53,7 +53,7 @@ public class DataLog
             indexer.put(dataDefinition.getKey32(), dataDefinition.getOffset());
         } catch (IOException e)
         {
-            e.printStackTrace();
+            logger.error("Could not append data to DataLog {}: {} ", filename, e.getMessage());
         }
     }
 
@@ -141,7 +141,7 @@ public class DataLog
                 return DataDefinitionSerializer.instance.deserialize(bytes, true);
             } catch (IOException e)
             {
-                e.printStackTrace();
+                logger.error("Could not get data from DataLog {}: {} ", filename, e.getMessage());
             }
         }
         return null;

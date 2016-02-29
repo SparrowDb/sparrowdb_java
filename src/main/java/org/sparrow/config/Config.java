@@ -8,14 +8,28 @@ import java.util.List;
  */
 public class Config
 {
-    public String node_name = "localnode";
-    public Integer http_port = 8081;
-    public String http_host = "0.0.0.0";
-    public Integer tcp_port = 8082;
-    public String tcp_host = "0.0.0.0";
-    public Long max_cache_size = 31457280L;
-    public String data_file_directory = "data";
-    public Long max_datalog_size = 1073741824L;
-    public List<String> nodes = new LinkedList<String>();
-    public Double bloomfilter_fpp = 0.001;
+    public String node_name;
+    public Integer http_port;
+    public String http_host;
+    public Integer tcp_port;
+    public String tcp_host;
+    public Long max_cache_size;
+    public String data_file_directory;
+    public Long max_datalog_size;
+    public List<String> nodes;
+    public Double bloomfilter_fpp;
+
+    public Config()
+    {
+        node_name = "localnode";
+        http_port = 8081;
+        http_host = "0.0.0.0";
+        tcp_port = 8082;
+        tcp_host = "0.0.0.0";
+        max_cache_size = 31457280L;
+        data_file_directory = "data";
+        max_datalog_size = 1073741824L;
+        nodes = new LinkedList<String>();
+        bloomfilter_fpp = 0.001;
+    }
 }

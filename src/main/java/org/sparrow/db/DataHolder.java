@@ -25,10 +25,10 @@ public class DataHolder
 {
     private static Logger logger = LoggerFactory.getLogger(DataHolder.class);
     private IndexSummary indexer = new IndexSummary();
-    private BloomFilter bf = null;
-    private String filename;
-    private String indexFile;
-    private String bloomFilterFile;
+    private BloomFilter bf;
+    private final String filename;
+    private final String indexFile;
+    private final String bloomFilterFile;
     private IDataWriter dataWriter;
 
     private DataHolder(String filename)
@@ -78,7 +78,7 @@ public class DataHolder
             writeIndex(dataDefinition.getKey32(), dataDefinition.getOffset());
         } catch (IOException e)
         {
-            e.printStackTrace();
+            logger.error("Could not append data to DataHolder {}: {} ", filename, e.getMessage());
         }
     }
 
@@ -136,7 +136,7 @@ public class DataHolder
             }
         } catch (IOException e)
         {
-            e.printStackTrace();
+            logger.error("Could not append data to Index file {}: {} ", indexFile, e.getMessage());
         }
     }
 
@@ -194,7 +194,7 @@ public class DataHolder
                 indexSize += (bytes.length + 4);
             } catch (IOException e)
             {
-                e.printStackTrace();
+                logger.error("Could not load data from Index file {}: {} ", indexFile, e.getMessage());
             }
         }
         indexReader.close();
@@ -218,10 +218,11 @@ public class DataHolder
                 return DataDefinitionSerializer.instance.deserialize(bytes, true);
             } catch (IOException e)
             {
-                e.printStackTrace();
+                logger.error("Could not get data from DataHolder {}: {} ", filename, e.getMessage());
             }
         }
-        dataReader.close();
+        if (dataReader!=null)
+            dataReader.close();
         return null;
     }
 
@@ -285,11 +286,7 @@ public class DataHolder
         {
             filename = SPUtils.getDbPath(dbname, String.format("data-holder-%d.spw", filecount));
             File file = new File(filename);
-            if (!file.exists())
-            {
-                return file.getName();
-            }
-            else
+            if (file.exists())
             {
                 int next = filecount+1;
                 File nextFile = new File(SPUtils.getDbPath(dbname, String.format("data-holder-%d.spw", next)));
@@ -297,6 +294,10 @@ public class DataHolder
                 {
                     return file.getName();
                 }
+            }
+            else
+            {
+                return file.getName();
             }
             filecount++;
         }

@@ -10,6 +10,7 @@ import org.sparrow.spql.SpqlParser;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by mauricio on 24/12/2015.
@@ -34,7 +35,7 @@ public class TServerTransportHandler implements SparrowTransport.Iface
     public List<String> show_databases() throws TException
     {
         List<String> list = new ArrayList<>(SparrowDatabase.instance.getDatabases());
-        Collections.sort(list, (str1, str2) -> str1.toUpperCase().compareTo(str2.toUpperCase()));
+        Collections.sort(list, (str1, str2) -> str1.toUpperCase(Locale.getDefault()).compareTo(str2.toUpperCase(Locale.getDefault())));
         return list;
     }
 

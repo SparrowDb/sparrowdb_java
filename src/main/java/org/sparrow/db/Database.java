@@ -2,6 +2,8 @@ package org.sparrow.db;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sparrow.cache.CacheFactory;
+import org.sparrow.cache.ICache;
 import org.sparrow.config.DatabaseDescriptor;
 import org.sparrow.thrift.DataObject;
 import org.sparrow.thrift.SpqlResult;
@@ -22,6 +24,7 @@ public class Database
     private volatile Set<DataHolder> dataHolders;
     private volatile DataLog dataLog;
     private String dbname;
+    private ICache<String, DataDefinition> cache = CacheFactory.newCache(80);
 
     private Database(String dbname)
     {
@@ -32,15 +35,17 @@ public class Database
 
     public static Database build(String dbname)
     {
+        Database database = null;
         try
         {
             FileUtils.createDirectory(DatabaseDescriptor.getDataFilePath() + dbname);
-            return new Database(dbname);
-        } catch (Exception e)
+            database = new Database(dbname);
+        }
+        catch (Exception e)
         {
             e.getMessage();
         }
-        return null;
+        return database;
     }
 
     public static Database open(String dbname)
@@ -90,6 +95,10 @@ public class Database
 
     public DataDefinition getDataWithImageByKey32(String dataKey)
     {
+        if (cache.containsKey(dataKey)) {
+            return cache.get(dataKey);
+        }
+
         DataDefinition dataDefinition = null;
 
         dataDefinition = dataLog.get(dataKey);
@@ -103,6 +112,7 @@ public class Database
                     dataDefinition = dh.get(dataKey);
                     if (dataDefinition != null)
                     {
+                        cache.put(dataKey, dataDefinition);
                         return dataDefinition;
                     }
                 }

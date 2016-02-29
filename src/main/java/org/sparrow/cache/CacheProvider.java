@@ -14,7 +14,7 @@ public class CacheProvider<K, V> implements ICache<K, V>
     private static final int DEFAULT_CONCURRENCY_LEVEL = 64;
     private final ConcurrentLinkedHashMap<K, V> map;
 
-    public CacheProvider(long capacity)
+    public CacheProvider(final long capacity)
     {
         this.map = new ConcurrentLinkedHashMap.Builder<K, V>().concurrencyLevel(DEFAULT_CONCURRENCY_LEVEL).maximumWeightedCapacity(capacity).build();
     }

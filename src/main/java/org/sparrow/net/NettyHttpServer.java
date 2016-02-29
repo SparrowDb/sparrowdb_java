@@ -24,6 +24,10 @@ public class NettyHttpServer implements Server
     private InetSocketAddress address;
     private HttpServerWorker server;
 
+    public NettyHttpServer ()
+    {
+    }
+
     public NettyHttpServer(String host, int port)
     {
         this.address = new InetSocketAddress(host, port);
@@ -71,6 +75,7 @@ public class NettyHttpServer implements Server
 
         public HttpServerWorker(InetSocketAddress address)
         {
+            super();
             this.address = address;
             serverBootstrap = new ServerBootstrap();
         }
