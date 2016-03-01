@@ -6,6 +6,7 @@ import org.sparrow.config.DatabaseDescriptor;
 import org.sparrow.io.*;
 import org.sparrow.serializer.DataDefinitionSerializer;
 import org.sparrow.util.SPUtils;
+import org.xerial.snappy.Snappy;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +49,8 @@ public class DataLog
         try
         {
             byte[] serializedData = DataDefinitionSerializer.instance.serialize(dataDefinition);
-            DataOutput.save(dataWriter, serializedData);
+            byte[] compressed = Snappy.compress(serializedData);
+            DataOutput.save(dataWriter, compressed);
             currentSize += dataDefinition.getSize();
             indexer.put(dataDefinition.getKey32(), dataDefinition.getOffset());
         } catch (IOException e)
@@ -107,12 +109,15 @@ public class DataLog
         while (currentSize < fileSize)
         {
             byte[] bytes = DataInput.load(dataReader, currentSize);
+            byte[] uncompressed = null;
             DataDefinition dataDefinition = null;
 
             try
             {
-                dataDefinition = DataDefinitionSerializer.instance.deserialize(bytes, true);
-            } catch (IOException e)
+                uncompressed = Snappy.uncompress(bytes);
+                dataDefinition = DataDefinitionSerializer.instance.deserialize(uncompressed, true);
+            }
+            catch (IOException e)
             {
                 logger.warn("{} Dataholder {} is corrupted size {}, truncating file...", dbname, filename, fileSize);
                 dataWriter.truncate(0);
@@ -138,7 +143,8 @@ public class DataLog
             byte[] bytes = DataInput.load(dataReader, offset);
             try
             {
-                return DataDefinitionSerializer.instance.deserialize(bytes, true);
+                byte[] uncompressed = Snappy.uncompress(bytes);
+                return DataDefinitionSerializer.instance.deserialize(uncompressed, true);
             } catch (IOException e)
             {
                 logger.error("Could not get data from DataLog {}: {} ", filename, e.getMessage());

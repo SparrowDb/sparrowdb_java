@@ -9,6 +9,7 @@ import org.sparrow.serializer.IndexSeralizer;
 import org.sparrow.util.BloomFilter;
 import org.sparrow.util.FileUtils;
 import org.sparrow.util.SPUtils;
+import org.xerial.snappy.Snappy;
 
 import java.io.File;
 import java.io.IOException;
@@ -215,7 +216,8 @@ public class DataHolder
             byte[] bytes = DataInput.load(dataReader, offset);
             try
             {
-                return DataDefinitionSerializer.instance.deserialize(bytes, true);
+                byte[] uncompressed = Snappy.uncompress(bytes);
+                return DataDefinitionSerializer.instance.deserialize(uncompressed, true);
             } catch (IOException e)
             {
                 logger.error("Could not get data from DataHolder {}: {} ", filename, e.getMessage());
