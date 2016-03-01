@@ -73,7 +73,7 @@ public class SparrowDatabase
 
     public void insert_data(DataObject object)
     {
-        getDatabase(object.getDbname()).insert_data(object);
+        getDatabase(object.getDbname()).insertData(object);
     }
 
     public void delete_data(String dbname, String key)

@@ -69,7 +69,7 @@ public class Database
         dataLog.close();
     }
 
-    public void insert_data(DataObject object)
+    public void insertData(DataObject object)
     {
         int hash32key = SPUtils.hash32(object.getKey());
         DataDefinition dataDefinition = new DataDefinition();
@@ -164,7 +164,7 @@ public class Database
         return  result;
     }
 
-    public SpqlResult query_data_where_key(String value)
+    public SpqlResult queryDataWhereKey(String value)
     {
         DataDefinition dataDefinition = getDataWithImageByKey32(value);
         SpqlResult result = new SpqlResult();
@@ -177,7 +177,7 @@ public class Database
         return result;
     }
 
-    public SpqlResult query_data_all()
+    public SpqlResult queryDataAll()
     {
         Set result = new LinkedHashSet<>();
         dataHolders.forEach(x -> result.addAll(x.fetchAll()));
