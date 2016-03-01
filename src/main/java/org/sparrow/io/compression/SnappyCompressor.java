@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
  */
 public class SnappyCompressor implements ICompressor
 {
-    private static Logger logger = LoggerFactory.getLogger(SnappyCompressor.class);
     private static final SnappyCompressor instance = new SnappyCompressor();
 
     public static SnappyCompressor create()

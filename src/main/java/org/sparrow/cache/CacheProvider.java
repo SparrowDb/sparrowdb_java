@@ -9,8 +9,6 @@ import org.slf4j.LoggerFactory;
  */
 public class CacheProvider<K, V> implements ICache<K, V>
 {
-    private static Logger logger = LoggerFactory.getLogger(CacheProvider.class);
-
     private static final int DEFAULT_CONCURRENCY_LEVEL = 64;
     private final ConcurrentLinkedHashMap<K, V> map;
 

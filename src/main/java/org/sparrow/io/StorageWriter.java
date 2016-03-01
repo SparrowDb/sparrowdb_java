@@ -13,7 +13,6 @@ import java.nio.file.StandardOpenOption;
  */
 public class StorageWriter implements IDataWriter
 {
-    private static Logger logger = org.slf4j.LoggerFactory.getLogger(StorageWriter.class);
     private final File file;
     private FileChannel fchannel;
 

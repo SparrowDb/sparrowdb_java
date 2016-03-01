@@ -13,7 +13,6 @@ import java.nio.file.StandardOpenOption;
  */
 public class StorageReader implements IDataReader
 {
-    private static Logger logger = org.slf4j.LoggerFactory.getLogger(StorageWriter.class);
     private FileChannel fchannel;
 
     private StorageReader(File file) throws IOException

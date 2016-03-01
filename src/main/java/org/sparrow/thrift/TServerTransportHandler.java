@@ -17,8 +17,6 @@ import java.util.Locale;
  */
 public class TServerTransportHandler implements SparrowTransport.Iface
 {
-    private static final Logger logger = LoggerFactory.getLogger(TServerTransportHandler.class);
-
     @Override
     public String authenticate(String username, String password) throws TException
     {

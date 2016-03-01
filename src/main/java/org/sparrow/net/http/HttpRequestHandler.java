@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
  */
 public class HttpRequestHandler extends SimpleChannelInboundHandler<HttpObject>
 {
-    private static Logger logger = LoggerFactory.getLogger(HttpRequestHandler.class);
     private RestController restController = new RestController();
 
     @Override
