@@ -1,8 +1,6 @@
 package org.sparrow.thrift;
 
 import org.apache.thrift.TException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sparrow.config.DatabaseDescriptor;
 import org.sparrow.db.SparrowDatabase;
 import org.sparrow.spql.SpqlParser;
