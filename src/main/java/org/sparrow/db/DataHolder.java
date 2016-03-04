@@ -22,18 +22,16 @@ import java.util.stream.Collectors;
 /**
  * Created by mauricio on 07/01/2016.
  */
-public class DataHolder
+public final class DataHolder extends DataFile
 {
     private static Logger logger = LoggerFactory.getLogger(DataHolder.class);
-    private IndexSummary indexer = new IndexSummary();
     private BloomFilter bf;
-    private final String filename;
     private final String indexFile;
     private final String bloomFilterFile;
-    private IDataWriter dataWriter;
 
     private DataHolder(String filename)
     {
+        super();
         this.filename = filename;
         this.indexFile = filename.replace("data-holder", "index");
         this.bloomFilterFile = filename.replace("data-holder", "bloomfilter");
@@ -47,11 +45,6 @@ public class DataHolder
         return dataHolder;
     }
 
-    public static DataHolder create(String filename)
-    {
-        return new DataHolder(filename);
-    }
-
     public static DataHolder create(String filename, IndexSummary indexer)
     {
         DataHolder dh = new DataHolder(filename);
@@ -63,65 +56,16 @@ public class DataHolder
         return dh;
     }
 
-    public void beforeAppend()
-    {
-        dataWriter = StorageWriter.open(filename);
-    }
-
-    public void append(DataDefinition dataDefinition)
-    {
-        dataDefinition.setOffset(dataWriter.length());
-        logger.debug("Writing data: {}", DataDefinitionSerializer.instance.toString(dataDefinition));
-        try
-        {
-            byte[] serializedData = DataDefinitionSerializer.instance.serialize(dataDefinition);
-            DataOutput.save(dataWriter, serializedData);
-            writeIndex(dataDefinition.getKey32(), dataDefinition.getOffset());
-        } catch (IOException e)
-        {
-            logger.error("Could not append data to DataHolder {}: {} ", filename, e.getMessage());
-        }
-    }
-
-    public void afterAppend()
-    {
-        closeFile();
-        loadIndexFile();
-        writeBloomFilter();
-    }
-
-    public void deleteData(DataDefinition dataDefinition)
-    {
-        // open datawriter
-        beforeAppend();
-
-        // update datadefinition to be removed
-        dataDefinition.setSize(0);
-        dataDefinition.setBuffer(null);
-        dataDefinition.setOffset(dataWriter.length());
-        dataDefinition.setState(DataDefinition.DataState.REMOVED);
-
-        // update index to the new removed registry
-        indexer.delete(dataDefinition.getKey32());
-        indexer.put(dataDefinition.getKey32(), dataWriter.length());
-
-        // write to disk new datadefinition
-        append(dataDefinition);
-
-        // close datawriter
-        closeFile();
-    }
-
-    public void closeFile()
-    {
-        if (dataWriter!=null)
-            dataWriter.close();
-    }
-
     public boolean isKeyInFile(String key)
     {
         String hashed = String.valueOf(SPUtils.hash32(key));
         return bf.contains(hashed);
+    }
+
+    @Override
+    protected void deleteData(DataDefinition dataDefinition)
+    {
+
     }
 
     private void writeIndex(int key, long offset)
@@ -131,13 +75,17 @@ public class DataHolder
         {
             byte[] serializedData = IndexSeralizer.instance.serialize(key, offset);
             DataOutput.save(indexWriter, serializedData);
+        }
+        catch (IOException e)
+        {
+            logger.error("Could not append data to Index file {}: {} ", indexFile, e.getMessage());
+        }
+        finally
+        {
             if (indexWriter != null)
             {
                 indexWriter.close();
             }
-        } catch (IOException e)
-        {
-            logger.error("Could not append data to Index file {}: {} ", indexFile, e.getMessage());
         }
     }
 
@@ -147,20 +95,28 @@ public class DataHolder
         for (Map.Entry<Integer, Long> idx : indexer.getIndexList().entrySet()) {
             bf.add(String.valueOf(idx.getKey()));
         }
+
         byte[] bytes = BloomFilter.BloomFilterSerializer.serializer(bf);
         IDataWriter bfWriter = StorageWriter.open(bloomFilterFile);
+
         try
         {
             if (bfWriter != null)
+            {
                 bfWriter.write(bytes);
+            }
         }
         catch (IOException e)
         {
             logger.error("Could not write bloomfilter {}", bloomFilterFile);
         }
-
-        if (bfWriter != null)
-            bfWriter.close();
+        finally
+        {
+            if (bfWriter != null)
+            {
+                bfWriter.close();
+            }
+        }
     }
 
     public void loadBloomFilter()
@@ -176,7 +132,13 @@ public class DataHolder
         {
             logger.error("Could not read bloomfilter {}", bloomFilterFile);
         }
-        dataReader.close();
+        finally
+        {
+            if (dataReader != null)
+            {
+                dataReader.close();
+            }
+        }
     }
 
     private void loadIndexFile()
@@ -198,127 +160,96 @@ public class DataHolder
                 logger.error("Could not load data from Index file {}: {} ", indexFile, e.getMessage());
             }
         }
-        indexReader.close();
-    }
-
-    public DataDefinition get(String key)
-    {
-        return get(SPUtils.hash32(key));
-    }
-
-    public DataDefinition get(int key32)
-    {
-        IDataReader dataReader = StorageReader.open(this.filename);
-        Long offset = indexer.get(key32);
-
-        if (offset!=null)
+        if (indexReader != null)
         {
-            byte[] bytes = DataInput.load(dataReader, offset);
-            try
+            indexReader.close();
+        }
+    }
+
+
+    public static class DataHolderFileManager {
+
+        private static boolean isValidDataHolder(String filename)
+        {
+            if (!FileUtils.fileExists(filename.replace("data-holder", "index")))
             {
-                byte[] uncompressed = Snappy.uncompress(bytes);
-                return DataDefinitionSerializer.instance.deserialize(uncompressed, true);
-            } catch (IOException e)
-            {
-                logger.error("Could not get data from DataHolder {}: {} ", filename, e.getMessage());
+                logger.warn("Index file does not exists for {}", filename);
+                return false;
             }
-        }
-        if (dataReader!=null)
-            dataReader.close();
-        return null;
-    }
-
-    public LinkedHashSet<DataDefinition> fetchAll()
-    {
-        return indexer.getIndexList().entrySet().stream().map(
-                idx -> get(idx.getKey())).collect(
-                Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    public String getFilename()
-    {
-        return filename;
-    }
-
-    private static boolean isValidDataHolder(String filename)
-    {
-        if (!FileUtils.fileExists(filename.replace("data-holder", "index")))
-        {
-            logger.warn("Index file does not exists for {}", filename);
-            return false;
-        }
-        if (!FileUtils.fileExists(filename.replace("data-holder", "bloomfilter")))
-        {
-            logger.warn("Bloom filter file does not exists for {}", filename);
-            return false;
-        }
-        return true;
-    }
-
-    public static void loadDataHolders(Set<DataHolder> collection, String dbname)
-    {
-        int filecount = 0;
-        String filename;
-        File file;
-
-        while (true)
-        {
-            filename = SPUtils.getDbPath(dbname, String.format("data-holder-%d.spw", filecount));
-            file = new File(filename);
-            if (file.exists())
+            if (!FileUtils.fileExists(filename.replace("data-holder", "bloomfilter")))
             {
-                if (isValidDataHolder(filename))
+                logger.warn("Bloom filter file does not exists for {}", filename);
+                return false;
+            }
+            return true;
+        }
+
+        public static void loadDataHolders(Set<DataHolder> collection, String dbname)
+        {
+            int filecount = 0;
+            String filename;
+            File file;
+
+            while (true)
+            {
+                filename = SPUtils.getDbPath(dbname, String.format("data-holder-%d.spw", filecount));
+                file = new File(filename);
+                if (file.exists())
                 {
-                    DataHolder dataHolder = DataHolder.open(filename);
-                    collection.add(dataHolder);
+                    if (isValidDataHolder(filename))
+                    {
+                        DataHolder dataHolder = DataHolder.open(filename);
+                        collection.add(dataHolder);
+                    }
+                } else {
+                    break;
                 }
-            } else {
-                break;
+                filecount++;
             }
-            filecount++;
         }
-    }
 
-    public static String getLastFilename(String dbname)
-    {
-        int filecount = 0;
-        String filename;
-
-        while (true)
+        public static String getLastFilename(String dbname)
         {
-            filename = SPUtils.getDbPath(dbname, String.format("data-holder-%d.spw", filecount));
-            File file = new File(filename);
-            if (file.exists())
+            int filecount = 0;
+            String filename;
+
+            while (true)
             {
-                int next = filecount+1;
-                File nextFile = new File(SPUtils.getDbPath(dbname, String.format("data-holder-%d.spw", next)));
-                if (!nextFile.exists() && file.exists())
+                filename = SPUtils.getDbPath(dbname, String.format("data-holder-%d.spw", filecount));
+                File file = new File(filename);
+                if (file.exists())
+                {
+                    int next = filecount+1;
+                    File nextFile = new File(SPUtils.getDbPath(dbname, String.format("data-holder-%d.spw", next)));
+                    if (!nextFile.exists() && file.exists())
+                    {
+                        return file.getName();
+                    }
+                }
+                else
                 {
                     return file.getName();
                 }
+                filecount++;
             }
-            else
-            {
-                return file.getName();
-            }
-            filecount++;
         }
-    }
 
-    public static String getNextFilename(String dbname)
-    {
-        int filecount = 0;
-        String filename;
-
-        while (true)
+        public static String getNextFilename(String dbname)
         {
-            filename = SPUtils.getDbPath(dbname, String.format("data-holder-%d.spw", filecount));
-            File file = new File(filename);
-            if (!file.exists())
+            int filecount = 0;
+            String filename;
+
+            while (true)
             {
-                return file.getName();
+                filename = SPUtils.getDbPath(dbname, String.format("data-holder-%d.spw", filecount));
+                File file = new File(filename);
+                if (!file.exists())
+                {
+                    return file.getName();
+                }
+                filecount++;
             }
-            filecount++;
         }
+
     }
 }

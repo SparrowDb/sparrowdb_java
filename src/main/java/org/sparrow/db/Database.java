@@ -59,7 +59,7 @@ public class Database
             database.dataLog.load();
         }
 
-        DataHolder.loadDataHolders(database.dataHolders, dbname);
+        DataHolder.DataHolderFileManager.loadDataHolders(database.dataHolders, dbname);
 
         return database;
     }

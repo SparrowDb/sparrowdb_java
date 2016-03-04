@@ -20,21 +20,18 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * Created by mauricio on 07/01/2016.
  */
-public class DataLog
+public final class DataLog extends DataFile
 {
     private static Logger logger = LoggerFactory.getLogger(DataLog.class);
-    private IndexSummary indexer = new IndexSummary();
-    private String filename;
     private String dbname;
     private Set<DataHolder> dataHolders;
-    private IDataWriter dataWriter;
-    private IDataReader dataReader;
     private long currentSize;
     private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
     private ExecutorService executor = Executors.newCachedThreadPool();
 
     public DataLog(String dbname, Set<DataHolder> dataHolders, String filename)
     {
+        super();
         this.dbname = dbname;
         this.filename = filename;
         this.dataHolders = dataHolders;
@@ -53,7 +50,8 @@ public class DataLog
             DataOutput.save(dataWriter, compressed);
             currentSize += dataDefinition.getSize();
             indexer.put(dataDefinition.getKey32(), dataDefinition.getOffset());
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             logger.error("Could not append data to DataLog {}: {} ", filename, e.getMessage());
         }
@@ -70,15 +68,22 @@ public class DataLog
         try
         {
             append(dataDefinition);
-        } finally
+        }
+        finally
         {
             lock.writeLock().unlock();
         }
     }
 
+    @Override
+    protected void deleteData(DataDefinition dataDefinition)
+    {
+
+    }
+
     private void flush()
     {
-        String nextFileName = SPUtils.getDbPath(dbname, DataHolder.getNextFilename(dbname));
+        String nextFileName = SPUtils.getDbPath(dbname, DataHolder.DataHolderFileManager.getNextFilename(dbname));
         logger.debug("Flushing data into {}", nextFileName);
         close();
 
@@ -108,13 +113,13 @@ public class DataLog
 
         while (currentSize < fileSize)
         {
-            byte[] bytes = DataInput.load(dataReader, currentSize);
+            byte[] dataCompressedBytes = DataInput.load(dataReader, currentSize);
             byte[] uncompressed = null;
             DataDefinition dataDefinition = null;
 
             try
             {
-                uncompressed = Snappy.uncompress(bytes);
+                uncompressed = Snappy.uncompress(dataCompressedBytes);
                 dataDefinition = DataDefinitionSerializer.instance.deserialize(uncompressed, true);
             }
             catch (IOException e)
@@ -125,52 +130,8 @@ public class DataLog
             }
 
             indexer.put(dataDefinition.getKey32(), dataDefinition.getOffset());
-            currentSize += (bytes.length + 4);
+            currentSize += (dataCompressedBytes.length + 4);
         }
     }
 
-    public DataDefinition get(String key)
-    {
-        return get(SPUtils.hash32(key));
-    }
-
-    public DataDefinition get(int key32)
-    {
-        Long offset = indexer.get(key32);
-
-        if (offset != null)
-        {
-            byte[] bytes = DataInput.load(dataReader, offset);
-            try
-            {
-                byte[] uncompressed = Snappy.uncompress(bytes);
-                return DataDefinitionSerializer.instance.deserialize(uncompressed, true);
-            } catch (IOException e)
-            {
-                logger.error("Could not get data from DataLog {}: {} ", filename, e.getMessage());
-            }
-        }
-        return null;
-    }
-
-    public boolean isEmpty()
-    {
-        return getSize() <= 0;
-    }
-
-    public long getSize()
-    {
-        return dataReader.length();
-    }
-
-    public void clear()
-    {
-        dataWriter.truncate(0);
-    }
-
-    public void close()
-    {
-        if (dataWriter != null) dataWriter.close();
-        if (dataReader != null) dataReader.close();
-    }
 }

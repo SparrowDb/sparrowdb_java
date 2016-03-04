@@ -109,7 +109,12 @@ public class SparrowDaemon
     {
         logger.info("Starting SparrowDb...");
         logSystemInfo();
-        SigarLib.instance.checkSystemResource();
+
+        if (SigarLib.instance.initialized())
+        {
+            SigarLib.instance.checkSystemResource();
+        }
+
         writePidFile();
         setup();
         startServers();
