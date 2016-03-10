@@ -42,7 +42,7 @@ public class IndexSeralizer implements TypeSerializer<Map.Entry<Integer, Long>>
     @Override
     public String toString(Map.Entry<Integer, Long> object)
     {
-        return "DataDefinition{" +
+        return "Index{" +
                 "key=" + object.getKey() +
                 ", offset=" + object.getValue() +
                 '}';
