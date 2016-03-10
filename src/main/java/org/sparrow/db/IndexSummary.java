@@ -1,22 +1,25 @@
 package org.sparrow.db;
 
+
+import com.google.common.collect.Maps;
+
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by mauricio on 27/12/2015.
  */
 public class IndexSummary
 {
-    private ConcurrentHashMap<Integer, Long> index_ = new ConcurrentHashMap<Integer, Long>();
+    private LinkedHashMap<Integer, Long> index_ = Maps.newLinkedHashMap();
 
     public IndexSummary()
     {
     }
 
-    public boolean put(int key, long value)
+    public synchronized boolean put(int key, long value)
     {
-        if (index_.contains(key))
+        if (index_.containsKey(key))
             return false;
         index_.put(key, value);
         return true;
@@ -29,7 +32,7 @@ public class IndexSummary
 
     public boolean hasKey(Integer key)
     {
-        return index_.contains(key);
+        return index_.containsKey(key);
     }
 
     public Map<Integer, Long> getIndexList()
