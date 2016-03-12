@@ -58,12 +58,6 @@ public final class DataHolder extends DataFile
         return bf.contains(hashed);
     }
 
-    @Override
-    protected void deleteData(DataDefinition dataDefinition)
-    {
-
-    }
-
     private void writeIndex(int key, long offset)
     {
         IDataWriter indexWriter = StorageWriter.open(indexFile);

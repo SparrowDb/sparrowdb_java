@@ -61,6 +61,10 @@ public class Database
 
         DataHolder.DataHolderFileManager.loadDataHolders(database.dataHolders, dbname);
 
+        /*if (dbname.equals("teste2")){
+            database.deleteData("key10154513336");
+        }*/
+
         return database;
     }
 
@@ -112,11 +116,11 @@ public class Database
             while (iterDataHolder.hasNext())
             {
                 dataDefinition = iterDataHolder.next().get(dataKey);
-                if (dataDefinition != null)
-                {
-                    cache.put(dataKey, dataDefinition);
-                    break;
-                }
+            }
+
+            if (dataDefinition != null)
+            {
+                cache.put(dataKey, dataDefinition);
             }
         }
 
@@ -125,26 +129,24 @@ public class Database
 
     public boolean deleteData(String dataKey)
     {
-        DataDefinition dataDefinition = null;
+        boolean isDataInCache = cache.containsKey(dataKey);
 
-        dataDefinition = dataLog.get(dataKey);
+        DataDefinition dataDefinition = getDataWithImageByKey32(dataKey);
 
         if (dataDefinition == null)
         {
-            for (DataHolder dh : dataHolders)
-            {
-                if (dh.isKeyInFile(dataKey))
-                {
-                    dataDefinition = dh.get(dataKey);
-                    if (dataDefinition != null)
-                    {
-                        dh.deleteData(dataDefinition);
-                        return true;
-                    }
-                }
-            }
+            return false;
         }
-        return false;
+        else
+        {
+            if (isDataInCache)
+            {
+                cache.remove(dataKey);
+            }
+            dataLog.add(new Tombstone(dataDefinition));
+        }
+
+        return true;
     }
 
     public SpqlResult mapToSpqlResult(Set<DataDefinition> data)

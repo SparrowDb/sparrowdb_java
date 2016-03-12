@@ -5,6 +5,7 @@ import org.sparrow.io.DataInput;
 import org.sparrow.io.IDataReader;
 import org.sparrow.io.StorageReader;
 import org.sparrow.serializer.DataDefinitionSerializer;
+import org.xerial.snappy.Snappy;
 
 import java.io.IOException;
 
@@ -15,18 +16,21 @@ public class DataExtract
 {
     public static void main(String[] args) throws IOException
     {
-        IDataReader dataReader  = StorageReader.open("data\\teste1\\data-holder-0.spw");
+        IDataReader dataReader  = StorageReader.open("data/teste3/data-holder-0.spw");
 
         long fileSize = dataReader.length();
         long currentSize = 0;
 
         while (currentSize < fileSize)
         {
-            byte[] bytes = DataInput.load(dataReader, currentSize);
-            DataDefinition dataDefinition = DataDefinitionSerializer.instance.deserialize(bytes, true);
+            byte[] dataCompressedBytes = DataInput.load(dataReader, currentSize);
+            byte[] uncompressed = Snappy.uncompress(dataCompressedBytes);
+            DataDefinition dataDefinition = DataDefinitionSerializer.instance.deserialize(uncompressed, true);
             System.out.println(DataDefinitionSerializer.instance.toString(dataDefinition));
-            currentSize += (bytes.length + 4);
+            currentSize += (dataCompressedBytes.length + 4);
         }
+
+        System.out.println(currentSize);
         dataReader.close();
     }
 }

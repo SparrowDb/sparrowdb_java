@@ -75,13 +75,7 @@ public final class DataLog extends DataFile
         }
     }
 
-    @Override
-    protected void deleteData(DataDefinition dataDefinition)
-    {
-
-    }
-
-    private void flush()
+    public void flush()
     {
         String nextFileName = SPUtils.getDbPath(dbname, DataHolder.DataHolderFileManager.getNextFilename(dbname));
         logger.debug("Flushing data into {}", nextFileName);

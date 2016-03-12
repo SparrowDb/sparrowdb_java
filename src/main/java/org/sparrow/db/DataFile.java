@@ -26,8 +26,6 @@ abstract class DataFile
     protected IDataReader dataReader;
     protected IndexSummary indexer = new IndexSummary();
 
-    protected abstract void deleteData(DataDefinition dataDefinition);
-
     public DataDefinition get(String key)
     {
         return get(SPUtils.hash32(key));
