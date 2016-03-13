@@ -90,7 +90,6 @@ public class Database
         // Get current time int UTC
         dataDefinition.setTimestamp(java.time.Instant.now().getEpochSecond());
         dataDefinition.setSize(object.bufferForData().capacity());
-        dataDefinition.setCrc32(0);
         dataDefinition.setExtension(DataDefinition.Extension.PNG);
         dataDefinition.setState(DataDefinition.DataState.ACTIVE);
         dataDefinition.setBuffer(object.bufferForData().array());
@@ -117,11 +116,11 @@ public class Database
             {
                 dataDefinition = iterDataHolder.next().get(dataKey);
             }
+        }
 
-            if (dataDefinition != null)
-            {
-                cache.put(dataKey, dataDefinition);
-            }
+        if (dataDefinition != null)
+        {
+            cache.put(dataKey, dataDefinition);
         }
 
         return dataDefinition;
@@ -139,11 +138,9 @@ public class Database
         }
         else
         {
-            if (isDataInCache)
-            {
-                cache.remove(dataKey);
-            }
-            dataLog.add(new Tombstone(dataDefinition));
+            Tombstone tombstone = new Tombstone(dataDefinition);
+            dataLog.add(tombstone);
+            cache.put(dataKey, tombstone);
         }
 
         return true;

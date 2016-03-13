@@ -43,7 +43,6 @@ public class DataDefinition
     private int key32;
     private int size;
     private long offset;
-    private int crc32;
     private long timestamp;
     private Extension extension;
     private DataState state;
@@ -54,24 +53,22 @@ public class DataDefinition
 
     }
 
-    public DataDefinition(String key, int key32, int size, long offset, int crc32, Extension extension, DataState state)
+    public DataDefinition(String key, int key32, int size, long offset, Extension extension, DataState state)
     {
         this.key = key;
         this.key32 = key32;
         this.size = size;
         this.offset = offset;
-        this.crc32 = crc32;
         this.extension = extension;
         this.state = state;
     }
 
-    public DataDefinition(String key, int key32, int size, long offset, int crc32, Extension extension, DataState state, byte[] buffer)
+    public DataDefinition(String key, int key32, int size, long offset, Extension extension, DataState state, byte[] buffer)
     {
         this.key = key;
         this.key32 = key32;
         this.size = size;
         this.offset = offset;
-        this.crc32 = crc32;
         this.extension = extension;
         this.state = state;
         this.buffer = Arrays.copyOf(buffer, buffer.length);
@@ -125,16 +122,6 @@ public class DataDefinition
     public void setTimestamp(long timestamp)
     {
         this.timestamp = timestamp;
-    }
-
-    public int getCrc32()
-    {
-        return crc32;
-    }
-
-    public void setCrc32(int crc32)
-    {
-        this.crc32 = crc32;
     }
 
     public Extension getExtension()

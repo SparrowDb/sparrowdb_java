@@ -17,12 +17,9 @@ public class IndexSummary
     {
     }
 
-    public synchronized boolean put(int key, long value)
+    public synchronized void put(int key, long value)
     {
-        if (index_.containsKey(key))
-            return false;
         index_.put(key, value);
-        return true;
     }
 
     public Long get(int key)

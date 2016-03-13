@@ -13,7 +13,6 @@ final class Tombstone extends DataDefinition
                 dataDefinition.getKey32(),
                 0,
                 dataDefinition.getOffset(),
-                0,
                 dataDefinition.getExtension(),
                 DataState.REMOVED,
                 new byte[0]

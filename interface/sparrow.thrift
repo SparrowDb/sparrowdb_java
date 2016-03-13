@@ -7,12 +7,11 @@ namespace perl sparrow
 struct DataObject {
 	1:required string dbname,
 	2:required string key,
-	3:optional string crc32,
-	4:optional binary data,
-	5:optional string extension,
-	6:optional i64 timestamp,
-	7:optional i32 size,
-	8:optional i32 state,
+	3:optional binary data,
+	4:optional string extension,
+	5:optional i64 timestamp,
+	6:optional i32 size,
+	7:optional i32 state,
 }
 
 struct SpqlResult {
