@@ -9,6 +9,7 @@ import org.sparrow.util.FileUtils;
 import org.sparrow.util.SPUtils;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
@@ -83,12 +84,12 @@ public class SparrowDatabase
 
     public void loadFromDisk()
     {
-        File[] dirs = FileUtils.listSubdirectories(new File(DatabaseDescriptor.getDataFilePath()));
-        for(File dir : dirs)
-        {
-            Database database = Database.open(dir.getName());
-            databases.put(dir.getName(), database);
-        }
+        Arrays.stream(FileUtils.listSubdirectories(new File(DatabaseDescriptor.getDataFilePath())))
+                .filter(x->!x.getName().equals("trigger"))
+                .forEach(x -> {
+                    Database database = Database.open(x.getName());
+                    databases.put(x.getName(), database);
+                });
     }
 
     public DataDefinition getObjectByKey(String dbname, String key)
