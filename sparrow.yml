@@ -2,11 +2,11 @@
 node_name: local-node
 
 # ---------------------------------- Network -----------------------------------
-# HTTP configuration for RESTful
+# HTTP Configuration
 http_port: 8081
 http_host: "0.0.0.0"
 
-# TCP configuration only used for connection between sparrow nodes
+# TCP configuration
 tcp_port: 9090
 tcp_host: "0.0.0.0"
 
@@ -18,8 +18,9 @@ max_cache_size: 31457280
 data_file_directory: data
 
 # ------------------------------ Max file sizes --------------------------------
-#max_datalog_size: 1000000
-#max_datalog_size: 1073741824
+# Max size in bytes for datalog, when it reaches the max size, datalog is
+# converted to dataholder, and is created an index file and blomfilter file
+# Default: 50MB
 max_datalog_size: 52428800
 
 # ------------------------------- Cluster nodes --------------------------------
@@ -28,3 +29,9 @@ nodes: []
 # ------------------------------- Bloom Filter ---------------------------------
 # Blommfilter false positive probability
 bloomfilter_fpp: 0.001
+
+# -------------------------------- Compaction ----------------------------------
+# Cron expression for dataholder compaction
+# Check: http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger
+# Default: Every tuesday and thursday, at 01:00:00
+dataholder_cron_compaction: "0 0 1 ? * TUE,THU *"
