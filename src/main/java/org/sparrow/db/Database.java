@@ -61,15 +61,14 @@ public class Database
 
         DataHolder.DataHolderFileManager.loadDataHolders(database.dataHolders, dbname);
 
-        /*if (dbname.equals("teste2")){
-            database.deleteData("key10154513336");
-        }*/
-
         return database;
     }
 
+
     public void close()
     {
+        cache.clear();
+        dataHolders.clear();
         dataLog.close();
     }
 
@@ -93,7 +92,11 @@ public class Database
         dataDefinition.setExtension(DataDefinition.Extension.PNG);
         dataDefinition.setState(DataDefinition.DataState.ACTIVE);
         dataDefinition.setBuffer(object.bufferForData().array());
+        insertData(dataDefinition);
+    }
 
+    public void insertData(DataDefinition dataDefinition)
+    {
         dataLog.add(dataDefinition);
     }
 

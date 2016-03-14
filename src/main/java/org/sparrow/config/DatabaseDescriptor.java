@@ -56,4 +56,24 @@ public class DatabaseDescriptor
     {
         return config.data_file_directory + System.getProperty("file.separator");
     }
+
+    public static String getDataFilePath(String ... paths)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append(config.data_file_directory);
+        sb.append(System.getProperty("file.separator"));
+        for (int i = 0; i < paths.length; i++)
+        {
+            sb.append(paths[i]);
+
+            if (i != paths.length)
+                sb.append(System.getProperty("file.separator"));
+        }
+        return sb.toString();
+    }
+
+    public static String getDataHolderCronCompaction()
+    {
+        return config.dataholder_cron_compaction;
+    }
 }

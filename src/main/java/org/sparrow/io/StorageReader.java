@@ -23,9 +23,14 @@ public class StorageReader implements IDataReader
 
     public static IDataReader open(String file)
     {
+        return open(new File(file));
+    }
+
+    public static IDataReader open(File file)
+    {
         try
         {
-            return new StorageReader(new File(file));
+            return new StorageReader(file);
         }
         catch (Exception e)
         {

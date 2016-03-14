@@ -5,6 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sparrow.config.DatabaseDescriptor;
 import org.sparrow.db.SparrowDatabase;
+import org.sparrow.db.compaction.CompactionManager;
+import org.sparrow.db.compaction.DataHolderCompact;
 import org.sparrow.net.NettyHttpServer;
 import org.sparrow.thrift.ThriftServer;
 import org.sparrow.util.SigarLib;
@@ -27,17 +29,8 @@ public class SparrowDaemon
     private static ThriftServer thriftServer;
     private static NettyHttpServer nettyHttpServer;
 
-    private static void setup()
+    private static void setupServerListener()
     {
-        logger.info("Loading configuration file...");
-        DatabaseDescriptor.loadConfiguration();
-        DatabaseDescriptor.checkDataDirectory();
-
-        logger.info("Node name: {}", DatabaseDescriptor.config.node_name);
-
-        logger.info("Loading databases...");
-        SparrowDatabase.instance.loadFromDisk();
-
         logger.info("Starting SparrowDb Thrift...");
         thriftServer = new ThriftServer(
                 DatabaseDescriptor.config.tcp_host,
@@ -47,8 +40,6 @@ public class SparrowDaemon
         nettyHttpServer = new NettyHttpServer(
                 DatabaseDescriptor.config.http_host,
                 DatabaseDescriptor.config.http_port);
-
-        logger.info("SparrowDb loaded !");
     }
 
     private static void startServers()
@@ -94,6 +85,20 @@ public class SparrowDaemon
         }
     }
 
+    public static void setupCompactionJobs()
+    {
+        /**
+         * Data holder compaction job. Rewrite data holders of each database
+         * without DataDefinition with "deleted" flag.
+         */
+        CompactionManager.instance.addJob(
+                "dataHolderCompaction",
+                DatabaseDescriptor.getDataHolderCronCompaction(),
+                DataHolderCompact.class);
+
+        CompactionManager.instance.startScheduler();
+    }
+
     public static void stop()
     {
         logger.info("Stoping SparrowDb...");
@@ -116,7 +121,22 @@ public class SparrowDaemon
         }
 
         writePidFile();
-        setup();
+
+        logger.info("Loading configuration file...");
+        DatabaseDescriptor.loadConfiguration();
+        DatabaseDescriptor.checkDataDirectory();
+
+        logger.info("Node name: {}", DatabaseDescriptor.config.node_name);
+
+        logger.info("Loading databases...");
+        SparrowDatabase.instance.loadFromDisk();
+
+        setupServerListener();
         startServers();
+
+        logger.info("Setting up compaction job...");
+        setupCompactionJobs();
+
+        logger.info("SparrowDb loaded !");
     }
 }

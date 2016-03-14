@@ -56,6 +56,7 @@ public class SparrowDatabase
         {
             logger.debug("Dropping database {}", dbname);
             database.close();
+            databases.remove(dbname);
             FileUtils.delete(new File(SPUtils.getDbPath(dbname)).getAbsolutePath());
             return true;
         }
@@ -70,6 +71,11 @@ public class SparrowDatabase
     public Set<String> getDatabases()
     {
         return databases.keySet();
+    }
+
+    public Map<String, Database> getDatabasesHolder()
+    {
+        return databases;
     }
 
     public void insert_data(DataObject object)
@@ -96,5 +102,21 @@ public class SparrowDatabase
     {
         Database database = getDatabase(dbname);
         return (database!=null) ? database.getDataWithImageByKey32(key) : null ;
+    }
+
+    public void loadDatabase(String dbname)
+    {
+        String path = DatabaseDescriptor.getDataFilePath(dbname);
+        Database database = Database.open(path);
+        databases.put(path, database);
+    }
+
+    public void closeDatabase(String dbname)
+    {
+        Database database = getDatabase(dbname);
+        if (database!=null)
+        {
+            database.close();
+        }
     }
 }

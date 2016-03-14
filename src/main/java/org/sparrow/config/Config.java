@@ -18,6 +18,7 @@ public class Config
     public Long max_datalog_size;
     public List<String> nodes;
     public Double bloomfilter_fpp;
+    public String dataholder_cron_compaction;
 
     public Config()
     {
@@ -31,5 +32,6 @@ public class Config
         max_datalog_size = 1073741824L;
         nodes = new LinkedList<String>();
         bloomfilter_fpp = 0.001;
+        dataholder_cron_compaction = "0 0 1 ? * TUE,FRI *";
     }
 }

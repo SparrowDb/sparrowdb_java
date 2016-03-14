@@ -1,6 +1,7 @@
 package org.sparrow.util;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -49,6 +50,23 @@ public class FileUtils
         {
             if (!directory.mkdirs())
                 throw new Exception("Failed to mkdirs " + directory);
+        }
+    }
+
+    public static void createFile(String file)
+    {
+        createFile(new File(file));
+    }
+
+    public static void createFile(File file)
+    {
+        try
+        {
+            file.createNewFile();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
         }
     }
 
@@ -135,10 +153,23 @@ public class FileUtils
         File[] directories = directory.listFiles();
         List<File> resultDirectories = new ArrayList<>();
 
-        assert directories != null;
         for (File file : directories)
         {
             if (file.isDirectory())
+                resultDirectories.add(file);
+        }
+
+        return resultDirectories.toArray(new File[resultDirectories.size()]);
+    }
+
+    public static File[] listFiles(File directory)
+    {
+        File[] directories = directory.listFiles();
+        List<File> resultDirectories = new ArrayList<>();
+
+        for (File file : directories)
+        {
+            if (file.isFile())
                 resultDirectories.add(file);
         }
 

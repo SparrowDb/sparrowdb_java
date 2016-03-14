@@ -32,4 +32,8 @@
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />
     </root>
+
+    <logger name="org.quartz" additivity="false">
+        <level value="ERROR"/>
+    </logger>
 </configuration>

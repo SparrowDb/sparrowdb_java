@@ -16,7 +16,7 @@ public class DataExtract
 {
     public static void main(String[] args) throws IOException
     {
-        IDataReader dataReader  = StorageReader.open("data/teste1/datalog.spw");
+        IDataReader dataReader  = StorageReader.open("data/teste1/data-holder-0.spw");
 
         long fileSize = dataReader.length();
         long currentSize = 0;
