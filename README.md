@@ -43,9 +43,11 @@ Creating a database:
 	
 	>>create database database_name;
 
-Clear database:
 
-	>>clear database_name;
+Sending an image to database:
+
+	>>insert into database_name (image_path_with_extension, image_key);
+
 
 Listing all images in database:
 
@@ -62,10 +64,6 @@ You also can use query like:
 	
 	>>select from database_name where key = image_key;
 
-	
-Sending an image to database:
-
-	>>insert into database_name (image_path_with_extension, image_key);
 
 Deleting image:
 
