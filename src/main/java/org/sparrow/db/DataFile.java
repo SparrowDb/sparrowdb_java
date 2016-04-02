@@ -21,10 +21,10 @@ abstract class DataFile
 {
     private static Logger logger = LoggerFactory.getLogger(DataFile.class);
 
-    protected String filename;
-    protected IDataWriter dataWriter;
-    protected IDataReader dataReader;
-    protected IndexSummary indexer = new IndexSummary();
+    String filename;
+    IDataWriter dataWriter;
+    IDataReader dataReader;
+    IndexSummary indexer = new IndexSummary();
 
     public DataDefinition get(String key)
     {

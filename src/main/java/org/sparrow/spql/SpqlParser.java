@@ -1,7 +1,6 @@
 package org.sparrow.spql;
 
 import org.slf4j.LoggerFactory;
-import org.sparrow.db.Database;
 import org.sparrow.db.SparrowDatabase;
 import org.sparrow.thrift.SpqlResult;
 
@@ -31,16 +30,15 @@ public class SpqlParser
 
             query_where_matcher = Pattern.compile(SPQL_QUERY_WHERE).matcher(query_select_matcher.group(2));
 
-            Database database = SparrowDatabase.instance.getDatabase(query_select_matcher.group(1));
-
-            if (database == null)
+            String dbname = query_select_matcher.group(1);
+            if (!SparrowDatabase.instance.databaseExists(dbname))
                 return null;
 
             if (query_where_matcher.matches())
             {
                 if (query_where_matcher.group(1).equals("key"))
                 {
-                    return database.queryDataWhereKey(query_where_matcher.group(2));
+                    return SpqlProcessor.queryDataWhereKey(dbname, query_where_matcher.group(2));
                 }
             }
             else
@@ -52,7 +50,7 @@ public class SpqlParser
                 }
                 else
                 {
-                    return database.queryDataAll();
+                    return SpqlProcessor.queryDataAll(dbname);
                 }
             }
         }

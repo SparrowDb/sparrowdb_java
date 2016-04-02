@@ -149,40 +149,8 @@ public class Database
         return true;
     }
 
-    public SpqlResult mapToSpqlResult(Set<DataDefinition> data)
+    public Set<DataHolder> getDataHolders()
     {
-        SpqlResult result = new SpqlResult();
-        for(DataDefinition dataDefinition : data)
-        {
-            DataObject dataObject = new DataObject();
-            dataObject.setDbname(dbname);
-            dataObject.setSize(dataDefinition.getSize());
-            dataObject.setTimestamp(dataDefinition.getTimestamp());
-            dataObject.setKey(dataDefinition.getKey());
-            dataObject.setState(dataDefinition.getState().ordinal());
-            result.addToRows(dataObject);
-        }
-        result.count = data.size();
-        return  result;
-    }
-
-    public SpqlResult queryDataWhereKey(String value)
-    {
-        DataDefinition dataDefinition = getDataWithImageByKey32(value);
-        SpqlResult result = new SpqlResult();
-        if (dataDefinition!=null)
-        {
-            result = mapToSpqlResult(new HashSet<DataDefinition>(){{
-                add(dataDefinition);
-            }});
-        }
-        return result;
-    }
-
-    public SpqlResult queryDataAll()
-    {
-        Set result = new LinkedHashSet<>();
-        dataHolders.forEach(x -> result.addAll(x.fetchAll()));
-        return mapToSpqlResult(result);
+        return dataHolders;
     }
 }
