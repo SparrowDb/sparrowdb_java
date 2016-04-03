@@ -16,6 +16,12 @@ if [[ "$1" == "build" ]]; then
 	eval mvn clean install
 fi
 
+if [[ "$1" == "client" ]]; then
+    SPARROW_JAR_CLIENT=$SPARROW_HOME/sparrow-client/target/sparrow-client-1.0.0.jar
+    SPARROW_CLASSPATH_CLIENT=$SPARROW_HOME/sparrow-client/target/lib/*
+	eval $JAVA_HOME/bin/java -cp "'$SPARROW_JAR_CLIENT:$SPARROW_CLASSPATH_CLIENT'" org.sparrow.client.SparrowClient
+fi
+
 if [[ "$1" == "start" || "$1" == "" ]]; then
 	exec_sparrow
 fi
