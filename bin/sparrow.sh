@@ -3,9 +3,9 @@
 export SPARROW_HOME=$(dirname $(dirname $(readlink -f "$0")))
 cd $SPARROW_HOME
 
-SPARROW_JAR=$SPARROW_HOME/target/sparrow-1.0-SNAPSHOT.jar
-SPARROW_CLASSPATH=$SPARROW_HOME/target/lib/*
-SIGAR_LIB=$SPARROW_HOME/sigar-bin
+SPARROW_JAR=$SPARROW_HOME/sparrow-server/target/sparrow-server-1.0.0.jar
+SPARROW_CLASSPATH=$SPARROW_HOME/sparrow-server/target/lib/*
+SIGAR_LIB=$SPARROW_HOME/sparrow-server/sigar-bin
 SPARROW_MAIN=org.sparrow.service.SparrowDaemon
 
 function exec_sparrow {
