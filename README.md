@@ -15,7 +15,6 @@ There is a corresponding data definition record followed by the image bytes for 
 Requirements
 ====================
 1. Java >= 1.8 (OpenJDK and Oracle JVMS have been tested)
-2. Python 2.7
 
 Getting started
 ====================
@@ -27,14 +26,13 @@ First, download Sparrow repository:
 * Go to Sparrow directory
 * Run: mvn clean install
 
-After that we start the server.  Running the startup script; it can be stopped with ctrl-C.
+After that we start the server. Running the startup script; it can be stopped with ctrl-C. Go to sparrowdb root directory.
 
-	$ cd bin
-	$ sparrow
+	$ bin/sparrow
 
 Running client.
 
-	$ python client.py
+	$ bin/sparrow client
 
 
 Using Sparrow
