@@ -26,6 +26,7 @@
         <module>sparrow-client</module>
         <module>sparrow-server</module>
         <module>sparrow-rpc</module>
+        <module>sparrow-tools</module>
     </modules>
 
     <dependencies>

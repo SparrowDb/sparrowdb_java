@@ -16,6 +16,7 @@ buildNumber.properties
 #Sparrow
 *.jpg
 *.png
+*.csv
 data/
 log/
 server.xml
