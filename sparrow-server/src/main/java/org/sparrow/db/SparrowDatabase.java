@@ -4,7 +4,7 @@ import org.cliffc.high_scale_lib.NonBlockingHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sparrow.config.DatabaseDescriptor;
-import org.sparrow.thrift.DataObject;
+import org.sparrow.rpc.DataObject;
 import org.sparrow.util.FileUtils;
 import org.sparrow.util.SPUtils;
 

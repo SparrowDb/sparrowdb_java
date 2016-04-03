@@ -4,8 +4,7 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sparrow.server.Client;
-import org.sparrow.thrift.DataObject;
-import org.sparrow.thrift.SparrowTransport;
+import org.sparrow.rpc.DataObject;
 
 import java.util.HashSet;
 import java.util.Set;

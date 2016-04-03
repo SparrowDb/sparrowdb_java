@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.sparrow.cache.CacheFactory;
 import org.sparrow.cache.ICache;
 import org.sparrow.config.DatabaseDescriptor;
-import org.sparrow.thrift.DataObject;
+import org.sparrow.rpc.DataObject;
 import org.sparrow.util.FileUtils;
 import org.sparrow.util.SPUtils;
 
