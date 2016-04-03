@@ -57,6 +57,7 @@ public class SparrowClient
 
             try
             {
+                System.out.print(">>");
                 line = buffer.readLine().trim();
                 processor.process(line);
             } catch (IOException e)
