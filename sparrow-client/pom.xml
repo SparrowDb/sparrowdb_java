@@ -11,5 +11,16 @@
 
     <artifactId>sparrow-client</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>io.airlift</groupId>
+            <artifactId>airline</artifactId>
+            <version>0.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.sparrow</groupId>
+            <artifactId>sparrow-rpc</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
 </project>
