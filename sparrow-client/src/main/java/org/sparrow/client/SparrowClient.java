@@ -52,7 +52,7 @@ public class SparrowClient
     {
         while(processor.isActive())
         {
-            BufferedReader buffer=new BufferedReader(new InputStreamReader(System.in));
+            BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
             String line;
 
             try
