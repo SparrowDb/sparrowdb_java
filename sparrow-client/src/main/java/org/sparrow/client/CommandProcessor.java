@@ -217,34 +217,6 @@ public class CommandProcessor
                     e.printStackTrace();
                 }
             }
-
-
-           /*ITER: pageResult.forEach(x -> {
-                x.stream().forEach(System.out::println);
-                try
-                {
-                    line[0] = buffer.readLine();
-                    if (line[0].trim().equals("."))
-                    {
-                        break ;
-                    }
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-            });*/
-
-            /*pageResult.stream().forEach(x -> {
-                try
-                {
-                    line[0] = buffer.readLine();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-            });*/
         }
         catch (TException e)
         {
