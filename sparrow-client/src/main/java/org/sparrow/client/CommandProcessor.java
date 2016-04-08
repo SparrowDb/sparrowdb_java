@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -174,6 +175,14 @@ public class CommandProcessor
         }
     }
 
+    public String getDateTime(long unixtime)
+    {
+        Date date = new Date((long)unixtime*1000);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return sdf.format(date);
+    }
+
     public void spqlQuery(String query)
     {
         try
@@ -185,7 +194,7 @@ public class CommandProcessor
             Iterable<List<DataObject>> pageResult = Lists.newArrayList(Iterables.partition(result.getRows(), 25));
             Iterator iter = pageResult.iterator();
 
-            System.out.format("%10s|%8s|%10s|%15s|%7s|%s",
+            System.out.format("%10s|%8s|%10s|%20s|%7s|%s",
                     "key",
                     "size",
                     "extension",
@@ -197,11 +206,11 @@ public class CommandProcessor
             {
                 List<DataObject> page = (List<DataObject>) iter.next();
 
-                page.stream().forEach(x -> System.out.format("%10s|%8s|%10s|%15s|%7s|%s",
+                page.stream().forEach(x -> System.out.format("%10s|%8s|%10s|%20s|%7s|%s",
                         x.getKey(),
                         x.getSize(),
                         x.getExtension(),
-                        x.getTimestamp(),
+                        getDateTime(x.getTimestamp()),
                         x.getState(),
                         System.getProperty("line.separator")));
                 try
