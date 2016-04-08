@@ -15,7 +15,7 @@ public class IndexExtract
 {
     public static void main(String[] args) throws IOException
     {
-        IDataReader dataReader  = StorageReader.open("data/teste2/index-0.spw");
+        IDataReader dataReader  = StorageReader.open("data/teste1/index-0.spw");
 
         long fileSize = dataReader.length();
         long currentSize = 0;

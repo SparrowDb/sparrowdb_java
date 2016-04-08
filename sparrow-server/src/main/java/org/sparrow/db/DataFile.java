@@ -1,16 +1,7 @@
 package org.sparrow.db;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.sparrow.io.DataInput;
-import org.sparrow.io.IDataReader;
-import org.sparrow.io.IDataWriter;
-import org.sparrow.io.StorageReader;
-import org.sparrow.serializer.DataDefinitionSerializer;
 import org.sparrow.util.SPUtils;
-import org.xerial.snappy.Snappy;
 
-import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
@@ -19,11 +10,8 @@ import java.util.stream.Collectors;
  */
 abstract class DataFile
 {
-    private static Logger logger = LoggerFactory.getLogger(DataFile.class);
-
+    OperableDataFile dataHolderProxy;
     String filename;
-    IDataWriter dataWriter;
-    IDataReader dataReader;
     IndexSummary indexer = new IndexSummary();
 
     public DataDefinition get(String key)
@@ -33,36 +21,8 @@ abstract class DataFile
 
     public DataDefinition get(int key32)
     {
-        DataDefinition dataDefinition = null;
         Long offset = indexer.get(key32);
-
-        if (offset == null)
-        {
-            return null;
-        }
-
-        IDataReader dataReader = StorageReader.open(this.filename);
-        byte[] dataCompressedBytes = DataInput.load(dataReader, offset);
-
-        if (dataCompressedBytes != null)
-        {
-            try
-            {
-                byte[] uncompressed = Snappy.uncompress(dataCompressedBytes);
-                dataDefinition = DataDefinitionSerializer.instance.deserialize(uncompressed, true);
-            }
-            catch (IOException e)
-            {
-                logger.error("Could not get data from DataHolder {}: {} ", filename, e.getMessage());
-            }
-        }
-
-        if (dataReader != null)
-        {
-            dataReader.close();
-        }
-
-        return dataDefinition;
+        return offset == null ? null : dataHolderProxy.getData(offset);
     }
 
     public LinkedHashSet<DataDefinition> fetchAll()
@@ -75,34 +35,23 @@ abstract class DataFile
         return filename;
     }
 
+    public void clear()
+    {
+        dataHolderProxy.truncate();
+    }
+
     public boolean isEmpty()
     {
-        return getSize() <= 0;
+        return dataHolderProxy.isEmpty();
     }
 
     public long getSize()
     {
-        return dataReader == null ? 0 : dataReader.length();
-    }
-
-    public void clear()
-    {
-        if (dataWriter != null)
-        {
-            dataWriter.truncate(0);
-        }
+        return dataHolderProxy.getSize();
     }
 
     public void close()
     {
-        if (dataWriter != null)
-        {
-            dataWriter.close();
-        }
-
-        if (dataReader != null)
-        {
-            dataReader.close();
-        }
+        dataHolderProxy.close();
     }
 }

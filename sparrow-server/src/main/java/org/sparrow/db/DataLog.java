@@ -3,10 +3,7 @@ package org.sparrow.db;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sparrow.config.DatabaseDescriptor;
-import org.sparrow.io.*;
-import org.sparrow.serializer.DataDefinitionSerializer;
 import org.sparrow.util.SPUtils;
-import org.xerial.snappy.Snappy;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,24 +32,16 @@ public final class DataLog extends DataFile
         this.dbname = dbname;
         this.filename = filename;
         this.dataHolders = dataHolders;
-        dataWriter = StorageWriter.open(filename);
-        dataReader = StorageReader.open(filename);
+        dataHolderProxy = new DataHolderProxy(filename);
     }
 
     private void append(DataDefinition dataDefinition)
     {
-        dataDefinition.setOffset(dataWriter.length());
-        logger.debug("Writing data: {}", DataDefinitionSerializer.instance.toString(dataDefinition));
-        try
-        {
-            byte[] serializedData = DataDefinitionSerializer.instance.serialize(dataDefinition);
-            byte[] compressed = Snappy.compress(serializedData);
-            DataOutput.save(dataWriter, compressed);
+        try {
+            dataHolderProxy.append(dataDefinition);
             currentSize += dataDefinition.getSize();
             indexer.put(dataDefinition.getKey32(), dataDefinition.getOffset());
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             logger.error("Could not append data to DataLog {}: {} ", filename, e.getMessage());
         }
     }
@@ -77,9 +66,9 @@ public final class DataLog extends DataFile
 
     public void flush()
     {
-        String nextFileName = SPUtils.getDbPath(dbname, DataHolder.DataHolderFileManager.getNextFilename(dbname));
+        String nextFileName = SPUtils.getDbPath(dbname, DataHolderFileManager.getNextFilename(dbname));
         logger.debug("Flushing data into {}", nextFileName);
-        close();
+        dataHolderProxy.close();
 
         if (new File(filename).renameTo(new File(nextFileName)))
         {
@@ -94,8 +83,7 @@ public final class DataLog extends DataFile
             this.indexer.clear();
 
             currentSize = 0;
-            dataWriter = StorageWriter.open(filename);
-            dataReader = StorageReader.open(filename);
+            dataHolderProxy.open(filename);
         }
 
         logger.debug("-------------- End flushing");
@@ -103,29 +91,8 @@ public final class DataLog extends DataFile
 
     public void load()
     {
-        long fileSize = dataReader.length();
-
-        while (currentSize < fileSize)
-        {
-            byte[] dataCompressedBytes = DataInput.load(dataReader, currentSize);
-            byte[] uncompressed = null;
-            DataDefinition dataDefinition = null;
-
-            try
-            {
-                uncompressed = Snappy.uncompress(dataCompressedBytes);
-                dataDefinition = DataDefinitionSerializer.instance.deserialize(uncompressed, true);
-            }
-            catch (IOException e)
-            {
-                logger.warn("{} Dataholder {} is corrupted size {}, truncating file...", dbname, filename, fileSize);
-                dataWriter.truncate(0);
-                break;
-            }
-
+        dataHolderProxy.iterateDataHolder((dataDefinition, bytesRead) -> {
             indexer.put(dataDefinition.getKey32(), dataDefinition.getOffset());
-            currentSize += (dataCompressedBytes.length + 4);
-        }
+        });
     }
-
 }
