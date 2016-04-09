@@ -49,4 +49,9 @@ public class SpqlProcessor {
         SparrowDatabase.instance.getDatabase(dbname).getDataHolders().forEach(x -> result.addAll(x.fetchAll()));
         return mapToSpqlResult(dbname, result);
     }
+
+    public static long queryCount(String dbname)
+    {
+        return SparrowDatabase.instance.getDatabase(dbname).countData();
+    }
 }

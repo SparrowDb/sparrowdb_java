@@ -54,4 +54,9 @@ abstract class DataFile
     {
         dataHolderProxy.close();
     }
+
+    public int count()
+    {
+        return indexer.size();
+    }
 }

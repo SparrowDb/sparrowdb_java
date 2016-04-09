@@ -9,6 +9,7 @@ import org.sparrow.db.compaction.CompactionManager;
 import org.sparrow.db.compaction.DataHolderCompact;
 import org.sparrow.net.NettyHttpServer;
 import org.sparrow.server.ThriftServer;
+import org.sparrow.spql.SpqlProcessor;
 import org.sparrow.util.SigarLib;
 
 import java.io.BufferedWriter;

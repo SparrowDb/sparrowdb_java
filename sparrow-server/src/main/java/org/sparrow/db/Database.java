@@ -156,4 +156,18 @@ public class Database
     {
         return dataHolders;
     }
+
+    public long countData()
+    {
+        long count = 0;
+
+        count += dataLog.count();
+
+        for (DataHolder dh : dataHolders)
+        {
+            count += dh.count();
+        }
+
+        return count;
+    }
 }
