@@ -136,8 +136,6 @@ public class Database
 
     public boolean deleteData(String dataKey)
     {
-        boolean isDataInCache = cache.containsKey(dataKey);
-
         DataDefinition dataDefinition = getDataWithImageByKey32(dataKey);
 
         if (dataDefinition == null)
