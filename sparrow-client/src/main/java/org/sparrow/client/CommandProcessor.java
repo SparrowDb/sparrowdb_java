@@ -191,8 +191,13 @@ public class CommandProcessor
             final String[] line = new String[1];
             SpqlResult result = client.spql_query(query);
 
-            Iterable<List<DataObject>> pageResult = Lists.newArrayList(Iterables.partition(result.getRows(), 25));
-            Iterator iter = pageResult.iterator();
+            if (!result.isSetRows())
+            {
+                System.out.format("%10s%s",
+                        "Empty query",
+                        System.getProperty("line.separator"));
+                return;
+            }
 
             System.out.format("%10s|%8s|%10s|%20s|%7s|%s",
                     "key",
@@ -201,6 +206,10 @@ public class CommandProcessor
                     "timestamp",
                     "state",
                     System.getProperty("line.separator"));
+
+
+            Iterable<List<DataObject>> pageResult = Lists.newArrayList(Iterables.partition(result.getRows(), 25));
+            Iterator iter = pageResult.iterator();
 
             while(iter.hasNext())
             {
