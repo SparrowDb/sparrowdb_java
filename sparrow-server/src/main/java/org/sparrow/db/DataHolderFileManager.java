@@ -6,7 +6,8 @@ import org.sparrow.util.FileUtils;
 import org.sparrow.util.SPUtils;
 
 import java.io.File;
-import java.util.Set;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by mauricio on 4/7/16.
@@ -15,7 +16,15 @@ public class DataHolderFileManager
 {
     private static Logger logger = LoggerFactory.getLogger(DataHolderFileManager.class);
 
-    private static boolean isValidDataHolder(String filename)
+    public static List<File> getDataHolders(String dbname)
+    {
+        return FileUtils.listFiles(new File(SPUtils.getDbPath(dbname)))
+                .stream()
+                .filter(x -> x.getName().startsWith("data-holder-"))
+                .collect(Collectors.toList());
+    }
+
+    public static boolean isValidDataHolder(String filename)
     {
         if (!FileUtils.fileExists(filename.replace("data-holder", "index")))
         {
@@ -30,69 +39,9 @@ public class DataHolderFileManager
         return true;
     }
 
-    public static void loadDataHolders(Set<DataHolder> collection, String dbname)
+    public static String getNextDataHolderName(String dbname)
     {
-        int filecount = 0;
-        String filename;
-        File file;
-
-        while (true)
-        {
-            filename = SPUtils.getDbPath(dbname, String.format("data-holder-%d.spw", filecount));
-            file = new File(filename);
-            if (file.exists())
-            {
-                if (isValidDataHolder(filename))
-                {
-                    collection.add(DataHolder.open(filename));
-                }
-            } else
-            {
-                break;
-            }
-            filecount++;
-        }
-    }
-
-    public static String getLastFilename(String dbname)
-    {
-        int filecount = 0;
-        String filename;
-
-        while (true)
-        {
-            filename = SPUtils.getDbPath(dbname, String.format("data-holder-%d.spw", filecount));
-            File file = new File(filename);
-            if (file.exists())
-            {
-                int next = filecount + 1;
-                File nextFile = new File(SPUtils.getDbPath(dbname, String.format("data-holder-%d.spw", next)));
-                if (!nextFile.exists() && file.exists())
-                {
-                    return file.getName();
-                }
-            } else
-            {
-                return file.getName();
-            }
-            filecount++;
-        }
-    }
-
-    public static String getNextFilename(String dbname)
-    {
-        int filecount = 0;
-        String filename;
-
-        while (true)
-        {
-            filename = SPUtils.getDbPath(dbname, String.format("data-holder-%d.spw", filecount));
-            File file = new File(filename);
-            if (!file.exists())
-            {
-                return file.getName();
-            }
-            filecount++;
-        }
+        List<File> dataHolders = DataHolderFileManager.getDataHolders(dbname);
+        return String.format("data-holder-%d.spw", dataHolders.size());
     }
 }

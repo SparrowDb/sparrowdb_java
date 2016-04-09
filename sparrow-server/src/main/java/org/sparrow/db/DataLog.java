@@ -66,9 +66,8 @@ public final class DataLog extends DataFile
 
     public void flush()
     {
-        String nextFileName = SPUtils.getDbPath(dbname, DataHolderFileManager.getNextFilename(dbname));
+        String nextFileName = SPUtils.getDbPath(dbname, DataHolderFileManager.getNextDataHolderName(dbname));
         logger.debug("Flushing data into {}", nextFileName);
-        dataHolderProxy.close();
 
         if (new File(filename).renameTo(new File(nextFileName)))
         {

@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by mauricio on 04/10/2015.
@@ -162,18 +164,18 @@ public class FileUtils
         return resultDirectories.toArray(new File[resultDirectories.size()]);
     }
 
-    public static File[] listFiles(File directory)
+    public static List<File> listFiles(File directory)
     {
         File[] directories = directory.listFiles();
-        List<File> resultDirectories = new ArrayList<>();
+        List<File> result = new ArrayList<>();
 
-        for (File file : directories)
-        {
-            if (file.isFile())
-                resultDirectories.add(file);
+        if (directory.exists()) {
+            result.addAll(Arrays.stream(directories)
+                    .filter(File::isFile)
+                    .collect(Collectors.toList()));
         }
 
-        return resultDirectories.toArray(new File[resultDirectories.size()]);
+        return result;
     }
 
     public static long folderSize(File directory)

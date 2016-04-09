@@ -57,7 +57,14 @@ public class Database
             database.dataLog.load();
         }
 
-        DataHolderFileManager.loadDataHolders(database.dataHolders, dbname);
+        DataHolderFileManager.getDataHolders(dbname)
+                .stream()
+                .forEach(x -> {
+                    if (DataHolderFileManager.isValidDataHolder(x.getAbsolutePath()))
+                    {
+                        database.dataHolders.add(DataHolder.open(x.getAbsolutePath()));
+                    }
+                });
 
         return database;
     }
