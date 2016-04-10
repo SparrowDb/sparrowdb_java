@@ -8,6 +8,7 @@ import org.sparrow.protocol.SparrowTransport;
 import org.sparrow.protocol.SpqlResult;
 import org.sparrow.spql.SpqlParser;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,6 +19,17 @@ import java.util.Locale;
  */
 public class TServerTransportHandler implements SparrowTransport.Iface
 {
+    private InetAddress address;
+
+    public TServerTransportHandler()
+    {
+    }
+
+    public TServerTransportHandler(InetAddress address)
+    {
+        this.address = address;
+    }
+
     @Override
     public String authenticate(String username, String password) throws TException
     {

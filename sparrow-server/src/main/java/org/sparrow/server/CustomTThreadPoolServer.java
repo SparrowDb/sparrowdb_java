@@ -1,5 +1,6 @@
 package org.sparrow.server;
 
+import org.apache.thrift.TProcessor;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
@@ -20,21 +21,19 @@ public class CustomTThreadPoolServer extends TThreadPoolServer
 
     public static class Builder
     {
-        public static TServer build(InetSocketAddress address, SparrowTransport.Iface handler)
+        public static TServer build(InetSocketAddress address)
         {
             TServerSocket serverTransport;
             TThreadPoolServer.Args args;
-            SparrowTransport.Processor processor;
 
             try
             {
-                processor =  new SparrowTransport.Processor(handler);
                 serverTransport = new TServerSocket(address);
                 args = new TThreadPoolServer.Args(serverTransport);
-                args.processor(processor);
+                args.processor(new TCustomProcessor());
                 return new TThreadPoolServer(args);
-
-            } catch (TTransportException e)
+            }
+            catch (TTransportException e)
             {
                 e.printStackTrace();
             }
