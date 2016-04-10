@@ -14,7 +14,7 @@ import java.io.InputStreamReader;
 /**
  * Created by mauricio on 4/2/16.
  */
-@Command(name = "client", description = "network test utility")
+@Command(name = "client", description = "SparrowDb client")
 public class SparrowClient
 {
     private static Logger logger = LoggerFactory.getLogger(SparrowClient.class);
@@ -22,10 +22,10 @@ public class SparrowClient
     @Inject
     public HelpOption helpOption;
 
-    @Option(name = {"-r", "--host"}, description = "Node hostname or ip address")
+    @Option(name = {"-r", "--host"}, description = "Server ip address")
     public String host = "127.0.0.1";
 
-    @Option(name = {"-p", "--port"}, description = "Remote jmx agent port number")
+    @Option(name = {"-p", "--port"}, description = "Server port number")
     public String port = "9090";
 
     private static CommandProcessor processor = new CommandProcessor();
