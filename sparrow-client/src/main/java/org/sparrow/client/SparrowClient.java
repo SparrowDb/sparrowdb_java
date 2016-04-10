@@ -2,6 +2,8 @@ package org.sparrow.client;
 
 import io.airlift.airline.*;
 import org.apache.thrift.transport.TTransportException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.BufferedReader;
@@ -15,14 +17,16 @@ import java.io.InputStreamReader;
 @Command(name = "client", description = "network test utility")
 public class SparrowClient
 {
+    private static Logger logger = LoggerFactory.getLogger(SparrowClient.class);
+
     @Inject
     public HelpOption helpOption;
 
-    @Option(type = OptionType.GLOBAL, name = {"-h", "--host"}, description = "Node hostname or ip address")
-    private static String host = "127.0.0.1";
+    @Option(name = {"-r", "--host"}, description = "Node hostname or ip address")
+    public String host = "127.0.0.1";
 
-    @Option(type = OptionType.GLOBAL, name = {"-p", "--port"}, description = "Remote jmx agent port number")
-    private static String port = "9090";
+    @Option(name = {"-p", "--port"}, description = "Remote jmx agent port number")
+    public String port = "9090";
 
     private static CommandProcessor processor = new CommandProcessor();
 
@@ -36,16 +40,21 @@ public class SparrowClient
             return;
         }
 
+        client.start();
+    }
+
+    public void start()
+    {
         try
         {
             processor.connect(host, port);
         }
         catch (TTransportException e)
         {
-            e.printStackTrace();
+            logger.error("Could not connect to {}:{} caused: {}", host, port, e.getCause());
         }
 
-        client.run();
+        this.run();
     }
 
     public void run()
