@@ -7,6 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.sparrow.util.FileUtils;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Created by mauricio on 24/12/2015.
@@ -15,6 +19,7 @@ public class DatabaseDescriptor
 {
     private static Logger logger = LoggerFactory.getLogger(DatabaseDescriptor.class);
     private static final String DEFAULT_SERVER_CONFIG_FILE = "sparrow.yml";
+    private static final String DEFAULT_TRIGGER_DIR = "trigger";
     public static Config config;
 
     static {
@@ -75,5 +80,12 @@ public class DatabaseDescriptor
     public static String getDataHolderCronCompaction()
     {
         return config.dataholder_cron_compaction;
+    }
+
+    public static List<File> filterDatabasesDir(File dataDir)
+    {
+        return Arrays.stream(FileUtils.listSubdirectories(dataDir))
+                .filter(x->!x.getName().equals(DEFAULT_TRIGGER_DIR))
+                .collect(Collectors.toList());
     }
 }

@@ -90,8 +90,7 @@ public class SparrowDatabase
 
     public void loadFromDisk()
     {
-        Arrays.stream(FileUtils.listSubdirectories(new File(DatabaseDescriptor.getDataFilePath())))
-                .filter(x->!x.getName().equals("trigger"))
+        DatabaseDescriptor.filterDatabasesDir(new File(DatabaseDescriptor.getDataFilePath()))
                 .forEach(x -> {
                     Database database = Database.open(x.getName());
                     databases.put(x.getName(), database);
