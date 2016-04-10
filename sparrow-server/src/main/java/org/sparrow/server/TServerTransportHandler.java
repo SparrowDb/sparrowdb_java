@@ -3,10 +3,10 @@ package org.sparrow.server;
 import org.apache.thrift.TException;
 import org.sparrow.config.DatabaseDescriptor;
 import org.sparrow.db.SparrowDatabase;
+import org.sparrow.protocol.DataObject;
+import org.sparrow.protocol.SparrowTransport;
+import org.sparrow.protocol.SpqlResult;
 import org.sparrow.spql.SpqlParser;
-import org.sparrow.rpc.DataObject;
-import org.sparrow.rpc.SparrowTransport;
-import org.sparrow.rpc.SpqlResult;
 
 import java.util.ArrayList;
 import java.util.Collections;

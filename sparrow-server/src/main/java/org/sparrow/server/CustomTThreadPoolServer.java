@@ -4,7 +4,7 @@ import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TTransportException;
-import org.sparrow.rpc.SparrowTransport;
+import org.sparrow.protocol.SparrowTransport;
 
 import java.net.InetSocketAddress;
 

@@ -1,5 +1,8 @@
 package org.sparrow.db;
 
+import org.sparrow.common.DataDefinition;
+import org.sparrow.common.DataDefinitionIterator;
+
 import java.io.IOException;
 
 /**

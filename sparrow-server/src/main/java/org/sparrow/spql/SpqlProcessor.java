@@ -1,9 +1,9 @@
 package org.sparrow.spql;
 
-import org.sparrow.db.DataDefinition;
+import org.sparrow.common.DataDefinition;
 import org.sparrow.db.SparrowDatabase;
-import org.sparrow.rpc.DataObject;
-import org.sparrow.rpc.SpqlResult;
+import org.sparrow.protocol.DataObject;
+import org.sparrow.protocol.SpqlResult;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;

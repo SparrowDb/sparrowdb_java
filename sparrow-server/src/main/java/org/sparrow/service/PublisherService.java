@@ -3,8 +3,8 @@ package org.sparrow.service;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sparrow.protocol.DataObject;
 import org.sparrow.server.Client;
-import org.sparrow.rpc.DataObject;
 
 import java.util.HashSet;
 import java.util.Set;

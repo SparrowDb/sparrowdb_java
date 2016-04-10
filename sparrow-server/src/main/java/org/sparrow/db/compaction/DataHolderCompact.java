@@ -5,15 +5,15 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sparrow.common.DataDefinition;
+import org.sparrow.common.io.DataInput;
+import org.sparrow.common.io.IDataReader;
+import org.sparrow.common.io.StorageReader;
+import org.sparrow.common.serializer.DataDefinitionSerializer;
+import org.sparrow.common.util.FileUtils;
 import org.sparrow.config.DatabaseDescriptor;
-import org.sparrow.db.DataDefinition;
-import org.sparrow.db.DataHolderFileManager;
+import org.sparrow.db.DataFileManager;
 import org.sparrow.db.SparrowDatabase;
-import org.sparrow.io.DataInput;
-import org.sparrow.io.IDataReader;
-import org.sparrow.io.StorageReader;
-import org.sparrow.serializer.DataDefinitionSerializer;
-import org.sparrow.util.FileUtils;
 import org.xerial.snappy.Snappy;
 
 import java.io.File;
@@ -79,7 +79,7 @@ public class DataHolderCompact implements Job
             e.printStackTrace();
         }
 
-        DataHolderFileManager.getDataHolders(dbname)
+        DataFileManager.getDataHolders(dbname)
                 .stream()
                 .forEach(x -> {
                     File newFile = new File(DatabaseDescriptor.getDataFilePath("temp", x.getName() + ".tmp"));
@@ -90,13 +90,13 @@ public class DataHolderCompact implements Job
 
 
         Set<String> dirtyKeys = new LinkedHashSet<>();
-        DataHolderFileManager.getDataHolders("temp")
+        DataFileManager.getDataHolders("temp")
                 .stream()
                 .forEach(x -> {
                     getDataHolderDirty(dbname, x, dirtyKeys);
                 });
 
-        DataHolderFileManager.getDataHolders("temp")
+        DataFileManager.getDataHolders("temp")
                 .stream()
                 .forEach(x -> {
                         try

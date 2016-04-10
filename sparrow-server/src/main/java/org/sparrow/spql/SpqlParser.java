@@ -2,7 +2,7 @@ package org.sparrow.spql;
 
 import org.slf4j.LoggerFactory;
 import org.sparrow.db.SparrowDatabase;
-import org.sparrow.rpc.SpqlResult;
+import org.sparrow.protocol.SpqlResult;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

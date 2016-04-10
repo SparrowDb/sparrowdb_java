@@ -2,18 +2,15 @@ package org.sparrow.db;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sparrow.common.io.*;
+import org.sparrow.common.serializer.IndexSeralizer;
+import org.sparrow.common.util.BloomFilter;
+import org.sparrow.common.util.SPUtils;
 import org.sparrow.config.DatabaseDescriptor;
-import org.sparrow.io.*;
-import org.sparrow.serializer.IndexSeralizer;
-import org.sparrow.util.BloomFilter;
-import org.sparrow.util.FileUtils;
-import org.sparrow.util.SPUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by mauricio on 07/01/2016.

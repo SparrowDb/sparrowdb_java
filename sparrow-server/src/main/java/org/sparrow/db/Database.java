@@ -4,10 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sparrow.cache.CacheFactory;
 import org.sparrow.cache.ICache;
+import org.sparrow.common.DataDefinition;
+import org.sparrow.common.Tombstone;
+import org.sparrow.common.util.FileUtils;
+import org.sparrow.common.util.SPUtils;
 import org.sparrow.config.DatabaseDescriptor;
-import org.sparrow.rpc.DataObject;
-import org.sparrow.util.FileUtils;
-import org.sparrow.util.SPUtils;
+import org.sparrow.protocol.DataObject;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -29,7 +31,7 @@ public class Database
     {
         this.dbname = dbname;
         dataHolders = new LinkedHashSet<>();
-        dataLog = new DataLog(dbname, dataHolders, SPUtils.getDbPath(dbname, "datalog", FILENAME_EXTENSION));
+        dataLog = new DataLog(dbname, dataHolders, DataFileManager.getDbPath(dbname, "datalog", FILENAME_EXTENSION));
     }
 
     public static Database build(String dbname)
@@ -57,10 +59,10 @@ public class Database
             database.dataLog.load();
         }
 
-        DataHolderFileManager.getDataHolders(dbname)
+        DataFileManager.getDataHolders(dbname)
                 .stream()
                 .forEach(x -> {
-                    if (DataHolderFileManager.isValidDataHolder(x.getAbsolutePath()))
+                    if (DataFileManager.isValidDataHolder(x.getAbsolutePath()))
                     {
                         database.dataHolders.add(DataHolder.open(x.getAbsolutePath()));
                     }

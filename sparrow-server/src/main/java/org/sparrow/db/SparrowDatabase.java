@@ -3,13 +3,12 @@ package org.sparrow.db;
 import org.cliffc.high_scale_lib.NonBlockingHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sparrow.common.DataDefinition;
+import org.sparrow.common.util.FileUtils;
 import org.sparrow.config.DatabaseDescriptor;
-import org.sparrow.rpc.DataObject;
-import org.sparrow.util.FileUtils;
-import org.sparrow.util.SPUtils;
+import org.sparrow.protocol.DataObject;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
@@ -57,7 +56,7 @@ public class SparrowDatabase
             logger.debug("Dropping database {}", dbname);
             database.close();
             databases.remove(dbname);
-            FileUtils.delete(new File(SPUtils.getDbPath(dbname)).getAbsolutePath());
+            FileUtils.delete(new File(DataFileManager.getDbPath(dbname)).getAbsolutePath());
             return true;
         }
         return false;

@@ -1,11 +1,14 @@
 package org.sparrow.tool;
 
-import io.airlift.airline.*;
-import org.sparrow.db.DataDefinition;
-import org.sparrow.io.DataInput;
-import org.sparrow.io.IDataReader;
-import org.sparrow.io.StorageReader;
-import org.sparrow.serializer.DataDefinitionSerializer;
+import io.airlift.airline.Arguments;
+import io.airlift.airline.Cli;
+import io.airlift.airline.Command;
+import io.airlift.airline.Help;
+import org.sparrow.common.DataDefinitionIterator;
+import org.sparrow.common.io.DataInput;
+import org.sparrow.common.io.IDataReader;
+import org.sparrow.common.io.StorageReader;
+import org.sparrow.common.serializer.DataDefinitionSerializer;
 import org.xerial.snappy.Snappy;
 
 import java.io.File;
@@ -37,12 +40,7 @@ public class SparrowTool
         @Arguments(description = "CSV params")
         public List<String> patterns;
 
-        @FunctionalInterface
-        interface DataDefinitionProcess{
-            void apply(DataDefinition dataDefinition);
-        }
-
-        public void iterateDataHolder(File dataHolder, DataDefinitionProcess dataDefinitionProcess) throws IOException
+        public void iterateDataHolder(File dataHolder, DataDefinitionIterator dataDefinitionProcess) throws IOException
         {
             IDataReader dataReader  = StorageReader.open(dataHolder);
 
@@ -53,8 +51,8 @@ public class SparrowTool
             {
                 byte[] dataCompressedBytes = DataInput.load(dataReader, currentSize);
                 byte[] uncompressed = Snappy.uncompress(dataCompressedBytes);
-                dataDefinitionProcess.apply(DataDefinitionSerializer.instance.deserialize(uncompressed, true));
                 currentSize += (dataCompressedBytes.length + 4);
+                dataDefinitionProcess.get(DataDefinitionSerializer.instance.deserialize(uncompressed, true), currentSize);
             }
             dataReader.close();
         }
@@ -76,7 +74,7 @@ public class SparrowTool
                 if (patterns.size() == 1)
                 {
                     System.out.print(headerLine);
-                    iterateDataHolder(new File(patterns.get(0)), (x) -> {
+                    iterateDataHolder(new File(patterns.get(0)), (x, c) -> {
                         String line = String.format("%s,%s,%s,%s,%s",
                                 x.getKey(),
                                 x.getSize(),
@@ -95,7 +93,7 @@ public class SparrowTool
                     printWriter = new PrintWriter(new FileOutputStream(out, true));
                     printWriter.write(headerLine);
 
-                    iterateDataHolder(new File(patterns.get(0)), (x) -> {
+                    iterateDataHolder(new File(patterns.get(0)), (x, c) -> {
                         String line = String.format("%s,%s,%s,%s,%s,%s",
                                 x.getKey(),
                                 x.getSize(),

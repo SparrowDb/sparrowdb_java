@@ -2,8 +2,8 @@ package org.sparrow.db;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sparrow.common.DataDefinition;
 import org.sparrow.config.DatabaseDescriptor;
-import org.sparrow.util.SPUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,7 +66,7 @@ public final class DataLog extends DataFile
 
     public void flush()
     {
-        String nextFileName = SPUtils.getDbPath(dbname, DataHolderFileManager.getNextDataHolderName(dbname));
+        String nextFileName = DataFileManager.getDbPath(dbname, DataFileManager.getNextDataHolderName(dbname));
         logger.debug("Flushing data into {}", nextFileName);
 
         if (new File(filename).renameTo(new File(nextFileName)))

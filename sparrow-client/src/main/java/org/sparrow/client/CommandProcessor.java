@@ -8,9 +8,9 @@ import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
-import org.sparrow.rpc.DataObject;
-import org.sparrow.rpc.SparrowTransport;
-import org.sparrow.rpc.SpqlResult;
+import org.sparrow.protocol.DataObject;
+import org.sparrow.protocol.SparrowTransport;
+import org.sparrow.protocol.SpqlResult;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -2,8 +2,10 @@ package org.sparrow.db;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sparrow.io.*;
-import org.sparrow.serializer.DataDefinitionSerializer;
+import org.sparrow.common.DataDefinition;
+import org.sparrow.common.DataDefinitionIterator;
+import org.sparrow.common.io.*;
+import org.sparrow.common.serializer.DataDefinitionSerializer;
 import org.xerial.snappy.Snappy;
 
 import java.io.IOException;

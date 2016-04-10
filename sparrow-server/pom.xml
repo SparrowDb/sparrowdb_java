@@ -102,12 +102,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.fusesource</groupId>
-            <artifactId>sigar</artifactId>
-            <version>1.6.4</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
             <version>2.1.5</version>
@@ -115,7 +109,13 @@
 
         <dependency>
             <groupId>org.sparrow</groupId>
-            <artifactId>sparrow-rpc</artifactId>
+            <artifactId>sparrow-protocol</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.sparrow</groupId>
+            <artifactId>sparrow-common</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>

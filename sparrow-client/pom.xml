@@ -19,7 +19,12 @@
         </dependency>
         <dependency>
             <groupId>org.sparrow</groupId>
-            <artifactId>sparrow-rpc</artifactId>
+            <artifactId>sparrow-protocol</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.sparrow</groupId>
+            <artifactId>sparrow-protocol</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>

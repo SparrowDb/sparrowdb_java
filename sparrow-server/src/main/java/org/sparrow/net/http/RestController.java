@@ -3,7 +3,7 @@ package org.sparrow.net.http;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import org.sparrow.db.DataDefinition;
+import org.sparrow.common.DataDefinition;
 import org.sparrow.db.SparrowDatabase;
 
 import java.util.regex.Matcher;

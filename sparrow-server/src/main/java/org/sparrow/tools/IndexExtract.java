@@ -1,9 +1,9 @@
 package org.sparrow.tools;
 
-import org.sparrow.io.DataInput;
-import org.sparrow.io.IDataReader;
-import org.sparrow.io.StorageReader;
-import org.sparrow.serializer.IndexSeralizer;
+import org.sparrow.common.io.DataInput;
+import org.sparrow.common.io.IDataReader;
+import org.sparrow.common.io.StorageReader;
+import org.sparrow.common.serializer.IndexSeralizer;
 
 import java.io.IOException;
 import java.util.Map;

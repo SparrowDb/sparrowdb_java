@@ -1,10 +1,10 @@
 package org.sparrow.tools;
 
-import org.sparrow.db.DataDefinition;
-import org.sparrow.io.DataInput;
-import org.sparrow.io.IDataReader;
-import org.sparrow.io.StorageReader;
-import org.sparrow.serializer.DataDefinitionSerializer;
+import org.sparrow.common.DataDefinition;
+import org.sparrow.common.io.DataInput;
+import org.sparrow.common.io.IDataReader;
+import org.sparrow.common.io.StorageReader;
+import org.sparrow.common.serializer.DataDefinitionSerializer;
 import org.xerial.snappy.Snappy;
 
 import java.io.IOException;
@@ -16,7 +16,8 @@ public class DataExtract
 {
     public static void main(String[] args) throws IOException
     {
-        IDataReader dataReader  = StorageReader.open("data/teste1/data-holder-0.spw");
+        IDataReader dataReader;
+        dataReader = StorageReader.open("data/teste1/data-holder-0.spw");
 
         long fileSize = dataReader.length();
         long currentSize = 0;
