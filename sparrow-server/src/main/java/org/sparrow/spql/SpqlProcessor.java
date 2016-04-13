@@ -46,6 +46,7 @@ public class SpqlProcessor {
     public static SpqlResult queryDataAll(String dbname)
     {
         Set result = new LinkedHashSet<>();
+        result.addAll(SparrowDatabase.instance.getDatabase(dbname).getDataLog().fetchAll());
         SparrowDatabase.instance.getDatabase(dbname).getDataHolders().forEach(x -> result.addAll(x.fetchAll()));
         return mapToSpqlResult(dbname, result);
     }

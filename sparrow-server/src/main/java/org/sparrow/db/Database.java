@@ -159,6 +159,11 @@ public class Database
         return dataHolders;
     }
 
+    public DataLog getDataLog()
+    {
+        return dataLog;
+    }
+
     public long countData()
     {
         long count = 0;
