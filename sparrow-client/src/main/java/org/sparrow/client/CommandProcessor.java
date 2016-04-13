@@ -155,23 +155,27 @@ public class CommandProcessor
 
     public void insertData(String path, String dbname, String key)
     {
-        try
+        File file = new File(path);
+        if (file.exists())
         {
-            byte[] bytes = Files.readAllBytes(new File(path).toPath());
-            DataObject dataObject = new DataObject();
-            dataObject.setDbname(dbname);
-            dataObject.setKey(key);
-            dataObject.setData(bytes);
-            client.insert_data(dataObject);
-            bytes = null;
+            try
+            {
+                byte[] bytes = Files.readAllBytes(file.toPath());
+                DataObject dataObject = new DataObject();
+                dataObject.setDbname(dbname);
+                dataObject.setKey(key);
+                dataObject.setData(bytes);
+                client.insert_data(dataObject);
+                bytes = null;
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
-        catch (IOException e)
+        else
         {
-            e.printStackTrace();
-        }
-        catch (TException e)
-        {
-            e.printStackTrace();
+            System.out.println("Could not load file: " + file.getAbsolutePath());
         }
     }
 
