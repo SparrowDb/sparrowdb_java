@@ -11,9 +11,10 @@ import java.util.stream.Collectors;
  */
 abstract class DataFile
 {
+    IndexSummary indexer = new IndexSummary();
     OperableDataFile dataHolderProxy;
     String filename;
-    IndexSummary indexer = new IndexSummary();
+    String indexFile;
 
     public DataDefinition get(String key)
     {
@@ -59,5 +60,15 @@ abstract class DataFile
     public int count()
     {
         return indexer.size();
+    }
+
+    public String getIndexFileName()
+    {
+        return indexFile;
+    }
+
+    public IndexSummary getIndexer()
+    {
+        return indexer;
     }
 }

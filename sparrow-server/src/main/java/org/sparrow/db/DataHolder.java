@@ -3,7 +3,6 @@ package org.sparrow.db;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sparrow.common.io.*;
-import org.sparrow.common.serializer.IndexSeralizer;
 import org.sparrow.common.util.BloomFilter;
 import org.sparrow.common.util.SPUtils;
 import org.sparrow.config.DatabaseDescriptor;
@@ -19,7 +18,6 @@ public final class DataHolder extends DataFile
 {
     private static Logger logger = LoggerFactory.getLogger(DataHolder.class);
     private BloomFilter bf;
-    private final String indexFile;
     private final String bloomFilterFile;
 
     private DataHolder(String filename)
@@ -34,7 +32,7 @@ public final class DataHolder extends DataFile
     public static DataHolder open(String filename)
     {
         DataHolder dataHolder = new DataHolder(filename);
-        dataHolder.loadIndexFile();
+        IndexManager.loadIndex(dataHolder);
         dataHolder.loadBloomFilter();
         return dataHolder;
     }
@@ -42,10 +40,8 @@ public final class DataHolder extends DataFile
     public static DataHolder create(String filename, IndexSummary indexer)
     {
         DataHolder dh = new DataHolder(filename);
-        indexer.getIndexList().forEach((key, value) -> {
-            dh.writeIndex(key, value);
-            dh.indexer.put(key, value);
-        });
+        indexer.getIndexList().forEach(dh.indexer::put);
+        IndexManager.writeIndexFile(dh);
         dh.writeBloomFilter();
         return dh;
     }
@@ -54,27 +50,6 @@ public final class DataHolder extends DataFile
     {
         String hashed = String.valueOf(SPUtils.hash32(key));
         return bf.contains(hashed);
-    }
-
-    private void writeIndex(int key, long offset)
-    {
-        IDataWriter indexWriter = StorageWriter.open(indexFile);
-        try
-        {
-            byte[] serializedData = IndexSeralizer.instance.serialize(key, offset);
-            DataOutput.save(indexWriter, serializedData);
-        }
-        catch (IOException e)
-        {
-            logger.error("Could not append data to Index file {}: {} ", indexFile, e.getMessage());
-        }
-        finally
-        {
-            if (indexWriter != null)
-            {
-                indexWriter.close();
-            }
-        }
     }
 
     private void writeBloomFilter()
@@ -129,28 +104,8 @@ public final class DataHolder extends DataFile
         }
     }
 
-    private void loadIndexFile()
+    public String getBloomFilterFile()
     {
-        IDataReader indexReader = StorageReader.open(indexFile);
-        long fileSize = indexReader.length();
-        long indexSize = 0;
-
-        while (indexSize < fileSize)
-        {
-            byte[] bytes = DataInput.load(indexReader, indexSize);
-            try
-            {
-                Map.Entry<Integer, Long> entry = IndexSeralizer.instance.deserialize(bytes);
-                indexer.put(entry.getKey(), entry.getValue());
-                indexSize += (bytes.length + 4);
-            } catch (IOException e)
-            {
-                logger.error("Could not load data from Index file {}: {} ", indexFile, e.getMessage());
-            }
-        }
-        if (indexReader != null)
-        {
-            indexReader.close();
-        }
+        return bloomFilterFile;
     }
 }
