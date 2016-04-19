@@ -3,6 +3,7 @@ package org.sparrow.db;
 import org.cliffc.high_scale_lib.NonBlockingHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sparrow.cache.CacheManager;
 import org.sparrow.common.DataDefinition;
 import org.sparrow.common.util.FileUtils;
 import org.sparrow.config.DatabaseDescriptor;
@@ -20,10 +21,10 @@ public class SparrowDatabase
     private static final Logger logger = LoggerFactory.getLogger(SparrowDatabase.class);
     public static final SparrowDatabase instance = new SparrowDatabase();
     private volatile Map<String, Database> databases = new NonBlockingHashMap<>();
+    public static final CacheManager<String, DataDefinition> cacheManager = new CacheManager<>();
 
     public SparrowDatabase()
     {
-
     }
 
     public boolean createDatabase(String dbname)

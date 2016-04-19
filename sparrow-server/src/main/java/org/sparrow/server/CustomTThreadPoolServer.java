@@ -1,11 +1,9 @@
 package org.sparrow.server;
 
-import org.apache.thrift.TProcessor;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TTransportException;
-import org.sparrow.protocol.SparrowTransport;
 
 import java.net.InetSocketAddress;
 

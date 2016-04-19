@@ -5,7 +5,7 @@ import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 /**
  * Created by mauricio on 24/12/2015.
  */
-public class CacheProvider<K, V> implements ICache<K, V>
+class CacheProvider<K, V> implements ICache<K, V>
 {
     private static final int DEFAULT_CONCURRENCY_LEVEL = 64;
     private final ConcurrentLinkedHashMap<K, V> map;
