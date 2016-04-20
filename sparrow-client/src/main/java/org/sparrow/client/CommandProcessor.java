@@ -212,12 +212,11 @@ public class CommandProcessor
                 return;
             }
 
-            System.out.format("%10s|%8s|%10s|%20s|%7s|%s",
+            System.out.format("%10s|%8s|%10s|%20s%s",
                     "key",
                     "size",
                     "extension",
                     "timestamp",
-                    "state",
                     System.getProperty("line.separator"));
 
 
@@ -228,12 +227,11 @@ public class CommandProcessor
             {
                 List<DataObject> page = (List<DataObject>) iter.next();
 
-                page.stream().forEach(x -> System.out.format("%10s|%8s|%10s|%20s|%7s|%s",
+                page.stream().forEach(x -> System.out.format("%10s|%8s|%10s|%20s%s",
                         x.getKey(),
                         x.getSize(),
                         x.getExtension(),
                         getDateTime(x.getTimestamp()),
-                        x.getState(),
                         System.getProperty("line.separator")));
                 try
                 {

@@ -8,6 +8,8 @@ import org.sparrow.protocol.SpqlResult;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Created by mauricio on 3/21/16.
@@ -31,6 +33,42 @@ public class SpqlProcessor {
         return  result;
     }
 
+    public static Predicate<DataDefinition> filterByActive()
+    {
+        return x -> x.getState() == DataDefinition.DataState.ACTIVE;
+    }
+
+    public static Predicate<DataDefinition> filterByKey(String key)
+    {
+        return x -> x.getKey().equals(key);
+    }
+
+    public static SpqlResult queryDataByFilter(String dbname, Predicate predicate)
+    {
+        Set result = new LinkedHashSet<>();
+
+        result.addAll(SparrowDatabase.instance.getDatabase(dbname)
+                .getDataLog()
+                .fetchAll()
+                .stream()
+                .filter(predicate)
+                .collect(Collectors.toList()));
+
+        SparrowDatabase.instance.getDatabase(dbname)
+                .getDataHolders()
+                .stream()
+                .forEach(x ->
+                        result.addAll(x.fetchAll().stream().filter(predicate).collect(Collectors.toList()))
+                );
+
+        return mapToSpqlResult(dbname, result);
+    }
+
+    public static SpqlResult queryDataAll(String dbname)
+    {
+        return queryDataByFilter(dbname, filterByActive());
+    }
+
     public static SpqlResult queryDataWhereKey(String dbname, String value)
     {
         DataDefinition dataDefinition = SparrowDatabase.instance.getObjectByKey(dbname, value);
@@ -42,14 +80,6 @@ public class SpqlProcessor {
             }});
         }
         return result;
-    }
-
-    public static SpqlResult queryDataAll(String dbname)
-    {
-        Set result = new LinkedHashSet<>();
-        result.addAll(SparrowDatabase.instance.getDatabase(dbname).getDataLog().fetchAll());
-        SparrowDatabase.instance.getDatabase(dbname).getDataHolders().forEach(x -> result.addAll(x.fetchAll()));
-        return mapToSpqlResult(dbname, result);
     }
 
     public static long queryCount(String dbname)
