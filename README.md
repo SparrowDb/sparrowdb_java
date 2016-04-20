@@ -50,13 +50,13 @@ Sending an image to database:
 Listing all images in database:
 
 	>>select from database_name;
-	Key		Size    Timestamp               Status
-	---------------------------------------------------------
-	key1	558001  2016-01-03 22:14:21+0000     ACTIVE
-	key2	61148   2016-01-03 22:14:40+0000     ACTIVE
-	key4	558001  2016-01-03 22:14:31+0000     ACTIVE
-	key3	558001  2016-01-03 22:16:06+0000     REMOVED
-	key5	95889   2016-01-03 22:14:47+0000     ACTIVE
+    key |    size| extension|           timestamp
+    key1| 1184791|       png| 2016-04-20 00:51:35+0000
+    key2|  104547|       jpg| 2016-04-20 01:04:07+0000
+	key3|  558001|       png| 2016-01-03 22:14:31+0000
+    key4|  558001|       gif| 2016-01-03 22:16:06+0000
+    key5|	95889|       bmp| 2016-01-03 22:14:47+0000
+
     
 You also can use query like:
 	
