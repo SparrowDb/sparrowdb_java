@@ -23,7 +23,7 @@ public class DataDefinitionSerializer implements TypeSerializer<DataDefinition>
         bos.writeInt(dataDefinition.getSize());
         bos.writeLong(dataDefinition.getOffset());
         bos.writeLong(dataDefinition.getTimestamp());
-        bos.writeShort(DataDefinition.Extension.getShort(dataDefinition.getExtension()));
+        bos.writeUTF(dataDefinition.getExtension());
         bos.writeByte(DataDefinition.DataState.getByte(dataDefinition.getState()));
         if (dataDefinition.getSize() > 0)
         {
@@ -38,7 +38,6 @@ public class DataDefinitionSerializer implements TypeSerializer<DataDefinition>
     {
         return deserialize(in, false);
     }
-
     public DataDefinition deserialize(byte[] in, boolean withData) throws IOException
     {
         DataDefinition dataDefinition = new DataDefinition();
@@ -50,7 +49,7 @@ public class DataDefinitionSerializer implements TypeSerializer<DataDefinition>
         dataDefinition.setSize(dis.readInt());
         dataDefinition.setOffset(dis.readLong());
         dataDefinition.setTimestamp(dis.readLong());
-        dataDefinition.setExtension(DataDefinition.Extension.values()[dis.readShort()]);
+        dataDefinition.setExtension(dis.readUTF());
         dataDefinition.setState(DataDefinition.DataState.values()[dis.readByte()]);
         if (withData)
         {

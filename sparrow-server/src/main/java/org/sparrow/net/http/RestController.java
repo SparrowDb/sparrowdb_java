@@ -81,7 +81,7 @@ public class RestController
         }
 
         restResponse.setStatus(HttpResponseStatus.OK);
-        restResponse.setResponseType(RestResponse.ResponseType.IMAGE);
+        restResponse.setResponseType(RestResponse.ResponseType.IMAGE, "image/" + dataDefinition.getExtension());
         restResponse.setBuff(Unpooled.copiedBuffer(dataDefinition.getBuffer()));
     }
 }

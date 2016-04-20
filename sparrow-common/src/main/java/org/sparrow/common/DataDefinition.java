@@ -7,22 +7,6 @@ import java.util.Arrays;
  */
 public class DataDefinition
 {
-    public enum Extension
-    {
-        PNG(0), JPG(1), JPGEG(2), TIFF(3), BMP(4);
-
-        private short id;
-        Extension(int id)
-        {
-            this.id = (short)id;
-        }
-
-        public static short getShort(Extension ext)
-        {
-            return Extension.values()[ext.ordinal()].id;
-        }
-    }
-
     public enum DataState
     {
         ACTIVE(0), REMOVED(1), DESTROY(2);
@@ -44,7 +28,7 @@ public class DataDefinition
     private int size;
     private long offset;
     private long timestamp;
-    private Extension extension;
+    private String extension;
     private DataState state;
     private byte[] buffer;
 
@@ -53,7 +37,7 @@ public class DataDefinition
 
     }
 
-    public DataDefinition(String key, int key32, int size, long offset, Extension extension, DataState state)
+    public DataDefinition(String key, int key32, int size, long offset, String extension, DataState state)
     {
         this.key = key;
         this.key32 = key32;
@@ -63,7 +47,7 @@ public class DataDefinition
         this.state = state;
     }
 
-    public DataDefinition(String key, int key32, int size, long offset, Extension extension, DataState state, byte[] buffer)
+    public DataDefinition(String key, int key32, int size, long offset, String extension, DataState state, byte[] buffer)
     {
         this.key = key;
         this.key32 = key32;
@@ -124,12 +108,12 @@ public class DataDefinition
         this.timestamp = timestamp;
     }
 
-    public Extension getExtension()
+    public String getExtension()
     {
         return extension;
     }
 
-    public void setExtension(Extension extension)
+    public void setExtension(String extension)
     {
         this.extension = extension;
     }

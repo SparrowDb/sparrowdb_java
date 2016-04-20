@@ -17,6 +17,7 @@ public class RestResponse
     private ByteBuf buff;
     private HttpVersion version = HttpVersion.HTTP_1_1;
     private ResponseType responseType;
+    private String contentType;
 
     public enum ResponseType
     {
@@ -34,7 +35,6 @@ public class RestResponse
 
     public FullHttpResponse getResponse()
     {
-        String contentType = (responseType == ResponseType.IMAGE) ? "image/png" : "text/plain; charset=UTF-8";
         FullHttpResponse response = new DefaultFullHttpResponse(version, status, buff);
         response.headers().set(CONTENT_TYPE, contentType);
         return response;
@@ -77,6 +77,12 @@ public class RestResponse
 
     public void setResponseType(ResponseType responseType)
     {
+        setResponseType(responseType, "text/plain; charset=UTF-8");
+    }
+
+    public void setResponseType(ResponseType responseType, String mimeType)
+    {
         this.responseType = responseType;
+        this.contentType = mimeType;
     }
 }

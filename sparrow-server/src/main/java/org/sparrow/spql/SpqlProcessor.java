@@ -23,6 +23,7 @@ public class SpqlProcessor {
             dataObject.setSize(dataDefinition.getSize());
             dataObject.setTimestamp(dataDefinition.getTimestamp());
             dataObject.setKey(dataDefinition.getKey());
+            dataObject.setExtension(dataDefinition.getExtension());
             dataObject.setState(dataDefinition.getState().ordinal());
             result.addToRows(dataObject);
         }

@@ -156,6 +156,14 @@ public class CommandProcessor
     public void insertData(String path, String dbname, String key)
     {
         File file = new File(path);
+        String fileExt = com.google.common.io.Files.getFileExtension(file.getAbsolutePath());
+
+        if (fileExt.isEmpty())
+        {
+            System.out.println("Invalid file extension");
+            return;
+        }
+
         if (file.exists())
         {
             try
@@ -165,6 +173,7 @@ public class CommandProcessor
                 dataObject.setDbname(dbname);
                 dataObject.setKey(key);
                 dataObject.setData(bytes);
+                dataObject.setExtension(fileExt);
                 client.insert_data(dataObject);
                 bytes = null;
             }

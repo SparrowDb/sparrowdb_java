@@ -93,7 +93,7 @@ public class Database
         // Get current time int UTC
         dataDefinition.setTimestamp(java.time.Instant.now().getEpochSecond());
         dataDefinition.setSize(object.bufferForData().capacity());
-        dataDefinition.setExtension(DataDefinition.Extension.PNG);
+        dataDefinition.setExtension(object.getExtension().toLowerCase());
         dataDefinition.setState(DataDefinition.DataState.ACTIVE);
         dataDefinition.setBuffer(object.bufferForData().array());
         insertData(dataDefinition);
