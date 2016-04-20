@@ -43,7 +43,7 @@ public class SpqlProcessor {
         return x -> x.getKey().equals(key);
     }
 
-    public static SpqlResult queryDataByFilter(String dbname, Predicate predicate)
+    public static SpqlResult queryDataByFilter(String dbname, Predicate<DataDefinition> predicate)
     {
         Set result = new LinkedHashSet<>();
 

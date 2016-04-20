@@ -212,7 +212,7 @@ public class CommandProcessor
                 return;
             }
 
-            System.out.format("%10s|%8s|%10s|%20s%s",
+            System.out.format("%10s|%8s|%10s|%24s%s",
                     "key",
                     "size",
                     "extension",
@@ -231,7 +231,7 @@ public class CommandProcessor
                         x.getKey(),
                         x.getSize(),
                         x.getExtension(),
-                        getDateTime(x.getTimestamp()),
+                        getDateTime(x.getTimestamp())+"+0000",
                         System.getProperty("line.separator")));
                 try
                 {
