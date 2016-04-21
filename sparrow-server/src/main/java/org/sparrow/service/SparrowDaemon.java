@@ -9,6 +9,7 @@ import org.sparrow.db.SparrowDatabase;
 import org.sparrow.db.compaction.CompactionManager;
 import org.sparrow.db.compaction.DataHolderCompact;
 import org.sparrow.net.NettyHttpServer;
+import org.sparrow.plugin.FilterManager;
 import org.sparrow.server.ThriftServer;
 
 import java.io.BufferedWriter;
@@ -99,6 +100,12 @@ public class SparrowDaemon
         CompactionManager.instance.startScheduler();
     }
 
+    public static void checkDirectories()
+    {
+        DatabaseDescriptor.checkDataDirectory();
+        DatabaseDescriptor.checkPluginDirectory();
+    }
+
     public static void stop()
     {
         logger.info("Stoping SparrowDb...");
@@ -124,7 +131,10 @@ public class SparrowDaemon
 
         logger.info("Loading configuration file...");
         DatabaseDescriptor.loadConfiguration();
-        DatabaseDescriptor.checkDataDirectory();
+        checkDirectories();
+
+        // Load Sparrow Filters from plugin folder
+        FilterManager.instance.loadFilters();
 
         logger.info("Node name: {}", DatabaseDescriptor.config.node_name);
 

@@ -1,13 +1,17 @@
 package org.sparrow.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sparrow.common.util.FileUtils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,7 +22,7 @@ public class DatabaseDescriptor
 {
     private static Logger logger = LoggerFactory.getLogger(DatabaseDescriptor.class);
     private static final String DEFAULT_SERVER_CONFIG_FILE = "sparrow.yml";
-    private static final String DEFAULT_TRIGGER_DIR = "trigger";
+    public static final String DEFAULT_PLUGIN_DIR = "plugin";
     public static Config config;
 
     static {
@@ -40,20 +44,30 @@ public class DatabaseDescriptor
         }
     }
 
-    public static void checkDataDirectory()
+    public static void checkAndCreateDirectory(String path)
     {
-        File dataDir = new File(getDataFilePath());
+        File dataDir = new File(path);
         if(!dataDir.exists())
         {
             try
             {
-                FileUtils.createDirectory(getDataFilePath());
-            } catch (Exception e)
+                FileUtils.createDirectory(path);
+            }
+            catch (Exception e)
             {
-                logger.error("Create data directory: {}", e.getMessage());
-                e.printStackTrace();
+                logger.error("Could not create directory: {}", e.getMessage());
             }
         }
+    }
+
+    public static void checkDataDirectory()
+    {
+        checkAndCreateDirectory(getDataFilePath());
+    }
+
+    public static void checkPluginDirectory()
+    {
+        checkAndCreateDirectory(DEFAULT_PLUGIN_DIR);
     }
 
     public static String getDataFilePath()
@@ -84,7 +98,7 @@ public class DatabaseDescriptor
     public static List<File> filterDatabasesDir(File dataDir)
     {
         return Arrays.stream(FileUtils.listSubdirectories(dataDir))
-                .filter(x->!x.getName().equals(DEFAULT_TRIGGER_DIR))
+                .filter(x->!x.getName().equals(DEFAULT_PLUGIN_DIR))
                 .collect(Collectors.toList());
     }
 }

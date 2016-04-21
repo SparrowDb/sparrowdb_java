@@ -35,3 +35,11 @@ bloomfilter_fpp: 0.001
 # Check: http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger
 # Default: Every tuesday and friday, at 01:00:00
 dataholder_cron_compaction: "0 0 1 ? * TUE,FRI *"
+
+
+# --------------------------------- Filters -------------------------------------
+# Format: [jar_file]=[package and class]
+# The class must implements IFilter
+filters: [
+  "TriggerTeste-1.0-SNAPSHOT.jar=org.sparrow.trigger.Grayscale"
+]

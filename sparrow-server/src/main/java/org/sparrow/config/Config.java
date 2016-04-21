@@ -19,6 +19,7 @@ public class Config
     public List<String> nodes;
     public Double bloomfilter_fpp;
     public String dataholder_cron_compaction;
+    public List<String> filters;
 
     public Config()
     {
@@ -33,5 +34,6 @@ public class Config
         nodes = new LinkedList<String>();
         bloomfilter_fpp = 0.001;
         dataholder_cron_compaction = "0 0 1 ? * TUE,FRI *";
+        filters = new LinkedList<String>();
     }
 }

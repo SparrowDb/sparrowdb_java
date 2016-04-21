@@ -18,6 +18,7 @@ buildNumber.properties
 *.png
 *.csv
 data/
+plugin/
 log/
 server.xml
 sparrow.pid
