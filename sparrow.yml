@@ -40,6 +40,4 @@ dataholder_cron_compaction: "0 0 1 ? * TUE,FRI *"
 # --------------------------------- Filters -------------------------------------
 # Format: [jar_file]=[package and class]
 # The class must implements IFilter
-filters: [
-  "TriggerTeste-1.0-SNAPSHOT.jar=org.sparrow.trigger.Grayscale"
-]
+filters: []
