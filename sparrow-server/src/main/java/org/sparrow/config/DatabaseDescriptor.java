@@ -22,7 +22,7 @@ public class DatabaseDescriptor
 {
     private static Logger logger = LoggerFactory.getLogger(DatabaseDescriptor.class);
     private static final String DEFAULT_SERVER_CONFIG_FILE = "sparrow.yml";
-    public static final String DEFAULT_PLUGIN_DIR = "plugin";
+    public static final String DEFAULT_PLUGIN_DIR = "plugins";
     public static Config config;
 
     static {
