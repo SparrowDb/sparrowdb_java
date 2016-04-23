@@ -49,7 +49,7 @@ public class FilterManager
             String path = DatabaseDescriptor.DEFAULT_PLUGIN_DIR + "/" + params[0];
             urlClassLoader = getClassLoader(new File(path));
             classToLoad = urlClassLoader.loadClass(params[1]);
-            filters.put(params[1], filterProxy(classToLoad, classToLoad.getConstructor().newInstance()));
+            filters.put(params[2], filterProxy(classToLoad, classToLoad.getConstructor().newInstance()));
         }
         catch (Exception e)
         {

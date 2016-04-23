@@ -2,8 +2,12 @@ package org.sparrow.server;
 
 import com.google.common.base.Strings;
 import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sparrow.config.DatabaseDescriptor;
 import org.sparrow.db.SparrowDatabase;
+import org.sparrow.plugin.FilterManager;
+import org.sparrow.plugin.IFilter;
 import org.sparrow.protocol.DataObject;
 import org.sparrow.protocol.SparrowTransport;
 import org.sparrow.protocol.SpqlResult;
@@ -20,6 +24,7 @@ import java.util.Locale;
  */
 public class TServerTransportHandler implements SparrowTransport.Iface
 {
+    private static Logger logger = LoggerFactory.getLogger(TServerTransportHandler.class);
     private InetAddress address;
 
     public TServerTransportHandler()
@@ -68,15 +73,55 @@ public class TServerTransportHandler implements SparrowTransport.Iface
     @Override
     public String insert_data(DataObject object, List<String> params) throws TException
     {
-        if (object.getSize() < DatabaseDescriptor.config.max_datalog_size)
+        if (object.getSize() > DatabaseDescriptor.config.max_datalog_size)
         {
-            if (SparrowDatabase.instance.databaseExists(object.getDbname()))
+            return "Data size is greater than max_datalog_size: " + DatabaseDescriptor.config.max_datalog_size;
+        }
+
+
+        if (!SparrowDatabase.instance.databaseExists(object.getDbname()))
+        {
+            return "Database " + object.getDbname() + " does not exists";
+        }
+
+        if (params.size() > 3)
+        {
+            IFilter filter = FilterManager.instance.getFilter(params.get(3));
+
+            if (filter == null)
             {
-                SparrowDatabase.instance.insert_data(object);
-                return "";
+                return "Invalid filter: " + params.get(3);
+            }
+            else
+            {
+                byte[] buff = null;
+                try
+                {
+                    buff = filter.process(object.getData());
+                    object.setData(buff);
+                }
+                catch (Exception e)
+                {
+                    logger.error("Filter error (Database: {}, Key: {}, Filter: {}) : {}",
+                            object.getDbname(),
+                            object.getKey(),
+                            params.get(3),
+                            e.getMessage());
+                    return String.format("Filter error (Database: {}, Key: {}, Filter: {}) ",
+                            object.getKey(),
+                            object.getDbname(),
+                            params.get(3));
+                }
+                finally
+                {
+                    buff = null;
+                }
             }
         }
-        return "Could not insert data";
+
+        SparrowDatabase.instance.insert_data(object);
+
+        return String.format("Data %s inserted in %s", object.getKey(), object.getDbname());
     }
 
     @Override

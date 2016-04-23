@@ -71,8 +71,6 @@ public class SpqlParseHandler implements SpqlParser.ISpqlParseHandler
     @Override
     public void insertStatement(String dbName, ArrayList<String> tokens)
     {
-        System.out.println("insere:"+tokens.get(0));
-
         File file = new File(tokens.get(0) + "." + tokens.get(1));
         String fileExt = tokens.get(1);
 
@@ -84,20 +82,27 @@ public class SpqlParseHandler implements SpqlParser.ISpqlParseHandler
 
         if (file.exists())
         {
+            byte[] bytes = null;
+
             try
             {
-                byte[] bytes = Files.readAllBytes(file.toPath());
+                bytes = Files.readAllBytes(file.toPath());
                 DataObject dataObject = new DataObject();
                 dataObject.setDbname(dbName);
                 dataObject.setKey(tokens.get(2));
                 dataObject.setData(bytes);
                 dataObject.setExtension(fileExt);
-                client.insert_data(dataObject, tokens);
+                String response = client.insert_data(dataObject, tokens);
+                System.out.println(response);
                 bytes = null;
             }
             catch (Exception e)
             {
                 e.printStackTrace();
+            }
+            finally
+            {
+                bytes = null;
             }
         }
         else
