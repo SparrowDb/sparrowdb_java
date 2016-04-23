@@ -90,10 +90,10 @@ public class PublisherService
             {
                 switch (type)
                 {
-                    case CREATE: response = client.getExecutor().create_database((String)args); break;
-                    case INSERT: response = client.getExecutor().insert_data((DataObject)args); break;
+                    //case CREATE: response = client.getExecutor().create_database((String)args); break;
+                    //case INSERT: response = client.getExecutor().insert_data((DataObject)args); break;
                 }
-            } catch (TException e)
+            } catch (Exception e)
             {
                 logger.warn("Could not process command on {}:{}", client.getHost(), client.getPort());
             }

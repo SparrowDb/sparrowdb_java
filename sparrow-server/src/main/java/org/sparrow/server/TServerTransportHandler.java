@@ -1,12 +1,13 @@
 package org.sparrow.server;
 
+import com.google.common.base.Strings;
 import org.apache.thrift.TException;
 import org.sparrow.config.DatabaseDescriptor;
 import org.sparrow.db.SparrowDatabase;
 import org.sparrow.protocol.DataObject;
 import org.sparrow.protocol.SparrowTransport;
 import org.sparrow.protocol.SpqlResult;
-import org.sparrow.spql.SpqlParser;
+import org.sparrow.spql.SpqlProcessor;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ public class TServerTransportHandler implements SparrowTransport.Iface
     }
 
     @Override
-    public String insert_data(DataObject object) throws TException
+    public String insert_data(DataObject object, List<String> params) throws TException
     {
         if (object.getSize() < DatabaseDescriptor.config.max_datalog_size)
         {
@@ -79,22 +80,19 @@ public class TServerTransportHandler implements SparrowTransport.Iface
     }
 
     @Override
-    public String delete_data(String dbname, String key) throws TException
+    public String delete_data(String dbname, String keyName, String keyValue) throws TException
     {
         if (SparrowDatabase.instance.databaseExists(dbname))
         {
-            SparrowDatabase.instance.delete_data(dbname, key);
+            SparrowDatabase.instance.delete_data(dbname, keyValue);
             return "";
         }
         return "Data deleted";
     }
 
     @Override
-    public SpqlResult spql_query(String query) throws TException
+    public SpqlResult spql_query(String dbname, String keyName, String keyValue) throws TException
     {
-        SpqlResult result = SpqlParser.parseAndProcess(query);
-        if (result == null)
-            return new SpqlResult();
-        return result;
+        return (Strings.isNullOrEmpty(keyName) && Strings.isNullOrEmpty(keyValue)) ? SpqlProcessor.queryDataAll(dbname) : SpqlProcessor.queryDataWhereKey(dbname, keyValue);
     }
 }

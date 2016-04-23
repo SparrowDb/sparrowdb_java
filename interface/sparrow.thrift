@@ -1,4 +1,4 @@
-namespace java org.sparrow.thrift
+namespace java org.sparrow.protocol
 namespace csharp Sparrow
 namespace py sparrow
 namespace php sparrow
@@ -30,9 +30,9 @@ service SparrowTransport {
 	
 	string drop_database(1:required string dbname)
 	
-	string insert_data(1:required DataObject object)
+	string insert_data(1:required DataObject object, 2:list<string> params)
 	
-	string delete_data(1:required string dbname, 2:required string key)
+	string delete_data(1:required string dbname, 2:string keyName, 3:string keyValue)
 	
-	SpqlResult spql_query(1:required string query)
+	SpqlResult spql_query(1:required string dbname, 2:string keyName, 3:string keyValue)
 }

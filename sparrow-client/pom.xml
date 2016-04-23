@@ -18,6 +18,11 @@
             <version>0.7</version>
         </dependency>
         <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>4.5.3</version>
+        </dependency>
+        <dependency>
             <groupId>org.sparrow</groupId>
             <artifactId>sparrow-protocol</artifactId>
             <version>1.0.0</version>
