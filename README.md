@@ -44,7 +44,7 @@ Creating a database:
 
 Sending an image to database:
 
-	>>insert into database_name (image_path_with_extension, image_key);
+	>>insert into database_name (image_path_without_extension, image_extension, image_key);
 
 
 Listing all images in database:
