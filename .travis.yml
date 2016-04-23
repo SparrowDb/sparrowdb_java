@@ -5,4 +5,7 @@ jdk:
 
 install: true
 
+git:
+  depth: 150
+
 script: mvn test
