@@ -56,9 +56,7 @@ public class CommandProcessor
         lexer = new SpqlLexer(new ANTLRInputStream(line));
         parser = new SpqlParser(new CommonTokenStream(lexer));
         parser.setHandler(spqlParseHandler);
-
-        ParseTree tree = parser.parse(); // begin parsing at init rule
-        System.out.println(tree.toStringTree(parser)); // print LISP-style tree
+        parser.parse();
     }
 
     public void close()

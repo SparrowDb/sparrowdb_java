@@ -68,6 +68,13 @@ public class SparrowClient
             {
                 System.out.print(">>");
                 line = buffer.readLine().trim();
+
+                if (line.equals("exit"))
+                {
+                    processor.close();
+                    System.exit(0);
+                }
+
                 processor.process(line);
             } catch (IOException e)
             {
