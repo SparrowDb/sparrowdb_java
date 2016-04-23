@@ -1,4 +1,3 @@
-// Generated from /home/mauricio/Sources/sparrowdb/sparrow-client/src/main/java/org/sparrow/spql/Spql.g by ANTLR 4.5
 
     package org.sparrow.spql;
     import java.util.ArrayList;
