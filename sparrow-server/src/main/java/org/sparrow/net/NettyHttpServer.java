@@ -64,7 +64,7 @@ public class NettyHttpServer implements Server
     @Override
     public boolean isRunning()
     {
-        return false;
+        return server.isAlive();
     }
 
     private class HttpServerWorker extends Thread
