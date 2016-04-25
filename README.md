@@ -65,7 +65,7 @@ You also can use query like:
 
 Deleting image:
 
-	>>delete database_name.image_key;
+	>>delete from database_name where key = image_key;
 
 
 Accessing image from browser:
