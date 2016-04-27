@@ -7,7 +7,9 @@ import org.sparrow.common.io.IDataWriter;
 import org.sparrow.common.io.StorageReader;
 import org.sparrow.common.io.StorageWriter;
 import org.sparrow.common.util.BloomFilter;
+import org.sparrow.common.util.FileUtils;
 import org.sparrow.common.util.SPUtils;
+import org.sparrow.config.DatabaseConfig;
 import org.sparrow.config.DatabaseDescriptor;
 
 import java.io.IOException;
@@ -23,26 +25,27 @@ public final class DataHolder extends DataFile
     private BloomFilter bf;
     private final String bloomFilterFile;
 
-    private DataHolder(String filename)
+    private DataHolder(String filename, DatabaseConfig.Descriptor descriptor)
     {
         super();
-        this.filename = filename;
-        dataHolderProxy = new DataHolderProxy(filename);
-        this.indexFile = filename.replace("data-holder", "index");
-        this.bloomFilterFile = filename.replace("data-holder", "bloomfilter");
+        this.descriptor = descriptor;
+        this.filename = FileUtils.joinPath(descriptor.path, filename);
+        this.indexFile = FileUtils.joinPath(descriptor.path, filename.replace("data-holder", "index"));
+        this.bloomFilterFile = FileUtils.joinPath(descriptor.path, filename.replace("data-holder", "bloomfilter"));
+        dataHolderProxy = new DataHolderProxy(this.filename);
     }
 
-    public static DataHolder open(String filename)
+    public static DataHolder open(String filename, DatabaseConfig.Descriptor descriptor)
     {
-        DataHolder dataHolder = new DataHolder(filename);
+        DataHolder dataHolder = new DataHolder(filename, descriptor);
         IndexManager.loadIndex(dataHolder);
         dataHolder.loadBloomFilter();
         return dataHolder;
     }
 
-    public static DataHolder create(String filename, IndexSummary indexer)
+    public static DataHolder create(String filename, DatabaseConfig.Descriptor descriptor, IndexSummary indexer)
     {
-        DataHolder dh = new DataHolder(filename);
+        DataHolder dh = new DataHolder(filename, descriptor);
         indexer.getIndexList().forEach(dh.indexer::put);
         IndexManager.writeIndexFile(dh);
         dh.writeBloomFilter();

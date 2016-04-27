@@ -9,13 +9,13 @@ import java.util.Set;
 /**
  * Created by mauricio on 10/03/16.
  */
-public class CompactionManager
+public class ScheduleManager
 {
-    public static final CompactionManager instance = new CompactionManager();
-    private Set<CompactionJob> jobs = Sets.newConcurrentHashSet();
+    public static final ScheduleManager instance = new ScheduleManager();
+    private Set<ScheduleJob> jobs = Sets.newConcurrentHashSet();
     private Scheduler scheduler;
 
-    private CompactionManager()
+    private ScheduleManager()
     {
         try
         {
@@ -45,7 +45,7 @@ public class CompactionManager
     public void addJob(String jobName, String cron, Class jobClass)
     {
         String groupName = jobName+"Group";
-        jobs.add(new CompactionJob(
+        jobs.add(new ScheduleJob(
                 jobName,
                 createTrigger(jobName+"Trigger", groupName, cron),
                 createJob(jobName+"Job", groupName),

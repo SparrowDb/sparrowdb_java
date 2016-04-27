@@ -3,6 +3,8 @@ package org.sparrow.db;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sparrow.common.DataDefinition;
+import org.sparrow.common.util.FileUtils;
+import org.sparrow.config.DatabaseConfig;
 import org.sparrow.config.DatabaseDescriptor;
 
 import java.io.File;
@@ -20,19 +22,19 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public final class DataLog extends DataFile
 {
     private static Logger logger = LoggerFactory.getLogger(DataLog.class);
-    private String dbname;
     private Set<DataHolder> dataHolders;
     private long currentSize;
     private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
+    private static final String DEFAULT_DATAHOLDER_FILE = "datalog.spw";
     private ExecutorService executor = Executors.newCachedThreadPool();
 
-    public DataLog(String dbname, Set<DataHolder> dataHolders, String filename)
+    public DataLog(Set<DataHolder> dataHolders, DatabaseConfig.Descriptor descriptor)
     {
         super();
-        this.dbname = dbname;
-        this.filename = filename;
+        this.descriptor = descriptor;
         this.dataHolders = dataHolders;
-        dataHolderProxy = new DataHolderProxy(filename);
+        this.filename = FileUtils.joinPath(descriptor.path, DEFAULT_DATAHOLDER_FILE);
+        dataHolderProxy = new DataHolderProxy(this.filename);
     }
 
     private void append(DataDefinition dataDefinition)
@@ -66,16 +68,16 @@ public final class DataLog extends DataFile
 
     public void flush()
     {
-        String nextFileName = DataFileManager.getDbPath(dbname, DataFileManager.getNextDataHolderName(dbname));
+        String nextFileName = DataFileManager.getNextDataHolderName(descriptor.path);
         logger.debug("Flushing data into {}", nextFileName);
 
-        if (new File(filename).renameTo(new File(nextFileName)))
+        if (new File(filename).renameTo(new File(FileUtils.joinPath(descriptor.path, nextFileName))))
         {
             IndexSummary temp = new IndexSummary();
             temp.getIndexList().putAll(this.indexer.getIndexList());
 
             executor.execute(() -> {
-                DataHolder dataHolder = DataHolder.create(nextFileName, temp);
+                DataHolder dataHolder = DataHolder.create(nextFileName, descriptor, temp);
                 dataHolders.add(dataHolder);
             });
 
@@ -90,8 +92,8 @@ public final class DataLog extends DataFile
 
     public void load()
     {
-        dataHolderProxy.iterateDataHolder((dataDefinition, bytesRead) -> {
-            indexer.put(dataDefinition.getKey32(), dataDefinition.getOffset());
-        });
+        dataHolderProxy.iterateDataHolder(
+                (dataDefinition, bytesRead) -> indexer.put(dataDefinition.getKey32(), dataDefinition.getOffset())
+        );
     }
 }

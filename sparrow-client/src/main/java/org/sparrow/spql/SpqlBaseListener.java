@@ -1,12 +1,9 @@
 
     package org.sparrow.spql;
-    import java.util.ArrayList;
 
-
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.misc.NotNull;
-import org.antlr.v4.runtime.tree.ErrorNode;
-import org.antlr.v4.runtime.tree.TerminalNode;
+	import org.antlr.v4.runtime.ParserRuleContext;
+	import org.antlr.v4.runtime.tree.ErrorNode;
+	import org.antlr.v4.runtime.tree.TerminalNode;
 
 /**
  * This class provides an empty implementation of {@link SpqlListener},

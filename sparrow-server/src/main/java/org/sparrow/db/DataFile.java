@@ -2,6 +2,7 @@ package org.sparrow.db;
 
 import org.sparrow.common.DataDefinition;
 import org.sparrow.common.util.SPUtils;
+import org.sparrow.config.DatabaseConfig;
 
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
@@ -13,6 +14,7 @@ abstract class DataFile
 {
     IndexSummary indexer = new IndexSummary();
     OperableDataFile dataHolderProxy;
+    DatabaseConfig.Descriptor descriptor;
     String filename;
     String indexFile;
 

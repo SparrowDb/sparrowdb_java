@@ -1,0 +1,12 @@
+<Config>
+  <node_name>localnode</node_name>
+  <http_port>8081</http_port>
+  <http_host>0.0.0.0</http_host>
+  <tcp_port>8082</tcp_port>
+  <tcp_host>0.0.0.0</tcp_host>
+  <max_cache_size>31457280</max_cache_size>
+  <data_file_directory>data</data_file_directory>
+  <max_datalog_size>52428800</max_datalog_size>
+  <bloomfilter_fpp>0.001</bloomfilter_fpp>
+  <dataholder_cron_compaction>0 0 1 ? * TUE,FRI *</dataholder_cron_compaction>
+</Config>

@@ -11,6 +11,7 @@ import org.sparrow.common.io.IDataReader;
 import org.sparrow.common.io.StorageReader;
 import org.sparrow.common.serializer.DataDefinitionSerializer;
 import org.sparrow.common.util.FileUtils;
+import org.sparrow.config.DatabaseConfig;
 import org.sparrow.config.DatabaseDescriptor;
 import org.sparrow.db.DataFileManager;
 import org.sparrow.db.SparrowDatabase;
@@ -19,6 +20,7 @@ import org.xerial.snappy.Snappy;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -50,7 +52,7 @@ public class DataHolderCompact implements Job
         dataReader.close();
     }
 
-    public void getDataHolderDirty(String dbname, File dataHolderFile, Set<String> dirtyKey)
+    public void getDataHolderDirty(File dataHolderFile, Set<String> dirtyKey)
     {
         try
         {
@@ -67,54 +69,52 @@ public class DataHolderCompact implements Job
         }
     }
 
-
-    public void processDatabase(String dbname)
+    public void processDatabase(DatabaseConfig.Descriptor descriptor)
     {
+        String tempPath = FileUtils.joinPath(descriptor.path, "temp");
+
         try
         {
-            FileUtils.createDirectory(DatabaseDescriptor.getDataFilePath("temp"));
+            FileUtils.createDirectory(tempPath);
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
 
-        DataFileManager.getDataHolders(dbname)
+        DataFileManager.getDataHolders(descriptor.path)
                 .stream()
                 .forEach(x -> {
-                    File newFile = new File(DatabaseDescriptor.getDataFilePath("temp", x.getName() + ".tmp"));
+                    File newFile = new File(FileUtils.joinPath(tempPath, x.getName()));
                     x.renameTo(newFile);
                 });
-        SparrowDatabase.instance.dropDatabase(dbname);
-        SparrowDatabase.instance.createDatabase(dbname);
 
 
         Set<String> dirtyKeys = new LinkedHashSet<>();
-        DataFileManager.getDataHolders("temp")
+        DataFileManager.getDataHolders(tempPath)
+                .stream()
+                .forEach(x -> getDataHolderDirty(x, dirtyKeys));
+
+
+        DataFileManager.getDataHolders(tempPath)
                 .stream()
                 .forEach(x -> {
-                    getDataHolderDirty(dbname, x, dirtyKeys);
+                    try
+                    {
+                        iterateDataHolder(x, f -> {
+                            if (!dirtyKeys.contains(f.getKey()))
+                            {
+                                SparrowDatabase.instance.getDatabase(descriptor.name).insertData(f);
+                            }
+                        });
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
                 });
 
-        DataFileManager.getDataHolders("temp")
-                .stream()
-                .forEach(x -> {
-                        try
-                        {
-                            iterateDataHolder(x, f -> {
-                                if (!dirtyKeys.contains(f.getKey()))
-                                {
-                                    SparrowDatabase.instance.getDatabase(dbname).insertData(f);
-                                }
-                            });
-                        }
-                        catch (IOException e)
-                        {
-                            e.printStackTrace();
-                        }
-                });
-
-        FileUtils.delete(DatabaseDescriptor.getDataFilePath("temp"));
+        FileUtils.delete(tempPath);
     }
 
     @Override
@@ -122,7 +122,7 @@ public class DataHolderCompact implements Job
     {
         logger.debug("Starting DataHolder compact");
 
-        Set<String> databases = SparrowDatabase.instance.getDatabases();
+        List<DatabaseConfig.Descriptor> databases = DatabaseDescriptor.database.databases;
 
         databases.forEach(this::processDatabase);
     }

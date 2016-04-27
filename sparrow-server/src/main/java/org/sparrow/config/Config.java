@@ -15,8 +15,8 @@ public class Config
     public String tcp_host;
     public Long max_cache_size;
     public String data_file_directory;
+    public String plugin_directory;
     public Long max_datalog_size;
-    public List<String> nodes;
     public Double bloomfilter_fpp;
     public String dataholder_cron_compaction;
     public List<String> filters;
@@ -30,8 +30,8 @@ public class Config
         tcp_host = "0.0.0.0";
         max_cache_size = 31457280L;
         data_file_directory = "data";
+        plugin_directory = "plugins";
         max_datalog_size = 1073741824L;
-        nodes = new LinkedList<String>();
         bloomfilter_fpp = 0.001;
         dataholder_cron_compaction = "0 0 1 ? * TUE,FRI *";
         filters = new LinkedList<String>();

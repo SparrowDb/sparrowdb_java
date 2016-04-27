@@ -1,5 +1,7 @@
 package org.sparrow.common.util;
 
+import com.google.common.base.Joiner;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -191,9 +193,14 @@ public class FileUtils
         return length;
     }
 
-    public static boolean fileExists(String filname)
+    public static boolean fileExists(String filename)
     {
-        File f = new File(filname);
-        return f.exists() && !f.isDirectory();
+        File f = new File(filename);
+        return f.exists() && f.isFile();
+    }
+
+    public static String joinPath(String... args)
+    {
+        return Joiner.on(System.getProperty("file.separator")).join(args);
     }
 }

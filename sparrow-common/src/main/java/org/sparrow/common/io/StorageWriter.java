@@ -122,8 +122,11 @@ public class StorageWriter implements IDataWriter
     {
         try
         {
-            fchannel.close();
-            fchannel = null;
+            if (fchannel != null)
+            {
+                fchannel.close();
+                fchannel = null;
+            }
         }
         catch (IOException e)
         {

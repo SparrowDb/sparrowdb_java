@@ -6,7 +6,7 @@ import org.sparrow.common.DataDefinition;
 import org.sparrow.common.Tombstone;
 import org.sparrow.common.util.FileUtils;
 import org.sparrow.common.util.SPUtils;
-import org.sparrow.config.DatabaseDescriptor;
+import org.sparrow.config.DatabaseConfig;
 import org.sparrow.protocol.DataObject;
 
 import java.util.Iterator;
@@ -19,25 +19,24 @@ import java.util.Set;
 public class Database
 {
     private static Logger logger = LoggerFactory.getLogger(Database.class);
-    private static final String FILENAME_EXTENSION = ".spw";
     private volatile Set<DataHolder> dataHolders;
     private volatile DataLog dataLog;
-    private final String dbname;
+    private final DatabaseConfig.Descriptor descriptor;
 
-    private Database(String dbname)
+    private Database(DatabaseConfig.Descriptor descriptor)
     {
-        this.dbname = dbname;
+        this.descriptor = descriptor;
         dataHolders = new LinkedHashSet<>();
-        dataLog = new DataLog(dbname, dataHolders, DataFileManager.getDbPath(dbname, "datalog", FILENAME_EXTENSION));
+        dataLog = new DataLog(dataHolders, descriptor);
     }
 
-    public static Database build(String dbname)
+    public static Database build(DatabaseConfig.Descriptor descriptor)
     {
         Database database = null;
         try
         {
-            FileUtils.createDirectory(DatabaseDescriptor.getDataFilePath() + dbname);
-            database = new Database(dbname);
+            FileUtils.createDirectory(descriptor.path);
+            database = new Database(descriptor);
         }
         catch (Exception e)
         {
@@ -46,22 +45,22 @@ public class Database
         return database;
     }
 
-    public static Database open(String dbname)
+    public static Database open(DatabaseConfig.Descriptor descriptor)
     {
-        Database database = new Database(dbname);
+        Database database = new Database(descriptor);
 
         if (!database.dataLog.isEmpty())
         {
-            logger.debug("Loading datalog {} with size: {}", dbname, database.dataLog.getSize());
+            logger.debug("Loading datalog {} with size: {}", descriptor.name, database.dataLog.getSize());
             database.dataLog.load();
         }
 
-        DataFileManager.getDataHolders(dbname)
+        DataFileManager.getDataHolders(descriptor.path)
                 .stream()
                 .forEach(x -> {
                     if (DataFileManager.isValidDataHolder(x.getAbsolutePath()))
                     {
-                        database.dataHolders.add(DataHolder.open(x.getAbsolutePath()));
+                        database.dataHolders.add(DataHolder.open(x.getName(), descriptor));
                     }
                 });
 

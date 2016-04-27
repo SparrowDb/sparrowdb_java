@@ -4,7 +4,10 @@ import com.google.common.base.Strings;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sparrow.common.util.FileUtils;
+import org.sparrow.config.DatabaseConfig;
 import org.sparrow.config.DatabaseDescriptor;
+import org.sparrow.config.SparrowFile;
 import org.sparrow.db.SparrowDatabase;
 import org.sparrow.plugin.FilterManager;
 import org.sparrow.plugin.IFilter;
@@ -59,7 +62,17 @@ public class TServerTransportHandler implements SparrowTransport.Iface
     @Override
     public String create_database(String dbname) throws TException
     {
-        boolean result = SparrowDatabase.instance.createDatabase(dbname);
+        DatabaseConfig.Descriptor descriptor = new DatabaseConfig.Descriptor();
+        descriptor.name = dbname;
+        descriptor.path = FileUtils.joinPath(DatabaseDescriptor.config.data_file_directory, dbname);
+        descriptor.max_datalog_size = DatabaseDescriptor.config.max_datalog_size;
+        descriptor.bloomfilter_fpp = DatabaseDescriptor.config.bloomfilter_fpp;
+        descriptor.dataholder_cron_compaction = DatabaseDescriptor.config.dataholder_cron_compaction;
+
+        DatabaseDescriptor.database.databases.add(descriptor);
+        DatabaseDescriptor.saveConfigurationFile(SparrowFile.DATABASE);
+
+        boolean result = SparrowDatabase.instance.createDatabase(descriptor);
         return result ? "Database " + dbname + " created" : "Could not create database " + dbname;
     }
 
@@ -67,6 +80,10 @@ public class TServerTransportHandler implements SparrowTransport.Iface
     public String drop_database(String dbname) throws TException
     {
         boolean result = SparrowDatabase.instance.dropDatabase(dbname);
+
+        DatabaseDescriptor.database.databases.remove(DatabaseDescriptor.getDatabaseConfigByName(dbname));
+        DatabaseDescriptor.saveConfigurationFile(SparrowFile.DATABASE);
+
         return result ? "Database " + dbname + " dropped" : "Could not drop database " + dbname;
     }
 

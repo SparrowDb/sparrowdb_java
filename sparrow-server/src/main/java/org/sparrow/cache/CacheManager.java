@@ -34,7 +34,6 @@ public class CacheManager<K, V>
     public void clear()
     {
         cache.clear();
-        metrics = new CacheMetrics(SparrowMetrics.instance.getMetrics(), cache);
     }
 
 

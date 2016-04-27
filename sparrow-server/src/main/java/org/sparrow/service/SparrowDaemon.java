@@ -1,13 +1,17 @@
 package org.sparrow.service;
 
 
+import io.airlift.airline.Command;
+import io.airlift.airline.Option;
+import io.airlift.airline.SingleCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sparrow.common.util.SigarLib;
 import org.sparrow.config.DatabaseDescriptor;
+import org.sparrow.config.SparrowFile;
 import org.sparrow.db.SparrowDatabase;
-import org.sparrow.db.compaction.CompactionManager;
 import org.sparrow.db.compaction.DataHolderCompact;
+import org.sparrow.db.compaction.ScheduleManager;
 import org.sparrow.net.NettyHttpServer;
 import org.sparrow.plugin.FilterManager;
 import org.sparrow.server.ThriftServer;
@@ -29,6 +33,13 @@ public class SparrowDaemon
     private static Logger logger = LoggerFactory.getLogger(SparrowDaemon.class);
     private static ThriftServer thriftServer;
     private static NettyHttpServer nettyHttpServer;
+    public static StartUpParams startUpParams = new StartUpParams();
+
+    @Command(name = "sparrow")
+    public static class StartUpParams {
+        @Option(name = {"-c", "--conf"}, description = "Configuration path")
+        public String configurationPath = "conf";
+    }
 
     private static void setupServerListener()
     {
@@ -41,10 +52,8 @@ public class SparrowDaemon
         nettyHttpServer = new NettyHttpServer(
                 DatabaseDescriptor.config.http_host,
                 DatabaseDescriptor.config.http_port);
-    }
 
-    private static void startServers()
-    {
+
         thriftServer.start();
         nettyHttpServer.start();
     }
@@ -92,18 +101,24 @@ public class SparrowDaemon
          * Data holder compaction job. Rewrite data holders of each database
          * without DataDefinition with "deleted" flag.
          */
-        CompactionManager.instance.addJob(
+        ScheduleManager.instance.addJob(
                 "dataHolderCompaction",
                 DatabaseDescriptor.getDataHolderCronCompaction(),
                 DataHolderCompact.class);
 
-        CompactionManager.instance.startScheduler();
+        ScheduleManager.instance.startScheduler();
     }
 
     public static void checkDirectories()
     {
-        DatabaseDescriptor.checkDataDirectory();
-        DatabaseDescriptor.checkPluginDirectory();
+        DatabaseDescriptor.checkAndCreateDirectory(DatabaseDescriptor.getDataFilePath());
+        DatabaseDescriptor.checkAndCreateDirectory(DatabaseDescriptor.config.plugin_directory);
+    }
+
+    public static void loadConfiguration()
+    {
+        DatabaseDescriptor.loadConfiguration(SparrowFile.SPARROW);
+        DatabaseDescriptor.loadConfiguration(SparrowFile.DATABASE);
     }
 
     public static void stop()
@@ -120,6 +135,8 @@ public class SparrowDaemon
     public static void main(String[] args) throws Exception
     {
         logger.info("Starting SparrowDb...");
+
+        startUpParams = SingleCommand.singleCommand(StartUpParams.class).parse(args);
         logSystemInfo();
 
         if (SigarLib.instance.initialized())
@@ -130,11 +147,8 @@ public class SparrowDaemon
         writePidFile();
 
         logger.info("Loading configuration file...");
-        DatabaseDescriptor.loadConfiguration();
+        loadConfiguration();
         checkDirectories();
-
-        // Load Sparrow Filters from plugin folder
-        FilterManager.instance.loadFilters();
 
         logger.info("Node name: {}", DatabaseDescriptor.config.node_name);
 
@@ -142,10 +156,12 @@ public class SparrowDaemon
         SparrowDatabase.instance.loadFromDisk();
 
         setupServerListener();
-        startServers();
 
         logger.info("Setting up compaction job...");
         setupCompactionJobs();
+
+        // Load Sparrow Filters from plugin folder
+        FilterManager.instance.loadFilters();
 
         logger.info("SparrowDb loaded !");
     }

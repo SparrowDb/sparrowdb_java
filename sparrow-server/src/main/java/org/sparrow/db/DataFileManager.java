@@ -3,10 +3,8 @@ package org.sparrow.db;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sparrow.common.util.FileUtils;
-import org.sparrow.config.DatabaseDescriptor;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,21 +15,9 @@ public class DataFileManager
 {
     private static Logger logger = LoggerFactory.getLogger(DataFileManager.class);
 
-    public static String getDbPath(String ... names)
+    public static List<File> getDataHolders(String path)
     {
-        StringBuilder b = new StringBuilder();
-        b.append(DatabaseDescriptor.getDataFilePath());
-        Arrays.stream(names).forEach(x -> {
-            if (!x.startsWith("."))
-                b.append(System.getProperty("file.separator"));
-            b.append(x);
-        });
-        return b.toString();
-    }
-
-    public static List<File> getDataHolders(String dbname)
-    {
-        return FileUtils.listFiles(new File(getDbPath(dbname)))
+        return FileUtils.listFiles(new File(path))
                 .stream()
                 .filter(x -> x.getName().startsWith("data-holder-"))
                 .collect(Collectors.toList());
@@ -52,9 +38,9 @@ public class DataFileManager
         return true;
     }
 
-    public static String getNextDataHolderName(String dbname)
+    public static String getNextDataHolderName(String path)
     {
-        List<File> dataHolders = DataFileManager.getDataHolders(dbname);
+        List<File> dataHolders = DataFileManager.getDataHolders(path);
         return String.format("data-holder-%d.spw", dataHolders.size());
     }
 }

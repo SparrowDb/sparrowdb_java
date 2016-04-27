@@ -2,12 +2,10 @@ package org.sparrow.plugin;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sparrow.common.util.FileUtils;
 import org.sparrow.config.DatabaseDescriptor;
 
 import java.io.File;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -26,16 +24,15 @@ public class FilterManager
 
     private URLClassLoader getClassLoader(File jarFile) throws MalformedURLException
     {
-        return new URLClassLoader(new URL[]{jarFile.toURL()}, System.class.getClassLoader());
+        return new URLClassLoader(new URL[]{jarFile.toURI().toURL()}, System.class.getClassLoader());
     }
 
     private IFilter filterProxy(Class clazz, Object o)
     {
-        IFilter filter = (IFilter) Proxy.newProxyInstance(IFilter.class.getClassLoader(),
+        return (IFilter) Proxy.newProxyInstance(IFilter.class.getClassLoader(),
                 new Class[]{IFilter.class},
                 (proxy, method, args) -> clazz.getMethod(method.getName(), method.getParameterTypes()).invoke(o, args)
         );
-        return filter;
     }
 
     private void loadFilter(String filter)
@@ -46,7 +43,7 @@ public class FilterManager
 
         try
         {
-            String path = DatabaseDescriptor.DEFAULT_PLUGIN_DIR + "/" + params[0];
+            String path = FileUtils.joinPath(DatabaseDescriptor.config.plugin_directory, params[0]);
             urlClassLoader = getClassLoader(new File(path));
             classToLoad = urlClassLoader.loadClass(params[1]);
             filters.put(params[2], filterProxy(classToLoad, classToLoad.getConstructor().newInstance()));

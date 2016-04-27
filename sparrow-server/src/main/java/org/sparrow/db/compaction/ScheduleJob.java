@@ -6,18 +6,18 @@ import org.quartz.Trigger;
 /**
  * Created by mauricio on 13/03/16.
  */
-public class CompactionJob
+public class ScheduleJob
 {
     private String jobName;
     private Trigger trigger;
     private JobDetail jobDetail;
     private Class jobClass;
 
-    public CompactionJob()
+    public ScheduleJob()
     {
     }
 
-    public CompactionJob(String jobName, Trigger trigger, JobDetail jobDetail, Class jobClass)
+    public ScheduleJob(String jobName, Trigger trigger, JobDetail jobDetail, Class jobClass)
     {
         this.jobName = jobName;
         this.trigger = trigger;

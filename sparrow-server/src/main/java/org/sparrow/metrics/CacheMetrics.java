@@ -22,13 +22,7 @@ public class CacheMetrics implements Metric
 
     public CacheMetrics(MetricRegistry metrics, final ICache cache)
     {
-        capacity = metrics.register("sparrow_cache_capacity", new Gauge<Long>()
-        {
-            public Long getValue()
-            {
-                return cache.capacity();
-            }
-        });
+        capacity = metrics.register("sparrow_cache_capacity", () -> cache.capacity());
 
         hits = metrics.meter("sparrow_cache_hits");
         requests = metrics.meter("sparrow_cache_requests");
@@ -65,12 +59,6 @@ public class CacheMetrics implements Metric
             }
         });
 
-        entries = metrics.register("sparrow_cache_entries", new Gauge<Integer>()
-        {
-            public Integer getValue()
-            {
-                return cache.size();
-            }
-        });
+        entries = metrics.register("sparrow_cache_entries", () -> cache.size());
     }
 }

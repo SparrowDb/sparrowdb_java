@@ -6,10 +6,10 @@ import org.slf4j.LoggerFactory;
 import org.sparrow.cache.CacheManager;
 import org.sparrow.common.DataDefinition;
 import org.sparrow.common.util.FileUtils;
+import org.sparrow.config.DatabaseConfig;
 import org.sparrow.config.DatabaseDescriptor;
 import org.sparrow.protocol.DataObject;
 
-import java.io.File;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,18 +27,18 @@ public class SparrowDatabase
     {
     }
 
-    public boolean createDatabase(String dbname)
+    public boolean createDatabase(DatabaseConfig.Descriptor descriptor)
     {
-        if (!databaseExists(dbname))
+        if (!databaseExists(descriptor.name))
         {
             try
             {
-                Database database = Database.build(dbname);
-                databases.put(dbname, database);
+                Database database = Database.build(descriptor);
+                databases.put(descriptor.name, database);
                 return true;
             } catch (Exception e)
             {
-                logger.error("Could not create database {}: {} ", dbname, e.getMessage());
+                logger.error("Could not create database {}: {} ", descriptor.name, e.getMessage());
             }
         }
         return false;
@@ -55,9 +55,12 @@ public class SparrowDatabase
         if (database != null)
         {
             logger.debug("Dropping database {}", dbname);
+
             database.close();
             databases.remove(dbname);
-            FileUtils.delete(new File(DataFileManager.getDbPath(dbname)).getAbsolutePath());
+
+            FileUtils.delete(DatabaseDescriptor.getDatabaseConfigByName(dbname).path);
+
             return true;
         }
         return false;
@@ -90,10 +93,10 @@ public class SparrowDatabase
 
     public void loadFromDisk()
     {
-        DatabaseDescriptor.filterDatabasesDir(new File(DatabaseDescriptor.getDataFilePath()))
+        DatabaseDescriptor.database.databases.stream()
                 .forEach(x -> {
-                    Database database = Database.open(x.getName());
-                    databases.put(x.getName(), database);
+                    Database database = Database.open(x);
+                    databases.put(x.name, database);
                 });
     }
 
@@ -101,13 +104,6 @@ public class SparrowDatabase
     {
         Database database = getDatabase(dbname);
         return (database!=null) ? database.getDataWithImageByKey32(key) : null ;
-    }
-
-    public void loadDatabase(String dbname)
-    {
-        String path = DatabaseDescriptor.getDataFilePath(dbname);
-        Database database = Database.open(path);
-        databases.put(path, database);
     }
 
     public void closeDatabase(String dbname)
