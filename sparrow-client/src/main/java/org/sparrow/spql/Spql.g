@@ -7,11 +7,12 @@ options {
 @header {
     package org.sparrow.spql;
     import java.util.ArrayList;
+    import java.util.HashMap;
 }
 
 @members {
     public interface ISpqlParseHandler {
-        void createDatabase(String dbName);
+        void createDatabase(String dbName, HashMap<String, String> tokens);
         void deleteStatement(String dbName, String keyName, String valueName);
         void dropDatabase(String dbName);
         void insertStatement(String dbName, ArrayList<String> tokens);
@@ -44,8 +45,11 @@ sql_stmt
 ;
 
 create_database_stmt
- : K_CREATE K_DATABASE database_name
-    { parserHandler.createDatabase($database_name.text); }
+    @init {
+            HashMap<String, String> tokens = new HashMap<>();
+    }
+ : K_CREATE K_DATABASE database_name ( '{' tks=hash_list '}' { tokens = $tks.tokens;})?
+    { parserHandler.createDatabase($database_name.text, tokens); }
  ;
 
 drop_database_stmt
@@ -65,6 +69,11 @@ insert_stmt
  : K_INSERT K_INTO database_name '(' tks=token_list ')'
     { parserHandler.insertStatement($database_name.text, $tks.tokens); }
  ;
+
+hash_list returns [HashMap<String, String> tokens]
+    :{ $tokens = new HashMap<String, String>(); }
+    key=token_name ':' val=token_name { $tokens.put($key.text, $val.text); } ( ','  key=token_name ':' val=token_name { $tokens.put($key.text, $val.text); })*
+;
 
 token_list returns [ArrayList<String> tokens]
     :{ $tokens = new ArrayList<String>(); }
@@ -92,6 +101,7 @@ K_INTO : I N T O;
 K_DELETE : D E L E T E;
 K_FROM : F R O M;
 K_WHERE : W H E R E;
+
 
 token_name
  : any_name

@@ -1,17 +1,17 @@
+// Generated from Spql.g by ANTLR 4.5
 
     package org.sparrow.spql;
+    import java.util.ArrayList;
+    import java.util.HashMap;
 
-	import org.antlr.v4.runtime.*;
-	import org.antlr.v4.runtime.atn.ATN;
-	import org.antlr.v4.runtime.atn.ATNDeserializer;
-	import org.antlr.v4.runtime.atn.ParserATNSimulator;
-	import org.antlr.v4.runtime.atn.PredictionContextCache;
-	import org.antlr.v4.runtime.dfa.DFA;
-	import org.antlr.v4.runtime.tree.ParseTreeListener;
-	import org.antlr.v4.runtime.tree.TerminalNode;
-
-	import java.util.ArrayList;
-	import java.util.List;
+import org.antlr.v4.runtime.atn.*;
+import org.antlr.v4.runtime.dfa.DFA;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.*;
+import org.antlr.v4.runtime.tree.*;
+import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class SpqlParser extends Parser {
@@ -21,30 +21,31 @@ public class SpqlParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, K_CREATE=6, K_DROP=7, K_DATABASE=8, 
-		K_DATABASES=9, K_SHOW=10, K_SELECT=11, K_INSERT=12, K_INTO=13, K_DELETE=14, 
-		K_FROM=15, K_WHERE=16, IDENTIFIER=17, NUMERIC_LITERAL=18, BIND_PARAMETER=19, 
-		STRING_LITERAL=20, BLOB_LITERAL=21, SINGLE_LINE_COMMENT=22, MULTILINE_COMMENT=23, 
-		SPACES=24, UNEXPECTED_CHAR=25;
+		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, T__7=8, K_CREATE=9, 
+		K_DROP=10, K_DATABASE=11, K_DATABASES=12, K_SHOW=13, K_SELECT=14, K_INSERT=15, 
+		K_INTO=16, K_DELETE=17, K_FROM=18, K_WHERE=19, IDENTIFIER=20, NUMERIC_LITERAL=21, 
+		BIND_PARAMETER=22, STRING_LITERAL=23, BLOB_LITERAL=24, SINGLE_LINE_COMMENT=25, 
+		MULTILINE_COMMENT=26, SPACES=27, UNEXPECTED_CHAR=28;
 	public static final int
 		RULE_parse = 0, RULE_sql_stmt_list = 1, RULE_sql_stmt = 2, RULE_create_database_stmt = 3, 
 		RULE_drop_database_stmt = 4, RULE_show_databases_stmt = 5, RULE_insert_stmt = 6, 
-		RULE_token_list = 7, RULE_delete_stmt = 8, RULE_select_stmt = 9, RULE_token_name = 10, 
-		RULE_database_name = 11, RULE_key_name = 12, RULE_key_value = 13, RULE_any_name = 14, 
-		RULE_keyword = 15;
+		RULE_hash_list = 7, RULE_token_list = 8, RULE_delete_stmt = 9, RULE_select_stmt = 10, 
+		RULE_token_name = 11, RULE_database_name = 12, RULE_key_name = 13, RULE_key_value = 14, 
+		RULE_any_name = 15, RULE_keyword = 16;
 	public static final String[] ruleNames = {
 		"parse", "sql_stmt_list", "sql_stmt", "create_database_stmt", "drop_database_stmt", 
-		"show_databases_stmt", "insert_stmt", "token_list", "delete_stmt", "select_stmt", 
-		"token_name", "database_name", "key_name", "key_value", "any_name", "keyword"
+		"show_databases_stmt", "insert_stmt", "hash_list", "token_list", "delete_stmt", 
+		"select_stmt", "token_name", "database_name", "key_name", "key_value", 
+		"any_name", "keyword"
 	};
 
 	private static final String[] _LITERAL_NAMES = {
-		null, "';'", "'('", "')'", "','", "'='"
+		null, "';'", "'{'", "'}'", "'('", "')'", "':'", "','", "'='"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
-		null, null, null, null, null, null, "K_CREATE", "K_DROP", "K_DATABASE", 
-		"K_DATABASES", "K_SHOW", "K_SELECT", "K_INSERT", "K_INTO", "K_DELETE", 
-		"K_FROM", "K_WHERE", "IDENTIFIER", "NUMERIC_LITERAL", "BIND_PARAMETER", 
+		null, null, null, null, null, null, null, null, null, "K_CREATE", "K_DROP", 
+		"K_DATABASE", "K_DATABASES", "K_SHOW", "K_SELECT", "K_INSERT", "K_INTO", 
+		"K_DELETE", "K_FROM", "K_WHERE", "IDENTIFIER", "NUMERIC_LITERAL", "BIND_PARAMETER", 
 		"STRING_LITERAL", "BLOB_LITERAL", "SINGLE_LINE_COMMENT", "MULTILINE_COMMENT", 
 		"SPACES", "UNEXPECTED_CHAR"
 	};
@@ -95,7 +96,7 @@ public class SpqlParser extends Parser {
 
 
 	    public interface ISpqlParseHandler {
-	        void createDatabase(String dbName);
+	        void createDatabase(String dbName, HashMap<String, String> tokens);
 	        void deleteStatement(String dbName, String keyName, String valueName);
 	        void dropDatabase(String dbName);
 	        void insertStatement(String dbName, ArrayList<String> tokens);
@@ -141,21 +142,21 @@ public class SpqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(35);
+			setState(37);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << K_CREATE) | (1L << K_DROP) | (1L << K_SHOW) | (1L << K_SELECT) | (1L << K_INSERT) | (1L << K_DELETE))) != 0)) {
 				{
 				{
-				setState(32);
+				setState(34);
 				sql_stmt_list();
 				}
 				}
-				setState(37);
+				setState(39);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(38);
+			setState(40);
 			match(EOF);
 			}
 		}
@@ -199,65 +200,65 @@ public class SpqlParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(43);
+			setState(45);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==T__0) {
 				{
 				{
-				setState(40);
+				setState(42);
 				match(T__0);
 				}
 				}
-				setState(45);
+				setState(47);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(46);
+			setState(48);
 			sql_stmt();
-			setState(55);
+			setState(57);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,3,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					{
 					{
-					setState(48); 
+					setState(50); 
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 					do {
 						{
 						{
-						setState(47);
+						setState(49);
 						match(T__0);
 						}
 						}
-						setState(50); 
+						setState(52); 
 						_errHandler.sync(this);
 						_la = _input.LA(1);
 					} while ( _la==T__0 );
-					setState(52);
+					setState(54);
 					sql_stmt();
 					}
 					} 
 				}
-				setState(57);
+				setState(59);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,3,_ctx);
 			}
-			setState(61);
+			setState(63);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,4,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					{
 					{
-					setState(58);
+					setState(60);
 					match(T__0);
 					}
 					} 
 				}
-				setState(63);
+				setState(65);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,4,_ctx);
 			}
@@ -313,41 +314,41 @@ public class SpqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(70);
+			setState(72);
 			switch (_input.LA(1)) {
 			case K_CREATE:
 				{
-				setState(64);
+				setState(66);
 				create_database_stmt();
 				}
 				break;
 			case K_DROP:
 				{
-				setState(65);
+				setState(67);
 				drop_database_stmt();
 				}
 				break;
 			case K_SHOW:
 				{
-				setState(66);
+				setState(68);
 				show_databases_stmt();
 				}
 				break;
 			case K_INSERT:
 				{
-				setState(67);
+				setState(69);
 				insert_stmt();
 				}
 				break;
 			case K_DELETE:
 				{
-				setState(68);
+				setState(70);
 				delete_stmt();
 				}
 				break;
 			case K_SELECT:
 				{
-				setState(69);
+				setState(71);
 				select_stmt();
 				}
 				break;
@@ -369,10 +370,14 @@ public class SpqlParser extends Parser {
 
 	public static class Create_database_stmtContext extends ParserRuleContext {
 		public Database_nameContext database_name;
+		public Hash_listContext tks;
 		public TerminalNode K_CREATE() { return getToken(SpqlParser.K_CREATE, 0); }
 		public TerminalNode K_DATABASE() { return getToken(SpqlParser.K_DATABASE, 0); }
 		public Database_nameContext database_name() {
 			return getRuleContext(Database_nameContext.class,0);
+		}
+		public Hash_listContext hash_list() {
+			return getRuleContext(Hash_listContext.class,0);
 		}
 		public Create_database_stmtContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -391,16 +396,34 @@ public class SpqlParser extends Parser {
 	public final Create_database_stmtContext create_database_stmt() throws RecognitionException {
 		Create_database_stmtContext _localctx = new Create_database_stmtContext(_ctx, getState());
 		enterRule(_localctx, 6, RULE_create_database_stmt);
+
+		            HashMap<String, String> tokens = new HashMap<>();
+		    
+		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(72);
-			match(K_CREATE);
-			setState(73);
-			match(K_DATABASE);
 			setState(74);
+			match(K_CREATE);
+			setState(75);
+			match(K_DATABASE);
+			setState(76);
 			((Create_database_stmtContext)_localctx).database_name = database_name();
-			 parserHandler.createDatabase((((Create_database_stmtContext)_localctx).database_name!=null?_input.getText(((Create_database_stmtContext)_localctx).database_name.start,((Create_database_stmtContext)_localctx).database_name.stop):null)); 
+			setState(82);
+			_la = _input.LA(1);
+			if (_la==T__1) {
+				{
+				setState(77);
+				match(T__1);
+				setState(78);
+				((Create_database_stmtContext)_localctx).tks = hash_list();
+				setState(79);
+				match(T__2);
+				 tokens = ((Create_database_stmtContext)_localctx).tks.tokens;
+				}
+			}
+
+			 parserHandler.createDatabase((((Create_database_stmtContext)_localctx).database_name!=null?_input.getText(((Create_database_stmtContext)_localctx).database_name.start,((Create_database_stmtContext)_localctx).database_name.stop):null), tokens); 
 			}
 		}
 		catch (RecognitionException re) {
@@ -441,11 +464,11 @@ public class SpqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(77);
+			setState(86);
 			match(K_DROP);
-			setState(78);
+			setState(87);
 			match(K_DATABASE);
-			setState(79);
+			setState(88);
 			((Drop_database_stmtContext)_localctx).database_name = database_name();
 			 parserHandler.dropDatabase((((Drop_database_stmtContext)_localctx).database_name!=null?_input.getText(((Drop_database_stmtContext)_localctx).database_name.start,((Drop_database_stmtContext)_localctx).database_name.stop):null)); 
 			}
@@ -484,9 +507,9 @@ public class SpqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(82);
+			setState(91);
 			match(K_SHOW);
-			setState(83);
+			setState(92);
 			match(K_DATABASES);
 			 parserHandler.showDatabases(); 
 			}
@@ -536,19 +559,92 @@ public class SpqlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(86);
+			setState(95);
 			match(K_INSERT);
-			setState(87);
+			setState(96);
 			match(K_INTO);
-			setState(88);
+			setState(97);
 			((Insert_stmtContext)_localctx).database_name = database_name();
-			setState(89);
-			match(T__1);
-			setState(90);
+			setState(98);
+			match(T__3);
+			setState(99);
 			((Insert_stmtContext)_localctx).tks = token_list();
-			setState(91);
-			match(T__2);
+			setState(100);
+			match(T__4);
 			 parserHandler.insertStatement((((Insert_stmtContext)_localctx).database_name!=null?_input.getText(((Insert_stmtContext)_localctx).database_name.start,((Insert_stmtContext)_localctx).database_name.stop):null), ((Insert_stmtContext)_localctx).tks.tokens); 
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class Hash_listContext extends ParserRuleContext {
+		public HashMap<String, String> tokens;
+		public Token_nameContext key;
+		public Token_nameContext val;
+		public List<Token_nameContext> token_name() {
+			return getRuleContexts(Token_nameContext.class);
+		}
+		public Token_nameContext token_name(int i) {
+			return getRuleContext(Token_nameContext.class,i);
+		}
+		public Hash_listContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_hash_list; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof SpqlListener ) ((SpqlListener)listener).enterHash_list(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof SpqlListener ) ((SpqlListener)listener).exitHash_list(this);
+		}
+	}
+
+	public final Hash_listContext hash_list() throws RecognitionException {
+		Hash_listContext _localctx = new Hash_listContext(_ctx, getState());
+		enterRule(_localctx, 14, RULE_hash_list);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			 ((Hash_listContext)_localctx).tokens =  new HashMap<String, String>(); 
+			setState(104);
+			((Hash_listContext)_localctx).key = token_name();
+			setState(105);
+			match(T__5);
+			setState(106);
+			((Hash_listContext)_localctx).val = token_name();
+			 _localctx.tokens.put((((Hash_listContext)_localctx).key!=null?_input.getText(((Hash_listContext)_localctx).key.start,((Hash_listContext)_localctx).key.stop):null), (((Hash_listContext)_localctx).val!=null?_input.getText(((Hash_listContext)_localctx).val.start,((Hash_listContext)_localctx).val.stop):null)); 
+			setState(116);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while (_la==T__6) {
+				{
+				{
+				setState(108);
+				match(T__6);
+				setState(109);
+				((Hash_listContext)_localctx).key = token_name();
+				setState(110);
+				match(T__5);
+				setState(111);
+				((Hash_listContext)_localctx).val = token_name();
+				 _localctx.tokens.put((((Hash_listContext)_localctx).key!=null?_input.getText(((Hash_listContext)_localctx).key.start,((Hash_listContext)_localctx).key.stop):null), (((Hash_listContext)_localctx).val!=null?_input.getText(((Hash_listContext)_localctx).val.start,((Hash_listContext)_localctx).val.stop):null)); 
+				}
+				}
+				setState(118);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			}
 			}
 		}
 		catch (RecognitionException re) {
@@ -587,29 +683,29 @@ public class SpqlParser extends Parser {
 
 	public final Token_listContext token_list() throws RecognitionException {
 		Token_listContext _localctx = new Token_listContext(_ctx, getState());
-		enterRule(_localctx, 14, RULE_token_list);
+		enterRule(_localctx, 16, RULE_token_list);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			 ((Token_listContext)_localctx).tokens =  new ArrayList<String>(); 
-			setState(95);
+			setState(120);
 			((Token_listContext)_localctx).token_name = token_name();
 			 _localctx.tokens.add((((Token_listContext)_localctx).token_name!=null?_input.getText(((Token_listContext)_localctx).token_name.start,((Token_listContext)_localctx).token_name.stop):null)); 
-			setState(103);
+			setState(128);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (_la==T__3) {
+			while (_la==T__6) {
 				{
 				{
-				setState(97);
-				match(T__3);
-				setState(98);
+				setState(122);
+				match(T__6);
+				setState(123);
 				((Token_listContext)_localctx).token_name = token_name();
 				 _localctx.tokens.add((((Token_listContext)_localctx).token_name!=null?_input.getText(((Token_listContext)_localctx).token_name.start,((Token_listContext)_localctx).token_name.stop):null)); 
 				}
 				}
-				setState(105);
+				setState(130);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -658,23 +754,23 @@ public class SpqlParser extends Parser {
 
 	public final Delete_stmtContext delete_stmt() throws RecognitionException {
 		Delete_stmtContext _localctx = new Delete_stmtContext(_ctx, getState());
-		enterRule(_localctx, 16, RULE_delete_stmt);
+		enterRule(_localctx, 18, RULE_delete_stmt);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(106);
+			setState(131);
 			match(K_DELETE);
-			setState(107);
+			setState(132);
 			match(K_FROM);
-			setState(108);
+			setState(133);
 			((Delete_stmtContext)_localctx).database_name = database_name();
-			setState(109);
+			setState(134);
 			match(K_WHERE);
-			setState(110);
+			setState(135);
 			((Delete_stmtContext)_localctx).key_name = key_name();
-			setState(111);
-			match(T__4);
-			setState(112);
+			setState(136);
+			match(T__7);
+			setState(137);
 			((Delete_stmtContext)_localctx).key_value = key_value();
 			 parserHandler.deleteStatement((((Delete_stmtContext)_localctx).database_name!=null?_input.getText(((Delete_stmtContext)_localctx).database_name.start,((Delete_stmtContext)_localctx).database_name.stop):null), (((Delete_stmtContext)_localctx).key_name!=null?_input.getText(((Delete_stmtContext)_localctx).key_name.start,((Delete_stmtContext)_localctx).key_name.stop):null), (((Delete_stmtContext)_localctx).key_value!=null?_input.getText(((Delete_stmtContext)_localctx).key_value.start,((Delete_stmtContext)_localctx).key_value.stop):null)); 
 			}
@@ -722,28 +818,28 @@ public class SpqlParser extends Parser {
 
 	public final Select_stmtContext select_stmt() throws RecognitionException {
 		Select_stmtContext _localctx = new Select_stmtContext(_ctx, getState());
-		enterRule(_localctx, 18, RULE_select_stmt);
+		enterRule(_localctx, 20, RULE_select_stmt);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(115);
+			setState(140);
 			match(K_SELECT);
-			setState(116);
+			setState(141);
 			match(K_FROM);
-			setState(117);
+			setState(142);
 			((Select_stmtContext)_localctx).database_name = database_name();
-			setState(123);
+			setState(148);
 			_la = _input.LA(1);
 			if (_la==K_WHERE) {
 				{
-				setState(118);
+				setState(143);
 				match(K_WHERE);
-				setState(119);
+				setState(144);
 				((Select_stmtContext)_localctx).key_name = key_name();
-				setState(120);
-				match(T__4);
-				setState(121);
+				setState(145);
+				match(T__7);
+				setState(146);
 				((Select_stmtContext)_localctx).key_value = key_value();
 				}
 			}
@@ -783,11 +879,11 @@ public class SpqlParser extends Parser {
 
 	public final Token_nameContext token_name() throws RecognitionException {
 		Token_nameContext _localctx = new Token_nameContext(_ctx, getState());
-		enterRule(_localctx, 20, RULE_token_name);
+		enterRule(_localctx, 22, RULE_token_name);
 		try {
-			setState(129);
+			setState(154);
 			switch (_input.LA(1)) {
-			case T__1:
+			case T__3:
 			case K_CREATE:
 			case K_DROP:
 			case K_DATABASE:
@@ -803,14 +899,14 @@ public class SpqlParser extends Parser {
 			case STRING_LITERAL:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(127);
+				setState(152);
 				any_name();
 				}
 				break;
 			case NUMERIC_LITERAL:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(128);
+				setState(153);
 				match(NUMERIC_LITERAL);
 				}
 				break;
@@ -849,11 +945,11 @@ public class SpqlParser extends Parser {
 
 	public final Database_nameContext database_name() throws RecognitionException {
 		Database_nameContext _localctx = new Database_nameContext(_ctx, getState());
-		enterRule(_localctx, 22, RULE_database_name);
+		enterRule(_localctx, 24, RULE_database_name);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(131);
+			setState(156);
 			any_name();
 			}
 		}
@@ -888,11 +984,11 @@ public class SpqlParser extends Parser {
 
 	public final Key_nameContext key_name() throws RecognitionException {
 		Key_nameContext _localctx = new Key_nameContext(_ctx, getState());
-		enterRule(_localctx, 24, RULE_key_name);
+		enterRule(_localctx, 26, RULE_key_name);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(133);
+			setState(158);
 			any_name();
 			}
 		}
@@ -927,11 +1023,11 @@ public class SpqlParser extends Parser {
 
 	public final Key_valueContext key_value() throws RecognitionException {
 		Key_valueContext _localctx = new Key_valueContext(_ctx, getState());
-		enterRule(_localctx, 26, RULE_key_value);
+		enterRule(_localctx, 28, RULE_key_value);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(135);
+			setState(160);
 			any_name();
 			}
 		}
@@ -971,14 +1067,14 @@ public class SpqlParser extends Parser {
 
 	public final Any_nameContext any_name() throws RecognitionException {
 		Any_nameContext _localctx = new Any_nameContext(_ctx, getState());
-		enterRule(_localctx, 28, RULE_any_name);
+		enterRule(_localctx, 30, RULE_any_name);
 		try {
-			setState(144);
+			setState(169);
 			switch (_input.LA(1)) {
 			case IDENTIFIER:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(137);
+				setState(162);
 				match(IDENTIFIER);
 				}
 				break;
@@ -995,26 +1091,26 @@ public class SpqlParser extends Parser {
 			case K_WHERE:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(138);
+				setState(163);
 				keyword();
 				}
 				break;
 			case STRING_LITERAL:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(139);
+				setState(164);
 				match(STRING_LITERAL);
 				}
 				break;
-			case T__1:
+			case T__3:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(140);
-				match(T__1);
-				setState(141);
+				setState(165);
+				match(T__3);
+				setState(166);
 				any_name();
-				setState(142);
-				match(T__2);
+				setState(167);
+				match(T__4);
 				}
 				break;
 			default:
@@ -1060,12 +1156,12 @@ public class SpqlParser extends Parser {
 
 	public final KeywordContext keyword() throws RecognitionException {
 		KeywordContext _localctx = new KeywordContext(_ctx, getState());
-		enterRule(_localctx, 30, RULE_keyword);
+		enterRule(_localctx, 32, RULE_keyword);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(146);
+			setState(171);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << K_CREATE) | (1L << K_DROP) | (1L << K_DATABASE) | (1L << K_DATABASES) | (1L << K_SHOW) | (1L << K_SELECT) | (1L << K_INSERT) | (1L << K_INTO) | (1L << K_DELETE) | (1L << K_FROM) | (1L << K_WHERE))) != 0)) ) {
 			_errHandler.recoverInline(this);
@@ -1086,45 +1182,55 @@ public class SpqlParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\33\u0097\4\2\t\2"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\36\u00b0\4\2\t\2"+
 		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
-		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\3\2\7\2"+
-		"$\n\2\f\2\16\2\'\13\2\3\2\3\2\3\3\7\3,\n\3\f\3\16\3/\13\3\3\3\3\3\6\3"+
-		"\63\n\3\r\3\16\3\64\3\3\7\38\n\3\f\3\16\3;\13\3\3\3\7\3>\n\3\f\3\16\3"+
-		"A\13\3\3\4\3\4\3\4\3\4\3\4\3\4\5\4I\n\4\3\5\3\5\3\5\3\5\3\5\3\6\3\6\3"+
-		"\6\3\6\3\6\3\7\3\7\3\7\3\7\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\t\3\t\3\t"+
-		"\3\t\3\t\3\t\3\t\7\th\n\t\f\t\16\tk\13\t\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3"+
-		"\n\3\n\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\5\13~\n\13\3\13\3\13\3"+
-		"\f\3\f\5\f\u0084\n\f\3\r\3\r\3\16\3\16\3\17\3\17\3\20\3\20\3\20\3\20\3"+
-		"\20\3\20\3\20\5\20\u0093\n\20\3\21\3\21\3\21\2\2\22\2\4\6\b\n\f\16\20"+
-		"\22\24\26\30\32\34\36 \2\3\3\2\b\22\u0096\2%\3\2\2\2\4-\3\2\2\2\6H\3\2"+
-		"\2\2\bJ\3\2\2\2\nO\3\2\2\2\fT\3\2\2\2\16X\3\2\2\2\20`\3\2\2\2\22l\3\2"+
-		"\2\2\24u\3\2\2\2\26\u0083\3\2\2\2\30\u0085\3\2\2\2\32\u0087\3\2\2\2\34"+
-		"\u0089\3\2\2\2\36\u0092\3\2\2\2 \u0094\3\2\2\2\"$\5\4\3\2#\"\3\2\2\2$"+
-		"\'\3\2\2\2%#\3\2\2\2%&\3\2\2\2&(\3\2\2\2\'%\3\2\2\2()\7\2\2\3)\3\3\2\2"+
-		"\2*,\7\3\2\2+*\3\2\2\2,/\3\2\2\2-+\3\2\2\2-.\3\2\2\2.\60\3\2\2\2/-\3\2"+
-		"\2\2\609\5\6\4\2\61\63\7\3\2\2\62\61\3\2\2\2\63\64\3\2\2\2\64\62\3\2\2"+
-		"\2\64\65\3\2\2\2\65\66\3\2\2\2\668\5\6\4\2\67\62\3\2\2\28;\3\2\2\29\67"+
-		"\3\2\2\29:\3\2\2\2:?\3\2\2\2;9\3\2\2\2<>\7\3\2\2=<\3\2\2\2>A\3\2\2\2?"+
-		"=\3\2\2\2?@\3\2\2\2@\5\3\2\2\2A?\3\2\2\2BI\5\b\5\2CI\5\n\6\2DI\5\f\7\2"+
-		"EI\5\16\b\2FI\5\22\n\2GI\5\24\13\2HB\3\2\2\2HC\3\2\2\2HD\3\2\2\2HE\3\2"+
-		"\2\2HF\3\2\2\2HG\3\2\2\2I\7\3\2\2\2JK\7\b\2\2KL\7\n\2\2LM\5\30\r\2MN\b"+
-		"\5\1\2N\t\3\2\2\2OP\7\t\2\2PQ\7\n\2\2QR\5\30\r\2RS\b\6\1\2S\13\3\2\2\2"+
-		"TU\7\f\2\2UV\7\13\2\2VW\b\7\1\2W\r\3\2\2\2XY\7\16\2\2YZ\7\17\2\2Z[\5\30"+
-		"\r\2[\\\7\4\2\2\\]\5\20\t\2]^\7\5\2\2^_\b\b\1\2_\17\3\2\2\2`a\b\t\1\2"+
-		"ab\5\26\f\2bi\b\t\1\2cd\7\6\2\2de\5\26\f\2ef\b\t\1\2fh\3\2\2\2gc\3\2\2"+
-		"\2hk\3\2\2\2ig\3\2\2\2ij\3\2\2\2j\21\3\2\2\2ki\3\2\2\2lm\7\20\2\2mn\7"+
-		"\21\2\2no\5\30\r\2op\7\22\2\2pq\5\32\16\2qr\7\7\2\2rs\5\34\17\2st\b\n"+
-		"\1\2t\23\3\2\2\2uv\7\r\2\2vw\7\21\2\2w}\5\30\r\2xy\7\22\2\2yz\5\32\16"+
-		"\2z{\7\7\2\2{|\5\34\17\2|~\3\2\2\2}x\3\2\2\2}~\3\2\2\2~\177\3\2\2\2\177"+
-		"\u0080\b\13\1\2\u0080\25\3\2\2\2\u0081\u0084\5\36\20\2\u0082\u0084\7\24"+
-		"\2\2\u0083\u0081\3\2\2\2\u0083\u0082\3\2\2\2\u0084\27\3\2\2\2\u0085\u0086"+
-		"\5\36\20\2\u0086\31\3\2\2\2\u0087\u0088\5\36\20\2\u0088\33\3\2\2\2\u0089"+
-		"\u008a\5\36\20\2\u008a\35\3\2\2\2\u008b\u0093\7\23\2\2\u008c\u0093\5 "+
-		"\21\2\u008d\u0093\7\26\2\2\u008e\u008f\7\4\2\2\u008f\u0090\5\36\20\2\u0090"+
-		"\u0091\7\5\2\2\u0091\u0093\3\2\2\2\u0092\u008b\3\2\2\2\u0092\u008c\3\2"+
-		"\2\2\u0092\u008d\3\2\2\2\u0092\u008e\3\2\2\2\u0093\37\3\2\2\2\u0094\u0095"+
-		"\t\2\2\2\u0095!\3\2\2\2\f%-\649?Hi}\u0083\u0092";
+		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
+		"\3\2\7\2&\n\2\f\2\16\2)\13\2\3\2\3\2\3\3\7\3.\n\3\f\3\16\3\61\13\3\3\3"+
+		"\3\3\6\3\65\n\3\r\3\16\3\66\3\3\7\3:\n\3\f\3\16\3=\13\3\3\3\7\3@\n\3\f"+
+		"\3\16\3C\13\3\3\4\3\4\3\4\3\4\3\4\3\4\5\4K\n\4\3\5\3\5\3\5\3\5\3\5\3\5"+
+		"\3\5\3\5\5\5U\n\5\3\5\3\5\3\6\3\6\3\6\3\6\3\6\3\7\3\7\3\7\3\7\3\b\3\b"+
+		"\3\b\3\b\3\b\3\b\3\b\3\b\3\t\3\t\3\t\3\t\3\t\3\t\3\t\3\t\3\t\3\t\3\t\7"+
+		"\tu\n\t\f\t\16\tx\13\t\3\n\3\n\3\n\3\n\3\n\3\n\3\n\7\n\u0081\n\n\f\n\16"+
+		"\n\u0084\13\n\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\f\3\f\3\f"+
+		"\3\f\3\f\3\f\3\f\3\f\5\f\u0097\n\f\3\f\3\f\3\r\3\r\5\r\u009d\n\r\3\16"+
+		"\3\16\3\17\3\17\3\20\3\20\3\21\3\21\3\21\3\21\3\21\3\21\3\21\5\21\u00ac"+
+		"\n\21\3\22\3\22\3\22\2\2\23\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \""+
+		"\2\3\3\2\13\25\u00b0\2\'\3\2\2\2\4/\3\2\2\2\6J\3\2\2\2\bL\3\2\2\2\nX\3"+
+		"\2\2\2\f]\3\2\2\2\16a\3\2\2\2\20i\3\2\2\2\22y\3\2\2\2\24\u0085\3\2\2\2"+
+		"\26\u008e\3\2\2\2\30\u009c\3\2\2\2\32\u009e\3\2\2\2\34\u00a0\3\2\2\2\36"+
+		"\u00a2\3\2\2\2 \u00ab\3\2\2\2\"\u00ad\3\2\2\2$&\5\4\3\2%$\3\2\2\2&)\3"+
+		"\2\2\2\'%\3\2\2\2\'(\3\2\2\2(*\3\2\2\2)\'\3\2\2\2*+\7\2\2\3+\3\3\2\2\2"+
+		",.\7\3\2\2-,\3\2\2\2.\61\3\2\2\2/-\3\2\2\2/\60\3\2\2\2\60\62\3\2\2\2\61"+
+		"/\3\2\2\2\62;\5\6\4\2\63\65\7\3\2\2\64\63\3\2\2\2\65\66\3\2\2\2\66\64"+
+		"\3\2\2\2\66\67\3\2\2\2\678\3\2\2\28:\5\6\4\29\64\3\2\2\2:=\3\2\2\2;9\3"+
+		"\2\2\2;<\3\2\2\2<A\3\2\2\2=;\3\2\2\2>@\7\3\2\2?>\3\2\2\2@C\3\2\2\2A?\3"+
+		"\2\2\2AB\3\2\2\2B\5\3\2\2\2CA\3\2\2\2DK\5\b\5\2EK\5\n\6\2FK\5\f\7\2GK"+
+		"\5\16\b\2HK\5\24\13\2IK\5\26\f\2JD\3\2\2\2JE\3\2\2\2JF\3\2\2\2JG\3\2\2"+
+		"\2JH\3\2\2\2JI\3\2\2\2K\7\3\2\2\2LM\7\13\2\2MN\7\r\2\2NT\5\32\16\2OP\7"+
+		"\4\2\2PQ\5\20\t\2QR\7\5\2\2RS\b\5\1\2SU\3\2\2\2TO\3\2\2\2TU\3\2\2\2UV"+
+		"\3\2\2\2VW\b\5\1\2W\t\3\2\2\2XY\7\f\2\2YZ\7\r\2\2Z[\5\32\16\2[\\\b\6\1"+
+		"\2\\\13\3\2\2\2]^\7\17\2\2^_\7\16\2\2_`\b\7\1\2`\r\3\2\2\2ab\7\21\2\2"+
+		"bc\7\22\2\2cd\5\32\16\2de\7\6\2\2ef\5\22\n\2fg\7\7\2\2gh\b\b\1\2h\17\3"+
+		"\2\2\2ij\b\t\1\2jk\5\30\r\2kl\7\b\2\2lm\5\30\r\2mv\b\t\1\2no\7\t\2\2o"+
+		"p\5\30\r\2pq\7\b\2\2qr\5\30\r\2rs\b\t\1\2su\3\2\2\2tn\3\2\2\2ux\3\2\2"+
+		"\2vt\3\2\2\2vw\3\2\2\2w\21\3\2\2\2xv\3\2\2\2yz\b\n\1\2z{\5\30\r\2{\u0082"+
+		"\b\n\1\2|}\7\t\2\2}~\5\30\r\2~\177\b\n\1\2\177\u0081\3\2\2\2\u0080|\3"+
+		"\2\2\2\u0081\u0084\3\2\2\2\u0082\u0080\3\2\2\2\u0082\u0083\3\2\2\2\u0083"+
+		"\23\3\2\2\2\u0084\u0082\3\2\2\2\u0085\u0086\7\23\2\2\u0086\u0087\7\24"+
+		"\2\2\u0087\u0088\5\32\16\2\u0088\u0089\7\25\2\2\u0089\u008a\5\34\17\2"+
+		"\u008a\u008b\7\n\2\2\u008b\u008c\5\36\20\2\u008c\u008d\b\13\1\2\u008d"+
+		"\25\3\2\2\2\u008e\u008f\7\20\2\2\u008f\u0090\7\24\2\2\u0090\u0096\5\32"+
+		"\16\2\u0091\u0092\7\25\2\2\u0092\u0093\5\34\17\2\u0093\u0094\7\n\2\2\u0094"+
+		"\u0095\5\36\20\2\u0095\u0097\3\2\2\2\u0096\u0091\3\2\2\2\u0096\u0097\3"+
+		"\2\2\2\u0097\u0098\3\2\2\2\u0098\u0099\b\f\1\2\u0099\27\3\2\2\2\u009a"+
+		"\u009d\5 \21\2\u009b\u009d\7\27\2\2\u009c\u009a\3\2\2\2\u009c\u009b\3"+
+		"\2\2\2\u009d\31\3\2\2\2\u009e\u009f\5 \21\2\u009f\33\3\2\2\2\u00a0\u00a1"+
+		"\5 \21\2\u00a1\35\3\2\2\2\u00a2\u00a3\5 \21\2\u00a3\37\3\2\2\2\u00a4\u00ac"+
+		"\7\26\2\2\u00a5\u00ac\5\"\22\2\u00a6\u00ac\7\31\2\2\u00a7\u00a8\7\6\2"+
+		"\2\u00a8\u00a9\5 \21\2\u00a9\u00aa\7\7\2\2\u00aa\u00ac\3\2\2\2\u00ab\u00a4"+
+		"\3\2\2\2\u00ab\u00a5\3\2\2\2\u00ab\u00a6\3\2\2\2\u00ab\u00a7\3\2\2\2\u00ac"+
+		"!\3\2\2\2\u00ad\u00ae\t\2\2\2\u00ae#\3\2\2\2\16\'/\66;AJTv\u0082\u0096"+
+		"\u009c\u00ab";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

@@ -1,9 +1,14 @@
+// Generated from Spql.g by ANTLR 4.5
 
     package org.sparrow.spql;
+    import java.util.ArrayList;
+    import java.util.HashMap;
 
-	import org.antlr.v4.runtime.ParserRuleContext;
-	import org.antlr.v4.runtime.tree.ErrorNode;
-	import org.antlr.v4.runtime.tree.TerminalNode;
+
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.misc.NotNull;
+import org.antlr.v4.runtime.tree.ErrorNode;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 /**
  * This class provides an empty implementation of {@link SpqlListener},
@@ -95,6 +100,18 @@ public class SpqlBaseListener implements SpqlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitInsert_stmt(SpqlParser.Insert_stmtContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterHash_list(SpqlParser.Hash_listContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitHash_list(SpqlParser.Hash_listContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

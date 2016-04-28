@@ -1,7 +1,11 @@
+// Generated from Spql.g by ANTLR 4.5
 
     package org.sparrow.spql;
+    import java.util.ArrayList;
+    import java.util.HashMap;
 
-	import org.antlr.v4.runtime.tree.ParseTreeListener;
+import org.antlr.v4.runtime.misc.NotNull;
+import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
  * This interface defines a complete listener for a parse tree produced by
@@ -78,6 +82,16 @@ public interface SpqlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitInsert_stmt(SpqlParser.Insert_stmtContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SpqlParser#hash_list}.
+	 * @param ctx the parse tree
+	 */
+	void enterHash_list(SpqlParser.Hash_listContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SpqlParser#hash_list}.
+	 * @param ctx the parse tree
+	 */
+	void exitHash_list(SpqlParser.Hash_listContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link SpqlParser#token_list}.
 	 * @param ctx the parse tree
