@@ -28,11 +28,11 @@ First, download Sparrow repository:
 
 After that we start the server. Running the startup script; it can be stopped with ctrl-C. Go to sparrowdb root directory.
 
-	$ bin/sparrow
+	$ bin/sparrow.sh
 
 Running client.
 
-	$ bin/sparrow client
+	$ bin/sparrow.sh client
 
 
 Using Sparrow
