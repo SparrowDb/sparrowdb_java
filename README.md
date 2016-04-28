@@ -70,7 +70,7 @@ Deleting image:
 
 Accessing image from browser:
 	
-	http://localhost:8082/database_name/image_key
+	http://localhost:8081/database_name/image_key
 
 License
 ====================
