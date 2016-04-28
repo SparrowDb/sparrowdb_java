@@ -30,7 +30,7 @@ After that we start the server. Running the startup script; it can be stopped wi
 
 	$ bin/sparrow.sh
 
-Running client.
+Running client (default port 8082).
 
 	$ bin/sparrow.sh client
 
@@ -70,7 +70,7 @@ Deleting image:
 
 Accessing image from browser:
 	
-	http://localhost:8081/database_name/image_key
+	http://localhost:8082/database_name/image_key
 
 License
 ====================
