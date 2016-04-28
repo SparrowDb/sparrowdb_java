@@ -17,10 +17,7 @@ import org.sparrow.protocol.SpqlResult;
 import org.sparrow.spql.SpqlProcessor;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * Created by mauricio on 24/12/2015.
@@ -60,7 +57,7 @@ public class TServerTransportHandler implements SparrowTransport.Iface
     }
 
     @Override
-    public String create_database(String dbname) throws TException
+    public String create_database(String dbname, Map<String, String> params) throws TException
     {
         DatabaseConfig.Descriptor descriptor = new DatabaseConfig.Descriptor();
         descriptor.name = dbname;

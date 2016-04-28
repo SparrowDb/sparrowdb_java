@@ -30,11 +30,11 @@ public class SpqlParseHandler implements SpqlParser.ISpqlParseHandler
     }
 
     @Override
-    public void createDatabase(String dbName, HashMap<String, String> tokens)
+    public void createDatabase(String dbName, HashMap<String, String> params)
     {
         try
         {
-            client.create_database(dbName);
+            client.create_database(dbName, params);
         }
         catch (TException e)
         {

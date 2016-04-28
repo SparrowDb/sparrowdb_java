@@ -26,7 +26,7 @@ service SparrowTransport {
 	
 	list<string> show_databases()
 	
-	string create_database(1:required string dbname)
+	string create_database(1:required string dbname, 2:map<string,string> params)
 	
 	string drop_database(1:required string dbname)
 	
