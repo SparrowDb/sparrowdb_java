@@ -29,7 +29,7 @@ public class SparrowClient
     public String host = "127.0.0.1";
 
     @Option(name = {"-p", "--port"}, description = "Server port number")
-    public String port = "9090";
+    public String port = "8082";
 
     private static CommandProcessor processor = new CommandProcessor();
 
