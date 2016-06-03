@@ -58,9 +58,10 @@ public class DatabaseDescriptor
 
     public static void loadConfiguration(SparrowFile cFile)
     {
+        File cfgFile = null;
         try
         {
-            File cfgFile = new File(FileUtils.joinPath(SparrowDaemon.startUpParams.configurationPath, cFile.toString()));
+            cfgFile = new File(FileUtils.joinPath(SparrowDaemon.startUpParams.configurationPath, cFile.toString()));
             ObjectMapper xmlMapper = new XmlMapper();
             xmlMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
             switch (cFile)
@@ -71,8 +72,7 @@ public class DatabaseDescriptor
         }
         catch (IOException e)
         {
-            //logger.error("Error trying to load configuration file " + cFile);
-            e.printStackTrace();
+            logger.error("Error trying to load configuration file " + cfgFile.getAbsolutePath());
             System.exit(1);
         }
     }
