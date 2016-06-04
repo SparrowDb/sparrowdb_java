@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by mauricio on 4/22/16.
@@ -69,19 +70,29 @@ public class SpqlParseHandler implements SpqlParser.ISpqlParseHandler
     }
 
     @Override
-    public void insertStatement(String dbName, ArrayList<String> tokens)
+    public void insertStatement(String dbName, ArrayList<String> _tokens)
     {
-        File file = new File(tokens.get(0) + "." + tokens.get(1));
-        String fileExt = tokens.get(1);
+        List<String> tokens = _tokens.stream().map(x -> x.substring(1, x.length()-1))
+                .collect(Collectors.toList());
 
-        if (Strings.isNullOrEmpty(fileExt))
+        File file = new File(tokens.get(0));
+
+        if (Strings.isNullOrEmpty(tokens.get(1)))
         {
-            System.out.println("Invalid file extension");
+            System.out.println("Invalid data key");
             return;
         }
 
         if (file.exists())
         {
+            String fileExt = com.google.common.io.Files.getFileExtension(file.getName());
+
+            if (Strings.isNullOrEmpty(fileExt))
+            {
+                System.out.println("Invalid file extension");
+                return;
+            }
+
             byte[] bytes = null;
 
             try
@@ -89,7 +100,7 @@ public class SpqlParseHandler implements SpqlParser.ISpqlParseHandler
                 bytes = Files.readAllBytes(file.toPath());
                 DataObject dataObject = new DataObject();
                 dataObject.setDbname(dbName);
-                dataObject.setKey(tokens.get(2));
+                dataObject.setKey(tokens.get(1));
                 dataObject.setData(bytes);
                 dataObject.setExtension(fileExt);
                 String response = client.insert_data(dataObject, tokens);
@@ -98,7 +109,7 @@ public class SpqlParseHandler implements SpqlParser.ISpqlParseHandler
             }
             catch (Exception e)
             {
-                e.printStackTrace();
+                System.out.println("Could not insert image: " + e.getMessage());
             }
             finally
             {
