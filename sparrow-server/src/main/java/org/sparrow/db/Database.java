@@ -101,7 +101,7 @@ public class Database
         insertData(dataDefinition);
 
         // Put in cache
-        //cacheManager.put(dataDefinition.getKey(), dataDefinition);
+        cacheManager.put(dataDefinition.getKey(), dataDefinition);
     }
 
     public void insertData(DataDefinition dataDefinition)
