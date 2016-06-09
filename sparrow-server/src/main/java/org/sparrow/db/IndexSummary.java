@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class IndexSummary
 {
-    private LinkedHashMap<Integer, Long> index_ = Maps.newLinkedHashMap();
+    private Map<Integer, Long> index_ = Maps.newConcurrentMap();
 
     public IndexSummary()
     {

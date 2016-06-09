@@ -156,6 +156,11 @@ public class TServerTransportHandler implements SparrowTransport.Iface
     @Override
     public SpqlResult spql_query(String dbname, String keyName, String keyValue) throws TException
     {
-        return (Strings.isNullOrEmpty(keyName) && Strings.isNullOrEmpty(keyValue)) ? SpqlProcessor.queryDataAll(dbname) : SpqlProcessor.queryDataWhereKey(dbname, keyValue);
+        if (SparrowDatabase.instance.databaseExists(dbname)) {
+                return (Strings.isNullOrEmpty(keyName) && Strings.isNullOrEmpty(keyValue)) ? SpqlProcessor.queryDataAll(dbname) : SpqlProcessor.queryDataWhereKey(dbname, keyValue);
+        } else {
+            return null;
+        }
+
     }
 }

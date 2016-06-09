@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -23,7 +24,7 @@ public final class DataLog extends DataFile
 {
     private static Logger logger = LoggerFactory.getLogger(DataLog.class);
     private Set<DataHolder> dataHolders;
-    private long currentSize;
+    private AtomicLong currentSize = new AtomicLong();
     private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
     private static final String DEFAULT_DATAHOLDER_FILE = "datalog.spw";
     private ExecutorService executor = Executors.newCachedThreadPool();
@@ -41,7 +42,6 @@ public final class DataLog extends DataFile
     {
         try {
             dataHolderProxy.append(dataDefinition);
-            currentSize += dataDefinition.getSize();
             indexer.put(dataDefinition.getKey32(), dataDefinition.getOffset());
         } catch (IOException e) {
             logger.error("Could not append data to DataLog {}: {} ", filename, e.getMessage());
@@ -50,7 +50,7 @@ public final class DataLog extends DataFile
 
     public void add(DataDefinition dataDefinition)
     {
-        if ((dataDefinition.getSize() + currentSize) >= DatabaseDescriptor.config.max_datalog_size)
+        if ((dataDefinition.getSize() + currentSize.get()) >= DatabaseDescriptor.config.max_datalog_size)
         {
             flush();
         }
@@ -59,6 +59,8 @@ public final class DataLog extends DataFile
         try
         {
             append(dataDefinition);
+            long size = currentSize.get();
+            currentSize.set(size + dataDefinition.getSize());
         }
         finally
         {
@@ -83,7 +85,7 @@ public final class DataLog extends DataFile
 
             this.indexer.clear();
 
-            currentSize = 0;
+            currentSize.set(0);
             dataHolderProxy.open(filename);
         }
 
