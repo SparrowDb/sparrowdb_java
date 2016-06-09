@@ -1,5 +1,6 @@
 package org.sparrow.db;
 
+import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sparrow.cache.CacheManager;
@@ -11,7 +12,6 @@ import org.sparrow.config.DatabaseConfig;
 import org.sparrow.protocol.DataObject;
 
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -29,7 +29,7 @@ public class Database
     {
         this.descriptor = descriptor;
         cacheManager = new CacheManager<>(descriptor.name, descriptor.max_cache_size);
-        dataHolders = new LinkedHashSet<>();
+        dataHolders = Sets.newConcurrentHashSet();
         dataLog = new DataLog(dataHolders, descriptor);
     }
 

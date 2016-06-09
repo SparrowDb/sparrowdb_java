@@ -1,6 +1,6 @@
 package org.sparrow.db;
 
-import org.cliffc.high_scale_lib.NonBlockingHashMap;
+import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sparrow.common.util.FileUtils;
@@ -17,7 +17,7 @@ public class SparrowDatabase
 {
     private static final Logger logger = LoggerFactory.getLogger(SparrowDatabase.class);
     public static final SparrowDatabase instance = new SparrowDatabase();
-    private volatile Map<String, Database> databases = new NonBlockingHashMap<>();
+    private volatile Map<String, Database> databases = Maps.newConcurrentMap();
 
     private SparrowDatabase()
     {
