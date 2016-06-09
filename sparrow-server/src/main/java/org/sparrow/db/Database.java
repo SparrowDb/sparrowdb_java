@@ -33,7 +33,7 @@ public class Database
         dataLog = new DataLog(dataHolders, descriptor);
     }
 
-    public static Database build(DatabaseConfig.Descriptor descriptor)
+    public static synchronized Database build(DatabaseConfig.Descriptor descriptor)
     {
         Database database = null;
         try
@@ -48,7 +48,7 @@ public class Database
         return database;
     }
 
-    public static Database open(DatabaseConfig.Descriptor descriptor)
+    public static synchronized Database open(DatabaseConfig.Descriptor descriptor)
     {
         Database database = new Database(descriptor);
 
@@ -71,7 +71,7 @@ public class Database
     }
 
 
-    public void close()
+    public synchronized void close()
     {
         cacheManager.clear();
         dataHolders.clear();
