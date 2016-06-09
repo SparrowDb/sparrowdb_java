@@ -51,7 +51,7 @@ public class ThriftServer implements Server
     @Override
     public boolean isRunning()
     {
-        return server != null;
+        return server != null && server.isAlive();
     }
 
     private static class ThriftServerWorker extends Thread
