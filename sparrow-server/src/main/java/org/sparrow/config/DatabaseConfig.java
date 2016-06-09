@@ -21,6 +21,7 @@ public class DatabaseConfig
     {
         public String name;
         public Long max_datalog_size;
+        public Long max_cache_size;
         public Double bloomfilter_fpp;
         public String dataholder_cron_compaction;
         public String path;

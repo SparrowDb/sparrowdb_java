@@ -20,13 +20,13 @@ public class CacheMetrics implements Metric
     public final Gauge<Double> fifteenMinuteHitRate;
     public final Gauge<Integer> entries;
 
-    public CacheMetrics(MetricRegistry metrics, final ICache cache)
+    public CacheMetrics(MetricRegistry metrics, String name, final ICache cache)
     {
-        capacity = metrics.register("sparrow_cache_capacity", () -> cache.capacity());
+        capacity = metrics.register(name + "sparrow_cache_capacity", () -> cache.capacity());
 
-        hits = metrics.meter("sparrow_cache_hits");
-        requests = metrics.meter("sparrow_cache_requests");
-        hitRate = metrics.register("sparrow_cache_hitRate", new RatioGauge()
+        hits = metrics.meter(name + "sparrow_cache_hits");
+        requests = metrics.meter(name + "sparrow_cache_requests");
+        hitRate = metrics.register(name + "sparrow_cache_hitRate", new RatioGauge()
         {
             @Override
             public Ratio getRatio()
@@ -35,7 +35,7 @@ public class CacheMetrics implements Metric
             }
         });
 
-        oneMinuteHitRate = metrics.register("sparrow_cache_oneMinuteHitRate", new RatioGauge()
+        oneMinuteHitRate = metrics.register(name + "sparrow_cache_oneMinuteHitRate", new RatioGauge()
         {
             protected Ratio getRatio()
             {
@@ -43,7 +43,7 @@ public class CacheMetrics implements Metric
             }
         });
 
-        fiveMinuteHitRate = metrics.register("sparrow_cache_fiveMinuteHitRate", new RatioGauge()
+        fiveMinuteHitRate = metrics.register(name + "sparrow_cache_fiveMinuteHitRate", new RatioGauge()
         {
             protected Ratio getRatio()
             {
@@ -51,7 +51,7 @@ public class CacheMetrics implements Metric
             }
         });
 
-        fifteenMinuteHitRate = metrics.register("sparrow_cache_fifteenMinuteHitRate", new RatioGauge()
+        fifteenMinuteHitRate = metrics.register(name + "sparrow_cache_fifteenMinuteHitRate", new RatioGauge()
         {
             protected Ratio getRatio()
             {
@@ -59,6 +59,6 @@ public class CacheMetrics implements Metric
             }
         });
 
-        entries = metrics.register("sparrow_cache_entries", () -> cache.size());
+        entries = metrics.register(name + "sparrow_cache_entries", () -> cache.size());
     }
 }

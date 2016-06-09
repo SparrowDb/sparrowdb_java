@@ -8,6 +8,7 @@ import org.sparrow.common.util.FileUtils;
 import org.sparrow.config.DatabaseConfig;
 import org.sparrow.config.DatabaseDescriptor;
 import org.sparrow.config.SparrowFile;
+import org.sparrow.db.Database;
 import org.sparrow.db.SparrowDatabase;
 import org.sparrow.plugin.FilterManager;
 import org.sparrow.plugin.IFilter;
@@ -63,6 +64,7 @@ public class TServerTransportHandler implements SparrowTransport.Iface
         descriptor.name = dbname;
         descriptor.path = FileUtils.joinPath(DatabaseDescriptor.config.data_file_directory, dbname);
         descriptor.max_datalog_size = DatabaseDescriptor.config.max_datalog_size;
+        descriptor.max_cache_size = DatabaseDescriptor.config.max_cache_size;
         descriptor.bloomfilter_fpp = DatabaseDescriptor.config.bloomfilter_fpp;
         descriptor.dataholder_cron_compaction = DatabaseDescriptor.config.dataholder_cron_compaction;
 
@@ -133,17 +135,19 @@ public class TServerTransportHandler implements SparrowTransport.Iface
             }
         }
 
-        SparrowDatabase.instance.insert_data(object);
 
+        Database database  = SparrowDatabase.instance.getDatabase(object.getDbname());
+        database.insertData(object);
         return String.format("Data %s inserted in %s", object.getKey(), object.getDbname());
     }
 
     @Override
     public String delete_data(String dbname, String keyName, String keyValue) throws TException
     {
-        if (SparrowDatabase.instance.databaseExists(dbname))
+        Database database  = SparrowDatabase.instance.getDatabase(dbname);
+        if (database != null)
         {
-            SparrowDatabase.instance.delete_data(dbname, keyValue);
+            database.deleteData(keyValue);
             return "";
         }
         return "Data deleted";

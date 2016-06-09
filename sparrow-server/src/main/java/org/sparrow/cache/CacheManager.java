@@ -11,10 +11,10 @@ public class CacheManager<K, V>
     private final ICache<K, V> cache;
     private CacheMetrics metrics;
 
-    public CacheManager()
+    public CacheManager(String name, Long maxSize)
     {
-        this.cache = new CacheProvider<>(80);
-        this.metrics = new CacheMetrics(SparrowMetrics.instance.getMetrics(), cache);
+        this.cache = new CacheProvider<>(maxSize);
+        this.metrics = new CacheMetrics(SparrowMetrics.instance.getMetrics(), name, cache);
     }
 
     public void put(K key, V value)

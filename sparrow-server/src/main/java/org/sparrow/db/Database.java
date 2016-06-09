@@ -2,6 +2,7 @@ package org.sparrow.db;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sparrow.cache.CacheManager;
 import org.sparrow.common.DataDefinition;
 import org.sparrow.common.Tombstone;
 import org.sparrow.common.util.FileUtils;
@@ -22,10 +23,12 @@ public class Database
     private volatile Set<DataHolder> dataHolders;
     private volatile DataLog dataLog;
     private final DatabaseConfig.Descriptor descriptor;
+    private volatile CacheManager<String, DataDefinition> cacheManager;
 
     private Database(DatabaseConfig.Descriptor descriptor)
     {
         this.descriptor = descriptor;
+        cacheManager = new CacheManager<>(descriptor.name, descriptor.max_cache_size);
         dataHolders = new LinkedHashSet<>();
         dataLog = new DataLog(dataHolders, descriptor);
     }
@@ -70,7 +73,7 @@ public class Database
 
     public void close()
     {
-        SparrowDatabase.cacheManager.clear();
+        cacheManager.clear();
         dataHolders.clear();
         dataLog.close();
     }
@@ -98,7 +101,7 @@ public class Database
         insertData(dataDefinition);
 
         // Put in cache
-        SparrowDatabase.cacheManager.put(dataDefinition.getKey(), dataDefinition);
+        //cacheManager.put(dataDefinition.getKey(), dataDefinition);
     }
 
     public void insertData(DataDefinition dataDefinition)
@@ -108,7 +111,7 @@ public class Database
 
     public DataDefinition getDataWithImageByKey32(String dataKey)
     {
-        DataDefinition dataDefinition = SparrowDatabase.cacheManager.get(dataKey);
+        DataDefinition dataDefinition = cacheManager.get(dataKey);
 
         if (dataDefinition == null)
         {
@@ -129,7 +132,7 @@ public class Database
 
         if (dataDefinition != null)
         {
-            SparrowDatabase.cacheManager.put(dataKey, dataDefinition);
+            cacheManager.put(dataKey, dataDefinition);
         }
 
         return dataDefinition;
@@ -147,7 +150,7 @@ public class Database
         {
             Tombstone tombstone = new Tombstone(dataDefinition);
             dataLog.add(tombstone);
-            SparrowDatabase.cacheManager.put(dataKey, tombstone);
+            cacheManager.put(dataKey, tombstone);
         }
 
         return true;

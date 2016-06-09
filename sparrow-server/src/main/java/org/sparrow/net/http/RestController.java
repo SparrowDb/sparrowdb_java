@@ -4,6 +4,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.sparrow.common.DataDefinition;
+import org.sparrow.db.Database;
 import org.sparrow.db.SparrowDatabase;
 
 import java.util.regex.Matcher;
@@ -49,6 +50,13 @@ public class RestController
         return Pattern.compile(GET_IMAGE_PATTERN).matcher(uri);
     }
 
+    private void sendErrorResponse()
+    {
+        restResponse.setStatus(HttpResponseStatus.BAD_REQUEST);
+        restResponse.setResponseType(RestResponse.ResponseType.TEXT);
+        restResponse.setBuff(Unpooled.copiedBuffer(badRequestMessage()));
+    }
+
     private void process()
     {
         if (!method.equals(HttpMethod.GET))
@@ -62,21 +70,25 @@ public class RestController
         Matcher urlMatcher = getUrlMatcher();
         if (!urlMatcher.matches())
         {
-            restResponse.setStatus(HttpResponseStatus.BAD_REQUEST);
-            restResponse.setResponseType(RestResponse.ResponseType.TEXT);
-            restResponse.setBuff(Unpooled.copiedBuffer(badRequestMessage()));
+            sendErrorResponse();
             return;
         }
 
-        String database = urlMatcher.group(1);
+        String dbname = urlMatcher.group(1);
         String imageKey = urlMatcher.group(2);
 
-        DataDefinition dataDefinition = SparrowDatabase.instance.getObjectByKey(database, imageKey);
+        Database database = SparrowDatabase.instance.getDatabase(dbname);
+
+        if (database == null)
+        {
+            sendErrorResponse();
+            return;
+        }
+
+        DataDefinition dataDefinition = database.getDataWithImageByKey32(imageKey);
         if (dataDefinition == null || dataDefinition.getState() != DataDefinition.DataState.ACTIVE)
         {
-            restResponse.setStatus(HttpResponseStatus.BAD_REQUEST);
-            restResponse.setResponseType(RestResponse.ResponseType.TEXT);
-            restResponse.setBuff(Unpooled.copiedBuffer(badRequestMessage()));
+            sendErrorResponse();
             return;
         }
 

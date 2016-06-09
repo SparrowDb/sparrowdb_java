@@ -1,6 +1,7 @@
 package org.sparrow.spql;
 
 import org.sparrow.common.DataDefinition;
+import org.sparrow.db.Database;
 import org.sparrow.db.SparrowDatabase;
 import org.sparrow.protocol.DataObject;
 import org.sparrow.protocol.SpqlResult;
@@ -71,7 +72,8 @@ public class SpqlProcessor {
 
     public static SpqlResult queryDataWhereKey(String dbname, String value)
     {
-        DataDefinition dataDefinition = SparrowDatabase.instance.getObjectByKey(dbname, value);
+        Database database  = SparrowDatabase.instance.getDatabase(dbname);
+        DataDefinition dataDefinition = database.getDataWithImageByKey32(value);
         SpqlResult result = new SpqlResult();
         if (dataDefinition!=null)
         {

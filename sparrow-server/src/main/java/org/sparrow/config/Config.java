@@ -28,7 +28,7 @@ public class Config
         http_host = "0.0.0.0";
         tcp_port = 8082;
         tcp_host = "0.0.0.0";
-        max_cache_size = 31457280L;
+        max_cache_size = 80L;
         data_file_directory = "data";
         plugin_directory = "plugins";
         max_datalog_size = 1073741824L;

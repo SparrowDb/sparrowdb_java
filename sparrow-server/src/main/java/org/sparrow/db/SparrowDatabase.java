@@ -3,12 +3,9 @@ package org.sparrow.db;
 import org.cliffc.high_scale_lib.NonBlockingHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sparrow.cache.CacheManager;
-import org.sparrow.common.DataDefinition;
 import org.sparrow.common.util.FileUtils;
 import org.sparrow.config.DatabaseConfig;
 import org.sparrow.config.DatabaseDescriptor;
-import org.sparrow.protocol.DataObject;
 
 import java.util.Map;
 import java.util.Set;
@@ -21,9 +18,8 @@ public class SparrowDatabase
     private static final Logger logger = LoggerFactory.getLogger(SparrowDatabase.class);
     public static final SparrowDatabase instance = new SparrowDatabase();
     private volatile Map<String, Database> databases = new NonBlockingHashMap<>();
-    public static final CacheManager<String, DataDefinition> cacheManager = new CacheManager<>();
 
-    public SparrowDatabase()
+    private SparrowDatabase()
     {
     }
 
@@ -81,16 +77,6 @@ public class SparrowDatabase
         return databases;
     }
 
-    public void insert_data(DataObject object)
-    {
-        getDatabase(object.getDbname()).insertData(object);
-    }
-
-    public void delete_data(String dbname, String key)
-    {
-        getDatabase(dbname).deleteData(key);
-    }
-
     public void loadFromDisk()
     {
         DatabaseDescriptor.database.databases.stream()
@@ -98,20 +84,5 @@ public class SparrowDatabase
                     Database database = Database.open(x);
                     databases.put(x.name, database);
                 });
-    }
-
-    public DataDefinition getObjectByKey(String dbname, String key)
-    {
-        Database database = getDatabase(dbname);
-        return (database!=null) ? database.getDataWithImageByKey32(key) : null ;
-    }
-
-    public void closeDatabase(String dbname)
-    {
-        Database database = getDatabase(dbname);
-        if (database!=null)
-        {
-            database.close();
-        }
     }
 }
