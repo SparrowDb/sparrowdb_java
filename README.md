@@ -2,7 +2,7 @@
 ﻿
 ﻿Whats is SparrowDB?
 ====================
-SparrowJDB is an image database that works like a simple append-only object store containing data definitions representing the stored images. Sparrow has a HTTP server so images can be accessed in browser or using client to make queries.
+SparrowDB is an image database that works like an append-only object store. Sparrow has tools that allow image processing and HTTP server to access images.
 
 
 Sparrow Object Store
