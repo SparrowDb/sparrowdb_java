@@ -28,6 +28,7 @@
         <module>sparrow-protocol</module>
         <module>sparrow-tools</module>
         <module>sparrow-common</module>
+        <module>sparrow-backup</module>
     </modules>
 
     <dependencies>

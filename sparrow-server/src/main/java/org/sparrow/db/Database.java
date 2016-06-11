@@ -179,4 +179,9 @@ public class Database
 
         return count;
     }
+
+    public DatabaseConfig.Descriptor getDescriptor()
+    {
+        return descriptor;
+    }
 }
