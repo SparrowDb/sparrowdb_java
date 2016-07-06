@@ -1,11 +1,12 @@
 package org.sparrow.common;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
  * Created by mauricio on 25/12/2015.
  */
-public class DataDefinition
+public class DataDefinition implements Serializable
 {
     public enum DataState
     {

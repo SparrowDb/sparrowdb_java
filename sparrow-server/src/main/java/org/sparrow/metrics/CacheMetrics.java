@@ -18,7 +18,7 @@ public class CacheMetrics implements Metric
     public final Gauge<Double> oneMinuteHitRate;
     public final Gauge<Double> fiveMinuteHitRate;
     public final Gauge<Double> fifteenMinuteHitRate;
-    public final Gauge<Integer> entries;
+    public final Gauge<Long> currentSize;
 
     public CacheMetrics(MetricRegistry metrics, String name, final ICache cache)
     {
@@ -59,6 +59,6 @@ public class CacheMetrics implements Metric
             }
         });
 
-        entries = metrics.register(name + "sparrow_cache_entries", () -> cache.size());
+        currentSize = metrics.register(name + "sparrow_cache_size", () -> cache.size());
     }
 }

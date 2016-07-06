@@ -23,7 +23,7 @@ public class Database
     private volatile Set<DataHolder> dataHolders;
     private volatile DataLog dataLog;
     private final DatabaseConfig.Descriptor descriptor;
-    private volatile CacheManager<String, DataDefinition> cacheManager;
+    private volatile CacheManager<String> cacheManager;
 
     private Database(DatabaseConfig.Descriptor descriptor)
     {

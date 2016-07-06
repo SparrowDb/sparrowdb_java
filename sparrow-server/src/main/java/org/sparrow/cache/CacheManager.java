@@ -1,30 +1,31 @@
 package org.sparrow.cache;
 
+import org.sparrow.common.DataDefinition;
 import org.sparrow.metrics.CacheMetrics;
 import org.sparrow.metrics.SparrowMetrics;
 
 /**
  * Created by mauricio on 4/18/16.
  */
-public class CacheManager<K, V>
+public class CacheManager<K>
 {
-    private final ICache<K, V> cache;
+    private final LRUCache<K> cache;
     private CacheMetrics metrics;
 
     public CacheManager(String name, Long maxSize)
     {
-        this.cache = new CacheProvider<>(maxSize);
+        this.cache = new LRUCache<>(maxSize);
         this.metrics = new CacheMetrics(SparrowMetrics.instance.getMetrics(), name, cache);
     }
 
-    public void put(K key, V value)
+    public void put(K key, DataDefinition value)
     {
         cache.put(key, value);
     }
 
-    public V get(K key)
+    public DataDefinition get(K key)
     {
-        V v = cache.get(key);
+        DataDefinition v = cache.get(key);
         metrics.requests.mark();
         if (v != null)
             metrics.hits.mark();
@@ -35,7 +36,6 @@ public class CacheManager<K, V>
     {
         cache.clear();
     }
-
 
     public CacheMetrics getMetrics()
     {
